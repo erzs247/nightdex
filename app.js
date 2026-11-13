@@ -67,6 +67,10 @@ const TEXT = {
       fAll: 'Sa collection', fTrade: 'Il l\'a, pas moi', fGive: 'Il la cherche, je l\'ai', fWish: 'Ses souhaits', emptyFilter: 'Rien dans ce filtre pour l\'instant.',
       tagMine: 'Je l\'ai', tagWant: 'Dans mes souhaits',
     },
+    scan: { btn: 'Scan', title: 'Scanner une carte', starting: 'Ouverture de la caméra…', aim: 'Place la carte dans le cadre, bien à plat, sans reflet.', holding: 'Je la tiens… ne bouge plus.', photo: 'Choisir une photo', torch: 'Lampe',
+      denied: 'Accès à la caméra refusé. Autorise-le dans les réglages du navigateur, ou choisis une photo de la carte.', noCamera: 'Pas de caméra disponible. Choisis plutôt une photo de la carte, bien cadrée.', indexErr: 'Impossible de charger le scanner. Vérifie ta connexion et réessaie.',
+      unsure: 'Pas sûr à 100 % : vérifie que c\'est la bonne.', owned: (q) => `Tu en as déjà ${q}.`, versions: 'Autres versions de cette carte :', notIt: 'Ce n\'est pas elle ?',
+      add: '+1 Je l\'ai', open: 'Voir la fiche', again: 'Rescanner', added: (q) => `Ajoutée : tu en as ${q}` },
     inst: { title: 'Installe NightDex', pitch: 'Comme une vraie appli : icône sur ton écran, plein écran sans navigateur, et ça marche hors connexion.', btn: 'Installer', ios: 'Sur iPhone : touche Partager (le carré avec la flèche), puis « Sur l\'écran d\'accueil ».', done: 'NightDex est installée ! Ouvre-la depuis ton écran d\'accueil.' },
     adm: { title: 'Administration', role: 'rôle admin', idPh: 'ID NightDex du donateur', activate: 'Activer', remove: 'Retirer', listTitle: 'Soutiens actifs', none: 'Aucun soutien pour l\'instant.', on: 'Soutien activé', off: 'Soutien retiré', badId: 'ID invalide : copie-le depuis « Mon compte » du donateur.', denied: 'Refusé : les règles Firestore ne reconnaissent pas encore ce compte comme admin (publie les nouvelles règles).' },
     support: 'Soutenir NightDex', supportHint: 'NightDex est gratuit et fait par un fan. Un don aide à le faire vivre et débloque des bonus (photo de profil, cadre doré).',
@@ -154,6 +158,10 @@ const TEXT = {
       fAll: 'Their collection', fTrade: 'They have, I don\'t', fGive: 'They want, I have', fWish: 'Their wishlist', emptyFilter: 'Nothing in this filter yet.',
       tagMine: 'I have it', tagWant: 'On my wishlist',
     },
+    scan: { btn: 'Scan', title: 'Scan a card', starting: 'Opening the camera…', aim: 'Place the card in the frame, flat, without glare.', holding: 'Got it… hold still.', photo: 'Choose a photo', torch: 'Torch',
+      denied: 'Camera access denied. Allow it in your browser settings, or choose a photo of the card.', noCamera: 'No camera available. Choose a well-framed photo of the card instead.', indexErr: 'Could not load the scanner. Check your connection and try again.',
+      unsure: 'Not 100 % sure: check it is the right one.', owned: (q) => `You already have ${q}.`, versions: 'Other versions of this card:', notIt: 'Not this one?',
+      add: '+1 I have it', open: 'View card', again: 'Scan again', added: (q) => `Added: you have ${q}` },
     inst: { title: 'Install NightDex', pitch: 'Like a real app: an icon on your screen, full screen without a browser, and it works offline.', btn: 'Install', ios: 'On iPhone: tap Share (the square with the arrow), then “Add to Home Screen”.', done: 'NightDex is installed! Open it from your home screen.' },
     adm: { title: 'Administration', role: 'admin role', idPh: 'Donor\'s NightDex ID', activate: 'Activate', remove: 'Remove', listTitle: 'Active supporters', none: 'No supporters yet.', on: 'Supporter activated', off: 'Supporter removed', badId: 'Invalid ID: copy it from the donor\'s “My account”.', denied: 'Refused: the Firestore rules do not recognise this account as admin yet (publish the new rules).' },
     support: 'Support NightDex', supportHint: 'NightDex is free and fan-made. A donation keeps it alive and unlocks extras (profile picture, gold frame).',
@@ -200,6 +208,8 @@ const I = {
   x: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',
   speaker: '<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
   heartSmall: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
+  camera: '<svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.8"/></svg>',
+  bolt: '<svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
   person: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
   heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
   own: '<svg viewBox="0 0 24 24"><rect x="6" y="3.5" width="12" height="17" rx="2"/><path d="m9.5 12 2 2 3.5-4"/></svg>',
@@ -616,7 +626,7 @@ function renderWishlist() {
 
 let searchQuery = '';
 function renderSearch() {
-  setTopbar(`<h1>${L.search}</h1>`);
+  setTopbar(`<h1>${L.search}</h1><button class="chip scan-chip" data-action="scan">${I.camera}<span>${L.scan.btn}</span></button>`);
   const q = searchQuery.trim().toLowerCase();
   const res = q.length < 2 ? [] : allItems().filter((c) => [c.name, c.nameEn, `${itemCode(c)} ${c.number ?? ''}`, `${c.set} ${c.number ?? ''}`].some((x) => String(x ?? '').toLowerCase().includes(q)));
   view.innerHTML = `<div class="stack">
@@ -1560,6 +1570,181 @@ async function doInstall() {
   if (sheetMode === null && !sheet.hidden) openSettings();
 }
 
+// ---------- Scanner de cartes : caméra + reconnaissance sur le téléphone (aucune photo envoyée) ----------
+// Chaque image de carte a une empreinte 9 × 12 (data/scan-index.json, faite par scripts/make-scan-index.mjs).
+// L'image du cadre-guide est réduite à 90 × 120, puis comparée sous 7 cadrages légèrement décalés.
+// Seuil et cadrages réglés sur des photos simulées : bon personnage reconnu 100 %, version exacte dans les 3 premiers 94 %.
+const SCAN = { RW: 90, RH: 120, GW: 9, GH: 12, MIN: 0.66, VARIANTS: [[0, 0, 0], [-3, 0, 0], [3, 0, 0], [0, -4, 0], [0, 4, 0], [0, 0, 3], [0, 0, 6]] };
+const scan = { index: null, stream: null, timer: 0, last: null, paused: false, track: null, torch: false, res: null, pick: null };
+function scanNorm(b) {
+  const v = new Float32Array(b.length);
+  for (let c = 0; c < 3; c++) { let m = 0; for (let i = c; i < b.length; i += 3) m += b[i]; m /= b.length / 3; for (let i = c; i < b.length; i += 3) v[i] = b[i] - m; }
+  let s = 0; for (const x of v) s += x * x; s = Math.sqrt(s) || 1;
+  for (let i = 0; i < v.length; i++) v[i] /= s;
+  return v;
+}
+// moyenne de chaque case d'une grille 9 × 12 sur un rectangle de l'image 90 × 120 (pixels RVBA du canvas)
+function scanFeature(px, x, y, w, h) {
+  const { GW, GH, RW } = SCAN, out = new Float32Array(GW * GH * 3);
+  for (let gy = 0; gy < GH; gy++) for (let gx = 0; gx < GW; gx++) {
+    const x0 = Math.floor(x + (gx * w) / GW), x1 = Math.max(x0 + 1, Math.floor(x + ((gx + 1) * w) / GW));
+    const y0 = Math.floor(y + (gy * h) / GH), y1 = Math.max(y0 + 1, Math.floor(y + ((gy + 1) * h) / GH));
+    let r = 0, g = 0, b = 0, n = 0;
+    for (let yy = y0; yy < y1; yy++) for (let xx = x0; xx < x1; xx++) { const i = (yy * RW + xx) * 4; r += px[i]; g += px[i + 1]; b += px[i + 2]; n++; }
+    const o = (gy * GW + gx) * 3; out[o] = Math.floor(r / n); out[o + 1] = Math.floor(g / n); out[o + 2] = Math.floor(b / n);
+  }
+  return scanNorm(out);
+}
+async function scanLoadIndex() {
+  if (scan.index) return;
+  const j = await fetch('data/scan-index.json').then((r) => r.json());
+  scan.index = j.items.map(([id, b64]) => [id, scanNorm(Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)))]);
+}
+function scanMatch(px) {
+  const best = new Map();
+  for (const [dx, dy, z] of SCAN.VARIANTS) {
+    const x = Math.max(0, dx + z), y = Math.max(0, dy + Math.round((z * 4) / 3));
+    const w = Math.min(SCAN.RW - x, SCAN.RW - 2 * z), h = Math.min(SCAN.RH - y, SCAN.RH - Math.round((2 * z * 4) / 3));
+    const v = scanFeature(px, x, y, w, h);
+    for (const [id, iv] of scan.index) {
+      let d = 0; for (let i = 0; i < v.length; i++) d += v[i] * iv[i];
+      if (!best.has(id) || d > best.get(id)) best.set(id, d);
+    }
+  }
+  return [...best].sort((a, b) => b[1] - a[1]);
+}
+const scanCanvas = () => { const c = document.createElement('canvas'); c.width = SCAN.RW; c.height = SCAN.RH; return c; };
+
+function openScanner() {
+  closeScanner();
+  const el = document.createElement('div');
+  el.className = 'scanner'; el.id = 'scanner';
+  el.innerHTML = `<video id="scanVideo" playsinline muted autoplay></video>
+    <div class="scan-shade"></div>
+    <div class="scan-guide" id="scanGuide"><i></i><i></i><i></i><i></i></div>
+    <div class="scan-top">
+      <button class="icon-btn" data-scan="close" aria-label="${L.close}">${I.x}</button>
+      <strong>${L.scan.title}</strong>
+      <button class="icon-btn" data-scan="torch" id="scanTorch" hidden aria-label="${L.scan.torch}">${I.bolt}</button>
+    </div>
+    <div class="scan-panel" id="scanPanel"><p class="scan-status">${L.scan.starting}</p></div>
+    <input id="scanFile" type="file" accept="image/*" hidden>`;
+  document.body.appendChild(el);
+  document.body.style.overflow = 'hidden';
+  scan.paused = false; scan.last = null; scan.res = null; scan.pick = null;
+  scanStart();
+}
+async function scanStart() {
+  const panel = () => document.getElementById('scanPanel');
+  try { await scanLoadIndex(); } catch { if (panel()) panel().innerHTML = `<p class="scan-status">${L.scan.indexErr}</p>`; return; }
+  if (!navigator.mediaDevices?.getUserMedia) { scanNoCamera(L.scan.noCamera); return; }
+  try {
+    scan.stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } });
+  } catch (e) { scanNoCamera(e?.name === 'NotAllowedError' ? L.scan.denied : L.scan.noCamera); return; }
+  const video = document.getElementById('scanVideo');
+  if (!video) { scanStopStream(); return; }
+  video.srcObject = scan.stream;
+  scan.track = scan.stream.getVideoTracks()[0];
+  try { if (scan.track.getCapabilities?.().torch) document.getElementById('scanTorch').hidden = false; } catch { /* pas de lampe */ }
+  if (panel()) panel().innerHTML = `<p class="scan-status">${L.scan.aim}</p><button class="btn-ghost scan-photo" data-scan="photo">${L.scan.photo}</button>`;
+  const canvas = scanCanvas(), ctx = canvas.getContext('2d', { willReadFrequently: true });
+  scan.timer = setInterval(() => {
+    if (scan.paused || !video.videoWidth) return;
+    const g = document.getElementById('scanGuide').getBoundingClientRect(), vr = video.getBoundingClientRect();
+    // la vidéo est affichée en « cover » : on retrouve la zone du guide dans l'image de la caméra
+    const k = Math.max(vr.width / video.videoWidth, vr.height / video.videoHeight);
+    const ox = (video.videoWidth * k - vr.width) / 2, oy = (video.videoHeight * k - vr.height) / 2;
+    const sx = (g.left - vr.left + ox) / k, sy = (g.top - vr.top + oy) / k, sw = g.width / k, sh = g.height / k;
+    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, SCAN.RW, SCAN.RH);
+    const res = scanMatch(ctx.getImageData(0, 0, SCAN.RW, SCAN.RH).data);
+    const [id, score] = res[0];
+    const name = cardsById.get(id)?.nameEn;
+    const status = document.querySelector('#scanPanel .scan-status');
+    if (score >= SCAN.MIN) {
+      if (scan.last === name) { scanFound(res, false); return; }
+      scan.last = name;
+      if (status) status.textContent = L.scan.holding;
+    } else { scan.last = null; if (status) status.textContent = L.scan.aim; }
+  }, 350);
+}
+function scanNoCamera(msg) {
+  const p = document.getElementById('scanPanel');
+  if (p) p.innerHTML = `<p class="scan-status">${msg}</p><button class="cta scan-photo" data-scan="photo">${L.scan.photo}</button>`;
+}
+function scanFromFile(file) {
+  const img = new Image();
+  img.onload = () => {
+    const c = scanCanvas(), ctx = c.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0, SCAN.RW, SCAN.RH);
+    URL.revokeObjectURL(img.src);
+    scanFound(scanMatch(ctx.getImageData(0, 0, SCAN.RW, SCAN.RH).data), true);
+  };
+  img.src = URL.createObjectURL(file);
+}
+function scanFound(res, fromPhoto) {
+  scan.paused = true; scan.res = res; scan.pick = res[0][0];
+  navigator.vibrate?.(40);
+  scanRenderResult(fromPhoto && res[0][1] < SCAN.MIN);
+}
+function scanRenderResult(unsure) {
+  const p = document.getElementById('scanPanel');
+  if (!p || !scan.res) return;
+  const c = cardsById.get(scan.pick);
+  const scores = new Map(scan.res);
+  // autres versions de la même carte (rééditions, bêta, promos) puis autres cartes proches
+  const versions = allItems().filter((x) => x.nameEn === c.nameEn && x.id !== c.id).sort((a, b) => (scores.get(b.id) ?? 0) - (scores.get(a.id) ?? 0)).slice(0, 8);
+  const others = [];
+  for (const [id] of scan.res) { const x = cardsById.get(id); if (x && x.nameEn !== c.nameEn && !others.some((o) => o.nameEn === x.nameEn)) others.push(x); if (others.length >= 2) break; }
+  const q = qty(c.id);
+  const chip = (x) => `<button class="chip" data-scan-pick="${esc(x.id)}">${esc(itemCode(x))} · ${esc(x.number ?? '')}</button>`;
+  p.innerHTML = `<div class="scan-result">
+      <button class="scan-thumb" data-scan="open">${cardImg(c, true)}</button>
+      <div class="scan-info">
+        <strong>${esc(cardName(c))}</strong>
+        <span class="num"><b class="print">${esc(itemCode(c))}</b> · ${esc(c.number ?? '')}${c.rarity ? ` · ${esc(rarityLabel(c.rarity))}` : ''}</span>
+        <span class="num scan-price">${price(c.id) != null ? eur(price(c.id)) : L.noPrice}</span>
+        ${unsure ? `<span class="note">${L.scan.unsure}</span>` : ''}
+        ${q ? `<span class="note">${L.scan.owned(q)}</span>` : ''}
+      </div>
+    </div>
+    ${versions.length ? `<div class="scan-alt"><span class="note">${L.scan.versions}</span><div class="chips">${versions.map(chip).join('')}</div></div>` : ''}
+    ${others.length ? `<div class="scan-alt"><span class="note">${L.scan.notIt}</span><div class="chips">${others.map((x) => `<button class="chip" data-scan-pick="${esc(x.id)}">${esc(cardName(x))}</button>`).join('')}</div></div>` : ''}
+    <div class="scan-actions">
+      <button class="cta" data-scan="add">${L.scan.add}</button>
+      <button class="btn-ghost" data-scan="open">${L.scan.open}</button>
+      <button class="btn-ghost" data-scan="wish" aria-pressed="${wish.has(c.id)}">${wish.has(c.id) ? '♥' : '♡'}</button>
+      <button class="btn-ghost" data-scan="again">${L.scan.again}</button>
+    </div>`;
+}
+function scanStopStream() {
+  clearInterval(scan.timer); scan.timer = 0;
+  scan.stream?.getTracks().forEach((t) => t.stop());
+  scan.stream = null; scan.track = null; scan.torch = false;
+}
+function closeScanner() {
+  scanStopStream();
+  const el = document.getElementById('scanner');
+  if (el) { el.remove(); document.body.style.overflow = ''; }
+}
+document.addEventListener('click', async (e) => {
+  const pick = e.target.closest('[data-scan-pick]');
+  if (pick) { scan.pick = pick.dataset.scanPick; scanRenderResult(false); return; }
+  const a = e.target.closest('[data-scan]');
+  if (!a) return;
+  const act = a.dataset.scan, id = scan.pick;
+  if (act === 'close') closeScanner();
+  else if (act === 'photo') document.getElementById('scanFile')?.click();
+  else if (act === 'again') { scan.paused = false; scan.last = null; scan.res = null; const p = document.getElementById('scanPanel'); if (p) p.innerHTML = `<p class="scan-status">${L.scan.aim}</p><button class="btn-ghost scan-photo" data-scan="photo">${L.scan.photo}</button>`; }
+  else if (act === 'add' && id) { user.owned[id] = qty(id) + 1; save(); refreshCard(id); toast(L.scan.added(qty(id))); scanRenderResult(false); }
+  else if (act === 'wish' && id) { wish.has(id) ? wish.delete(id) : wish.add(id); save(); refreshCard(id); scanRenderResult(false); }
+  else if (act === 'open' && id) { closeScanner(); openCard(id, true); }
+  else if (act === 'torch' && scan.track) { scan.torch = !scan.torch; try { await scan.track.applyConstraints({ advanced: [{ torch: scan.torch }] }); } catch { /* lampe indisponible */ } a.classList.toggle('on', scan.torch); }
+});
+document.addEventListener('change', (e) => { if (e.target.id === 'scanFile' && e.target.files?.[0]) scanFromFile(e.target.files[0]); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && document.getElementById('scanner')) closeScanner(); });
+addEventListener('hashchange', () => closeScanner());
+addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.getElementById('scanner')) closeScanner(); });
+
 // ---------- Barre d'onglets et langue ----------
 function renderSupportSide() {
   const nav = document.querySelector('.tabbar');
@@ -1635,6 +1820,7 @@ document.addEventListener('click', async (e) => {
   else if (d.action === 'settings') openSettings();
   else if (d.action === 'account') openAccount();
   else if (d.action === 'prev') navStep(-1);
+  else if (d.action === 'scan') openScanner();
   else if (d.action === 'install') doInstall();
   else if (d.action === 'install-dismiss') { try { localStorage.setItem('nightdex:installDismissed', '1'); } catch { /* */ } document.getElementById('installBanner')?.remove(); }
   else if (d.action === 'copy-id') {

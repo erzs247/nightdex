@@ -38,6 +38,8 @@ jobs:
         run: node scripts/import-officiel.mjs
       - name: Nouveaux produits scellés
         run: node scripts/import-scelle.mjs
+      - name: Empreintes du scanner (nouvelles cartes)
+        run: node scripts/make-scan-index.mjs
       - name: Enregistrer les nouveautés
         run: |
           git config user.name "nightdex-bot"
