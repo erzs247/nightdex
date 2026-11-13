@@ -37,6 +37,26 @@ npm start
 
 Puis ouvrir http://localhost:8080.
 
+## Comptes (collection synchronisée entre appareils)
+
+Avec un compte (Google ou e-mail + mot de passe), la collection, les souhaits et les séries favorites sont enregistrés
+en ligne et synchronisés entre tous les appareils. Sans compte, tout reste sur le téléphone, comme avant.
+La collection reste aussi enregistrée sur le téléphone : l'appli marche hors ligne et envoie les changements au retour du réseau.
+Au premier passage d'un appareil sur un compte, les deux collections sont réunies (quantité la plus haute gardée).
+Le compte peut être supprimé depuis l'appli (exigé par Google Play).
+
+Les comptes utilisent **Firebase** (gratuit à cette échelle). Mise en place, une seule fois :
+1. https://console.firebase.google.com → *Créer un projet* (Google Analytics inutile).
+2. *Authentication* → *Commencer* → *Sign-in method* : activer **Google** et **Adresse e-mail/Mot de passe**.
+3. *Authentication* → *Paramètres* → *Domaines autorisés* : ajouter `erzs247.github.io`.
+4. *Firestore Database* → *Créer une base de données* (mode production, région `eur3` Europe).
+   Onglet *Règles* : coller le contenu de `firestore.rules`, puis *Publier*.
+5. *Paramètres du projet* (roue dentée) → *Vos applications* → icône web `</>` → nom « NightDex » →
+   copier l'objet `firebaseConfig` dans `data/firebase.json` (format JSON : `apiKey`, `authDomain`, `projectId`, `appId`…).
+   Ces valeurs sont publiques par conception : la sécurité vient des règles Firestore.
+
+Tant que `data/firebase.json` est vide (`{}`), l'appli fonctionne sans comptes.
+
 ## Produits scellés
 
 L'onglet **Scellé** de l'accueil liste les boosters, booster box, cases de 6 booster box, decks et kits
@@ -122,6 +142,7 @@ Sur le téléphone, ouvrir l'adresse GitHub Pages puis « Ajouter à l'écran d'
 | `data/config.json` | réglages Cardmarket (langue, idGame, correspondance des extensions) |
 | `scripts/update-prices.mjs` | relevé quotidien des prix Cardmarket |
 | `scripts/import-cards.mjs` | import CSV (images, raretés, liens) |
+| `data/firebase.json`, `firestore.rules` | configuration Firebase des comptes et règles de sécurité |
 | `data/sealed.json`, `images/sealed/` | produits scellés et leurs visuels |
 | `scripts/import-scelle.mjs` | import des produits scellés depuis Cardmarket |
 | `scripts/import-officiel.mjs` | import des cartes et images depuis la base officielle |

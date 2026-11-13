@@ -378,3 +378,32 @@ main { padding: 0 var(--gutter-r) 0 var(--gutter-l); outline: none; }
 .sealed-foot .mini-btn { height: 38px; }
 .row .thumb.is-sealed { aspect-ratio: 1 / 1; background: var(--surface-2); }
 .row .thumb.is-sealed img { object-fit: contain; }
+
+/* Compte */
+.acct-btn { position: relative; }
+.acct-btn.signed::after {
+  content: ""; position: absolute; top: 8px; right: 8px; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--muted); border: 2px solid var(--bg);
+}
+.acct-btn.on-ok::after { background: var(--up); }
+.acct-btn.on-syncing::after { background: var(--accent); }
+.acct-btn.on-error::after { background: var(--down); }
+.acct-row { display: flex; align-items: center; gap: 10px; justify-content: flex-start; }
+.acct-row svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; flex: none; }
+.acct-row span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.account .panel { gap: 6px; }
+.sync { font-size: 13.5px; font-weight: 600; }
+.sync.ok { color: var(--up); }
+.sync.wait { color: var(--accent); }
+.sync.err { color: var(--down); font-weight: 500; }
+.btn-google { display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; color: #1f1f1f; border-color: #fff; }
+.btn-google svg { width: 20px; height: 20px; }
+.divider { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.acct-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.acct-actions .cta { padding: 12px 8px; font-size: 15px; }
+.link-btn { border: 0; background: none; color: var(--cyan); text-decoration: underline; padding: 4px 0; justify-self: start; font-size: 14px; }
+.form-err { margin: 0; color: var(--down); font-size: 14px; }
+.danger-zone { border-color: color-mix(in srgb, var(--down) 45%, var(--line)); }
+.btn-danger { color: var(--down); }
+button:disabled { opacity: .5; cursor: default; }

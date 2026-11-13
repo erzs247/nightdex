@@ -1,0 +1,15 @@
+rules_version = '2';
+// Règles de sécurité Firestore pour NightDex :
+// chaque compte ne peut lire, écrire et supprimer que SA collection (users/<son identifiant>).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['owned', 'wish', 'fav', 'app', 'v', 'updatedAt'])
+        && request.resource.data.owned is map
+        && request.resource.data.wish is list
+        && request.resource.data.fav is list;
+    }
+  }
+}

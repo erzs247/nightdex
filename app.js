@@ -42,6 +42,17 @@ const TEXT = {
     chartWait: 'Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.', chartNone: 'Pas de prix Cardmarket pour cette carte pour l\'instant.',
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue', langToast: 'Langue : français',
+    account: 'Mon compte', accountShort: 'Compte',
+    accountPitch: 'Connecte-toi pour retrouver ta collection, tes souhaits et tes séries favorites sur tous tes appareils. Sans compte, elles restent enregistrées sur ce téléphone.',
+    google: 'Continuer avec Google', or: 'ou', email: 'Adresse e-mail', password: 'Mot de passe (6 caractères minimum)',
+    signIn: 'Se connecter', signUp: 'Créer un compte', forgot: 'Mot de passe oublié ?', resetSent: 'E-mail de réinitialisation envoyé',
+    signedAs: (e) => `Connecté : ${e}`, signOut: 'Se déconnecter', signedOut: 'Déconnecté. Ta collection reste sur ce téléphone.',
+    welcome: 'Connecté : ta collection est synchronisée',
+    syncOk: (t) => `Collection synchronisée${t ? ` · ${t}` : ''}`, syncing: 'Synchronisation…', syncErr: 'Synchronisation impossible pour le moment. Tes changements sont gardés sur ce téléphone et seront envoyés plus tard.',
+    syncInfo: (n, w) => `${n} ${plural(n, 'carte ou produit possédé', 'cartes et produits possédés')}, ${w} ${plural(w, 'souhait', 'souhaits')} : enregistrés sur ton compte.`,
+    deleteAcc: 'Supprimer mon compte', deleteConfirm: 'Confirmer la suppression définitive', deleteNote: 'Supprime ton compte et la copie en ligne de ta collection. La collection reste sur ce téléphone.',
+    deleted: 'Compte supprimé',
+    authErr: { 'auth/invalid-email': 'Adresse e-mail invalide.', 'auth/missing-password': 'Indique un mot de passe.', 'auth/weak-password': 'Mot de passe trop court : 6 caractères minimum.', 'auth/email-already-in-use': 'Un compte existe déjà avec cette adresse : connecte-toi.', 'auth/invalid-credential': 'E-mail ou mot de passe incorrect.', 'auth/wrong-password': 'E-mail ou mot de passe incorrect.', 'auth/user-not-found': 'Aucun compte avec cette adresse.', 'auth/too-many-requests': 'Trop d\'essais : réessaie dans quelques minutes.', 'auth/network-request-failed': 'Pas de connexion internet.', 'auth/requires-recent-login': 'Par sécurité, déconnecte-toi puis reconnecte-toi avant de supprimer ton compte.', 'auth/unauthorized-domain': 'Ce site n\'est pas encore autorisé dans Firebase (domaines autorisés).', default: 'Une erreur est survenue, réessaie.' },
     disclaimer: 'NightDex est une appli de fan non officielle, sans lien avec CD Projekt ni WeirdCo. Cyberpunk est une marque de CD Projekt ; les images des cartes et des produits appartiennent à leurs ayants droit. Prix : Cardmarket (tendance, mis à jour chaque jour).',
     storage: (n, w) => `Votre collection est enregistrée sur cet appareil (${n} cartes possédées, ${w} souhaits). Exportez-la pour la sauvegarder ou la transférer sur un autre téléphone.`,
     export: 'Exporter ma collection (copier)', import: 'Importer un fichier de sauvegarde', dataLine: (n, m, d) => `Données : ${n} cartes, ${m} séries · prix Cardmarket du ${d}.`, close: 'Fermer',
@@ -86,6 +97,17 @@ const TEXT = {
     chartWait: 'Not enough history to draw a curve yet. Prices are recorded every day.', chartNone: 'No Cardmarket price for this card yet.',
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'Language', langToast: 'Language: English',
+    account: 'My account', accountShort: 'Account',
+    accountPitch: 'Sign in to find your collection, wishlist and favourite sets on all your devices. Without an account, they stay on this phone.',
+    google: 'Continue with Google', or: 'or', email: 'Email address', password: 'Password (at least 6 characters)',
+    signIn: 'Sign in', signUp: 'Create an account', forgot: 'Forgot password?', resetSent: 'Password reset email sent',
+    signedAs: (e) => `Signed in: ${e}`, signOut: 'Sign out', signedOut: 'Signed out. Your collection stays on this phone.',
+    welcome: 'Signed in: your collection is synced',
+    syncOk: (t) => `Collection synced${t ? ` · ${t}` : ''}`, syncing: 'Syncing…', syncErr: 'Sync is not possible right now. Your changes are kept on this phone and will be sent later.',
+    syncInfo: (n, w) => `${n} ${plural(n, 'card or product', 'cards and products')} owned, ${w} in wishlist: saved to your account.`,
+    deleteAcc: 'Delete my account', deleteConfirm: 'Confirm permanent deletion', deleteNote: 'Deletes your account and the online copy of your collection. The collection stays on this phone.',
+    deleted: 'Account deleted',
+    authErr: { 'auth/invalid-email': 'Invalid email address.', 'auth/missing-password': 'Enter a password.', 'auth/weak-password': 'Password too short: at least 6 characters.', 'auth/email-already-in-use': 'An account already exists with this email: sign in.', 'auth/invalid-credential': 'Wrong email or password.', 'auth/wrong-password': 'Wrong email or password.', 'auth/user-not-found': 'No account with this email.', 'auth/too-many-requests': 'Too many attempts: try again in a few minutes.', 'auth/network-request-failed': 'No internet connection.', 'auth/requires-recent-login': 'For security, sign out and sign in again before deleting your account.', 'auth/unauthorized-domain': 'This site is not yet authorised in Firebase (authorised domains).', default: 'Something went wrong, please try again.' },
     disclaimer: 'NightDex is an unofficial fan app, not affiliated with CD Projekt or WeirdCo. Cyberpunk is a trademark of CD Projekt; card and product images belong to their respective owners. Prices: Cardmarket (trend, updated daily).',
     storage: (n, w) => `Your collection is saved on this device (${n} cards owned, ${w} in wishlist). Export it to back it up or move it to another phone.`,
     export: 'Export my collection (copy)', import: 'Import a backup file', dataLine: (n, m, d) => `Data: ${n} cards, ${m} sets · Cardmarket prices from ${d}.`, close: 'Close',
@@ -102,6 +124,7 @@ const I = {
   sort: '<svg viewBox="0 0 24 24"><path d="M8 4v16"/><path d="m4 8 4-4 4 4"/><path d="M16 20V4"/><path d="m12 16 4 4 4-4"/></svg>',
   filter: '<svg viewBox="0 0 24 24"><path d="M4 7h10"/><path d="M18 7h2"/><circle cx="16" cy="7" r="2"/><path d="M4 17h2"/><path d="M10 17h10"/><circle cx="8" cy="17" r="2"/></svg>',
   gear: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  person: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
   heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
   own: '<svg viewBox="0 0 24 24"><rect x="6" y="3.5" width="12" height="17" rx="2"/><path d="m9.5 12 2 2 3.5-4"/></svg>',
   listIcon: '<svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>',
@@ -133,8 +156,13 @@ function loadUser() {
 const user = loadUser();
 const wish = new Set(user.wish);
 const fav = new Set(user.fav);
+// signature de ce qui est synchronisé avec le compte (collection, souhaits, favoris ; pas les préférences d'affichage)
+const collectionSig = () => JSON.stringify([Object.entries(user.owned).filter(([, q]) => q > 0).sort(), [...wish].sort(), [...fav].sort()]);
+let lastSig = collectionSig();
 function save() {
   user.wish = [...wish]; user.fav = [...fav];
+  const sig = collectionSig();
+  if (sig !== lastSig) { lastSig = sig; cloudChanged(); }
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* stockage indisponible */ }
 }
 
@@ -370,7 +398,7 @@ function progressTile(s) {
 let homeQuery = '';
 function homeTopbar(withMode) {
   const mode = user.prefs.homeMode;
-  setTopbar(`<h1>${L.home}</h1>${withMode ? `<button class="icon-btn" data-action="home-mode" aria-label="${L.toggleView}">${mode === 'grid' ? I.listIcon : I.gridIcon}</button>` : ''}${langBtn()}<button class="icon-btn" data-action="settings" aria-label="${L.settings}">${I.gear}</button>`);
+  setTopbar(`<h1>${L.home}</h1>${withMode ? `<button class="icon-btn" data-action="home-mode" aria-label="${L.toggleView}">${mode === 'grid' ? I.listIcon : I.gridIcon}</button>` : ''}${langBtn()}${accountBtn()}<button class="icon-btn" data-action="settings" aria-label="${L.settings}">${I.gear}</button>`);
 }
 const homeTabs = (active) => `<div class="seg" role="tablist">${[['home', L.setsTab], ['sealed', L.sealed]].map(([h, l]) => `<button data-nav="${h}" aria-pressed="${active === h}">${l}</button>`).join('')}</div>`;
 function renderSealed() {
@@ -707,16 +735,17 @@ function openCard(id) {
   sheetPanel.querySelector('.stepper button')?.focus({ preventScroll: true });
 }
 function closeCard() {
-  sheet.hidden = true; openId = null;
+  sheet.hidden = true; openId = null; sheetMode = null;
   document.body.style.overflow = '';
   lastFocus?.focus?.({ preventScroll: true });
 }
 
 // ---------- Réglages ----------
 function openSettings() {
-  openId = null;
+  openId = null; sheetMode = null;
   sheetPanel.innerHTML = `<div class="grab"></div><div class="stack">
     <h2 id="sheetTitle" style="margin:0;font:700 22px var(--font-display)">${L.settings}</h2>
+    ${cloud.enabled ? `<button class="btn-ghost acct-row" data-action="account">${I.person}<span>${cloud.user ? esc(L.signedAs(cloud.user.email ?? cloud.user.name ?? '')) : L.account}</span></button>` : ''}
     <div class="panel"><h3>${L.language}</h3>${seg('lang', lang, [['fr', 'Français'], ['en', 'English']])}</div>
     <p class="note">${L.storage(Object.keys(user.owned).length, wish.size)}</p>
     <div class="menu">
@@ -732,6 +761,171 @@ function openSettings() {
   sheet.hidden = false;
   document.body.style.overflow = 'hidden';
 }
+
+// ---------- Compte (Firebase) : collection synchronisée entre appareils ----------
+// Activé seulement si data/firebase.json contient la configuration du projet Firebase (voir README).
+// La collection reste enregistrée sur le téléphone (utilisable hors ligne) et la copie du compte est tenue à jour.
+const FIREBASE = 'https://www.gstatic.com/firebasejs/10.12.2';
+const cloud = { enabled: false, user: null, status: 'off', lastSync: null, dirty: false, timer: null, api: null, unsub: null, error: '', busy: false, confirmDelete: false };
+let sheetMode = null; // 'account' quand le panneau du compte est ouvert
+
+async function initCloud() {
+  let cfg = null;
+  try { const r = await fetch('data/firebase.json', { cache: 'no-cache' }); if (r.ok) cfg = await r.json(); } catch { /* pas de compte */ }
+  if (!cfg?.apiKey) return;
+  try {
+    const [appM, authM, fsM] = await Promise.all(['app', 'auth', 'firestore'].map((m) => import(`${FIREBASE}/firebase-${m}.js`)));
+    const app = appM.initializeApp(cfg);
+    const auth = authM.getAuth(app);
+    auth.languageCode = lang;
+    cloud.api = { authM, fsM, auth, db: fsM.getFirestore(app) };
+    cloud.enabled = true;
+    authM.getRedirectResult(auth).catch((e) => { cloud.error = e.code; refreshAccount(); });
+    authM.onAuthStateChanged(auth, onCloudUser);
+    refreshAccount();
+  } catch (e) { console.warn('Compte indisponible', e); }
+}
+
+const cloudRef = () => cloud.api.fsM.doc(cloud.api.db, 'users', cloud.user.uid);
+const canon = (d) => JSON.stringify([Object.entries(d?.owned ?? {}).filter(([, q]) => q > 0).sort(), [...(d?.wish ?? [])].sort(), [...(d?.fav ?? [])].sort()]);
+function cloudData() { return { owned: Object.fromEntries(Object.entries(user.owned).filter(([, q]) => q > 0)), wish: [...wish], fav: [...fav] }; }
+// fusion au premier passage d'un appareil sur un compte : on additionne (quantité max, souhaits et favoris réunis)
+function unionData(a, b) {
+  const owned = { ...(a?.owned ?? {}) };
+  for (const [id, q] of Object.entries(b?.owned ?? {})) owned[id] = Math.max(owned[id] ?? 0, q);
+  return { owned, wish: [...new Set([...(a?.wish ?? []), ...(b?.wish ?? [])])], fav: [...new Set([...(a?.fav ?? []), ...(b?.fav ?? [])])] };
+}
+function applyCloudData(d) {
+  user.owned = { ...(d.owned ?? {}) };
+  wish.clear(); (d.wish ?? []).forEach((x) => wish.add(x));
+  fav.clear(); (d.fav ?? []).forEach((x) => fav.add(x));
+  user.wish = [...wish]; user.fav = [...fav];
+  lastSig = collectionSig();
+  try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* stockage indisponible */ }
+  if (sheet.hidden) currentRender();
+  else if (openId) { currentRender(); openCard(openId); }
+  else { currentRender(); refreshAccount(); }
+}
+async function pushCloud() {
+  if (!cloud.user) return;
+  clearTimeout(cloud.timer);
+  cloud.status = 'syncing'; refreshAccount();
+  try {
+    await cloud.api.fsM.setDoc(cloudRef(), { ...cloudData(), app: 'NightDex', v: 1, updatedAt: cloud.api.fsM.serverTimestamp() });
+    cloud.dirty = false; user.pending = false; save();
+    cloud.status = 'ok'; cloud.lastSync = new Date(); cloud.error = '';
+  } catch (e) { cloud.status = 'error'; cloud.error = e.code ?? ''; }
+  refreshAccount();
+}
+function cloudChanged() {
+  if (!cloud.enabled) return;
+  user.pending = true;
+  if (!cloud.user) return;
+  cloud.dirty = true;
+  clearTimeout(cloud.timer);
+  cloud.timer = setTimeout(pushCloud, 1200);
+}
+function onCloudUser(u) {
+  cloud.unsub?.(); cloud.unsub = null;
+  cloud.user = u ? { uid: u.uid, email: u.email, name: u.displayName } : null;
+  cloud.confirmDelete = false;
+  if (!u) { cloud.status = 'off'; refreshAccount(); return; }
+  cloud.status = 'syncing'; refreshAccount();
+  const { fsM } = cloud.api;
+  let first = true;
+  cloud.unsub = fsM.onSnapshot(cloudRef(), async (snap) => {
+    if (snap.metadata.hasPendingWrites) return;
+    const remote = snap.exists() ? snap.data() : null;
+    if (first) {
+      first = false;
+      const firstTimeHere = user.syncedUid !== u.uid;
+      let next;
+      if (!remote) next = cloudData();                          // compte neuf : on envoie la collection du téléphone
+      else if (firstTimeHere) next = unionData(remote, cloudData()); // nouvel appareil : on réunit les deux
+      else if (user.pending) next = cloudData();               // changements faits hors ligne : le téléphone est à jour
+      else next = remote;                                       // sinon le compte fait foi
+      user.syncedUid = u.uid;
+      applyCloudData(next);
+      if (!remote || canon(next) !== canon(remote)) await pushCloud();
+      else { user.pending = false; save(); cloud.status = 'ok'; cloud.lastSync = new Date(); refreshAccount(); }
+      return;
+    }
+    if (cloud.dirty || !remote) return;                        // nos propres changements partent juste après
+    applyCloudData(remote);                                     // changement fait sur un autre appareil
+    cloud.status = 'ok'; cloud.lastSync = new Date(); refreshAccount();
+  }, (e) => { cloud.status = 'error'; cloud.error = e.code ?? ''; refreshAccount(); });
+}
+
+const accountBtn = () => (cloud.enabled ? `<button class="icon-btn acct-btn ${cloud.user ? `signed on-${cloud.status}` : ''}" data-action="account" aria-label="${L.account}">${I.person}</button>` : '');
+function refreshAccount() {
+  if (cloud.enabled) for (const b of document.querySelectorAll('.acct-btn')) b.outerHTML = accountBtn();
+  if (cloud.enabled && !topbar.querySelector('.acct-btn') && topbar.querySelector('[data-action="settings"]')) currentRender();
+  if (sheetMode === 'account' && !sheet.hidden) openAccount(true);
+}
+function authError(code) { return L.authErr[code] ?? L.authErr.default; }
+function openAccount(keep) {
+  openId = null; sheetMode = 'account';
+  const em = keep ? document.getElementById('acctEmail')?.value ?? '' : '';
+  const u = cloud.user;
+  const time = cloud.lastSync ? new Intl.DateTimeFormat(fmt.loc, { hour: '2-digit', minute: '2-digit' }).format(cloud.lastSync) : '';
+  const status = cloud.status === 'ok' ? `<span class="sync ok">● ${L.syncOk(time)}</span>` : cloud.status === 'syncing' ? `<span class="sync wait">● ${L.syncing}</span>` : cloud.status === 'error' ? `<span class="sync err">● ${L.syncErr}</span>` : '';
+  sheetPanel.innerHTML = `<div class="grab"></div><div class="stack account">
+    <h2 id="sheetTitle" style="margin:0;font:700 22px var(--font-display)">${L.account}</h2>
+    ${u ? `
+      <div class="panel">
+        <strong>${esc(L.signedAs(u.email ?? u.name ?? ''))}</strong>
+        ${status}
+        <span class="note">${L.syncInfo(Object.values(user.owned).filter((q) => q > 0).length, wish.size)}</span>
+      </div>
+      <button class="btn-ghost" data-action="signout">${L.signOut}</button>
+      <div class="panel danger-zone">
+        <span class="note">${L.deleteNote}</span>
+        <button class="btn-ghost btn-danger" data-action="delete-account">${cloud.confirmDelete ? L.deleteConfirm : L.deleteAcc}</button>
+      </div>` : `
+      <p class="note">${L.accountPitch}</p>
+      <button class="btn-ghost btn-google" data-action="google" ${cloud.busy ? 'disabled' : ''}><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.6 12.3c0-.8-.1-1.6-.2-2.3H12v4.4h5.9a5 5 0 0 1-2.2 3.3v2.7h3.6c2-1.9 3.3-4.7 3.3-8.1z"/><path fill="#34A853" d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.7c-1 .7-2.2 1.1-3.7 1.1-2.9 0-5.3-1.9-6.2-4.5H2.1v2.8A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.8 14.2a6.6 6.6 0 0 1 0-4.3V7.1H2.1a11 11 0 0 0 0 9.9z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3.1.6 4.2 1.6l3.2-3.2A11 11 0 0 0 2.1 7.1l3.7 2.8C6.7 7.3 9.1 5.4 12 5.4z"/></svg>${L.google}</button>
+      <div class="divider"><span>${L.or}</span></div>
+      <form class="stack" id="acctForm" style="gap:10px">
+        <input class="search" id="acctEmail" type="email" autocomplete="email" placeholder="${L.email}" value="${esc(em)}" required>
+        <input class="search" id="acctPass" type="password" autocomplete="current-password" placeholder="${L.password}" minlength="6">
+        <div class="acct-actions">
+          <button class="cta" type="submit" data-mode="in" ${cloud.busy ? 'disabled' : ''}>${L.signIn}</button>
+          <button class="btn-ghost" type="submit" data-mode="up" ${cloud.busy ? 'disabled' : ''}>${L.signUp}</button>
+        </div>
+        <button class="link-btn" type="button" data-action="forgot">${L.forgot}</button>
+      </form>`}
+    ${cloud.error && !u ? `<p class="form-err" role="alert">${esc(authError(cloud.error))}</p>` : ''}
+    <button class="btn-ghost" data-action="close">${L.close}</button>
+  </div>`;
+  sheet.hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+async function cloudAction(fn, okMsg) {
+  cloud.busy = true; cloud.error = ''; refreshAccount();
+  try { await fn(); if (okMsg) toast(okMsg); } catch (e) { cloud.error = e.code ?? 'default'; }
+  cloud.busy = false; refreshAccount();
+}
+function signInGoogle() {
+  const { authM, auth } = cloud.api;
+  auth.languageCode = lang;
+  const provider = new authM.GoogleAuthProvider();
+  return cloudAction(async () => {
+    try { await authM.signInWithPopup(auth, provider); }
+    catch (e) {
+      if (['auth/popup-blocked', 'auth/operation-not-supported-in-this-environment', 'auth/cancelled-popup-request'].includes(e.code)) await authM.signInWithRedirect(auth, provider);
+      else if (e.code !== 'auth/popup-closed-by-user') throw e;
+    }
+  }, null);
+}
+document.addEventListener('submit', (e) => {
+  if (e.target.id !== 'acctForm') return;
+  e.preventDefault();
+  const { authM, auth } = cloud.api;
+  const email = document.getElementById('acctEmail').value.trim();
+  const pass = document.getElementById('acctPass').value;
+  const up = e.submitter?.dataset.mode === 'up';
+  cloudAction(() => (up ? authM.createUserWithEmailAndPassword(auth, email, pass) : authM.signInWithEmailAndPassword(auth, email, pass)), L.welcome);
+});
 
 let toastTimer;
 function toast(msg) {
@@ -758,7 +952,8 @@ function setLang(next) {
   const wasSettings = !sheet.hidden && !openId;
   const card = openId;
   currentRender();
-  if (card) openCard(card); else if (wasSettings) openSettings();
+  if (cloud.api) cloud.api.auth.languageCode = lang;
+  if (card) openCard(card); else if (wasSettings && sheetMode === 'account') openAccount(true); else if (wasSettings) openSettings();
   toast(L.langToast);
 }
 
@@ -804,6 +999,24 @@ document.addEventListener('click', async (e) => {
     toast(L.sortToast(L.sorts[user.prefs.sort]));
   } else if (d.action === 'filters') { showFilters = !showFilters; currentRender(); }
   else if (d.action === 'settings') openSettings();
+  else if (d.action === 'account') openAccount();
+  else if (d.action === 'google') signInGoogle();
+  else if (d.action === 'forgot') {
+    const email = document.getElementById('acctEmail')?.value.trim();
+    cloudAction(() => cloud.api.authM.sendPasswordResetEmail(cloud.api.auth, email), L.resetSent);
+  } else if (d.action === 'signout') {
+    cloudAction(async () => { cloud.unsub?.(); cloud.unsub = null; await cloud.api.authM.signOut(cloud.api.auth); }, L.signedOut);
+  } else if (d.action === 'delete-account') {
+    if (!cloud.confirmDelete) { cloud.confirmDelete = true; refreshAccount(); return; }
+    cloudAction(async () => {
+      const cu = cloud.api.auth.currentUser;
+      cloud.unsub?.(); cloud.unsub = null;
+      await cloud.api.fsM.deleteDoc(cloudRef());
+      await cloud.api.authM.deleteUser(cu);
+      user.syncedUid = null; save();
+    }, L.deleted);
+    cloud.confirmDelete = false;
+  }
   else if (d.action === 'close') closeCard();
   else if (d.action === 'export') {
     const data = JSON.stringify({ app: 'NightDex', version: 1, exportedAt: new Date().toISOString(), owned: user.owned, wish: [...wish], fav: [...fav] });
@@ -862,6 +1075,7 @@ renderChrome();
 try {
   await loadData();
   route();
+  initCloud();
 } catch (err) {
   view.innerHTML = `<div class="empty"><strong>${L.loadError}</strong>${L.loadErrorHint}</div>`;
   console.error(err);
