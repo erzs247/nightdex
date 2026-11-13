@@ -51,6 +51,7 @@ const TEXT = {
     chartWait: 'Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.', chartNone: 'Pas de prix Cardmarket pour cette carte pour l\'instant.',
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue de l\'appli', langToast: 'Appli en français',
+    otherCopies: (n, l) => `+ ${n} exemplaire${n > 1 ? 's' : ''} en ${l} (bouton FR | EN pour y passer)`, colLang: (l) => `Collection ${l.toUpperCase()}`,
     cardLanguage: 'Langue des cartes', cardLangHint: 'Le bouton FR | EN de l\'accueil fait la même chose : séries, noms et images dans cette langue.',
     cardLangToast: (l) => (l === 'fr' ? 'Cartes : séries françaises' : 'Cartes : séries anglaises'),
     langHint: 'Menus, boutons et textes de NightDex.',
@@ -147,6 +148,7 @@ const TEXT = {
     chartWait: 'Not enough history to draw a curve yet. Prices are recorded every day.', chartNone: 'No Cardmarket price for this card yet.',
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'App language', langToast: 'App in English',
+    otherCopies: (n, l) => `+ ${n} cop${n > 1 ? 'ies' : 'y'} in ${l} (switch with FR | EN)`, colLang: (l) => `${l.toUpperCase()} collection`,
     cardLanguage: 'Card language', cardLangHint: 'The FR | EN button on the home screen does the same: sets, names and images in that language.',
     cardLangToast: (l) => (l === 'fr' ? 'Cards: French sets' : 'Cards: English sets'),
     langHint: 'NightDex menus, buttons and texts.',
@@ -324,7 +326,21 @@ async function loadData() {
 const P = (id) => priceFile.prices[id];
 const hasPrices = () => Object.keys(priceFile.prices ?? {}).length > 0;
 const price = (id) => P(id)?.trend ?? null;
-const qty = (id) => user.owned[id] ?? 0;
+// collection séparée par langue : clé « id » = exemplaires FR, « id@en » = exemplaires EN (le scellé n'a qu'une clé)
+const okey = (id, l = cardLang) => (l === 'en' && !id.includes('@') && !isSealed(cardsById.get(id) ?? {}) ? `${id}@en` : id);
+const ownedOf = (map, id, l = cardLang) => map?.[okey(id, l)] ?? 0;
+const qty = (id, l = cardLang) => ownedOf(user.owned, id, l);
+const qtyAll = (id) => (isSealed(cardsById.get(id) ?? {}) ? qty(id) : qty(id, 'fr') + qty(id, 'en'));
+// anciennes données (une seule quantité par carte) : les cartes qui n'existent qu'en anglais passent en « @en », le reste reste en FR
+function migrateOwned(map) {
+  if (!map) return map;
+  for (const [k, n] of Object.entries(map)) {
+    const c = cardsById.get(k);
+    if (!c || isSealed(c) || !c.languages || c.languages.includes('fr')) continue;
+    map[`${k}@en`] = Math.max(map[`${k}@en`] ?? 0, n); delete map[k];
+  }
+  return map;
+}
 const setOf = (code) => catalog.sets.find((s) => s.code === code);
 const setTotal = (s) => setCards(s.code).length;
 const ownedIn = (code) => setCards(code).filter((c) => qty(c.id) > 0).length;
@@ -616,7 +632,7 @@ function renderSet(code) {
 
 let colSet = '';
 function renderCollection() {
-  setTopbar(`<h1>${L.myCollection}</h1>${cloud.enabled ? `<a class="chip friends-chip" href="#friends">${L.fr.title}<span class="fbadge" data-friends-badge ${fr.requests.length ? '' : 'hidden'}>${fr.requests.length || ''}</span></a>` : ''}`);
+  setTopbar(`<h1>${L.myCollection}</h1>${langBtn()}${cloud.enabled ? `<a class="chip friends-chip" href="#friends">${L.fr.title}<span class="fbadge" data-friends-badge ${fr.requests.length ? '' : 'hidden'}>${fr.requests.length || ''}</span></a>` : ''}`);
   const owned = catalog.cards.filter((c) => qty(c.id) > 0);
   const ownedSealed = sealed.filter((s) => qty(s.id) > 0);
   if (!owned.length && !ownedSealed.length) {
@@ -671,18 +687,18 @@ function renderSearch() {
 }
 
 function portfolioSeries() {
-  const owned = allItems().filter((c) => qty(c.id) > 0 && P(c.id)?.history?.length);
+  const owned = allItems().filter((c) => qtyAll(c.id) > 0 && P(c.id)?.history?.length);
   if (!owned.length) return [];
   // la courbe commence quand toutes les cartes possédées ont un prix (sinon faux saut depuis 0 €)
   const start = owned.reduce((m, c) => (P(c.id).history[0][0] > m ? P(c.id).history[0][0] : m), '');
   const days = new Set();
   for (const c of owned) for (const [d] of P(c.id).history) if (d >= start) days.add(d);
-  return [...days].sort().map((d) => [d, Math.round(owned.reduce((a, c) => a + qty(c.id) * (valueAt(P(c.id).history, d) ?? 0), 0) * 100) / 100]);
+  return [...days].sort().map((d) => [d, Math.round(owned.reduce((a, c) => a + qtyAll(c.id) * (valueAt(P(c.id).history, d) ?? 0), 0) * 100) / 100]);
 }
 function renderValues() {
   setTopbar(`<h1>${L.market}</h1>`);
-  const owned = allItems().filter((c) => qty(c.id) > 0);
-  const value = owned.reduce((a, c) => a + qty(c.id) * (price(c.id) ?? 0), 0);
+  const owned = allItems().filter((c) => qtyAll(c.id) > 0);
+  const value = owned.reduce((a, c) => a + qtyAll(c.id) * (price(c.id) ?? 0), 0);
   const priced = allItems().filter((c) => inCardLang(c) && (price(c.id) ?? 0) >= 0.5);
   const movers = priced.map((c) => [c, change(c.id, 7)]).filter(([, v]) => v != null && v !== 0);
   const ups = [...movers].filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 5);
@@ -837,6 +853,7 @@ function openCard(id, keepNav) {
           ${c.rarity ? `<span class="rarity" ${rarityStyle(c.rarity)}>${esc(rarityLabel(c.rarity))}${c.type ? ` · ${esc(typeLabel(c.type))}` : ''}${c.color ? ` · ${esc(colorLabel(c.color))}` : ''}</span>` : ''}
           ${stats ? `<span class="sub num">${stats}</span>` : ''}
           ${enOnly ? `<span class="sub">${L.enOnly}</span>` : ''}
+          ${!sealedItem && qty(id, cardLang === 'fr' ? 'en' : 'fr') ? `<span class="sub other-copies">${L.otherCopies(qty(id, cardLang === 'fr' ? 'en' : 'fr'), cardLang === 'fr' ? 'EN' : 'FR')}</span>` : ''}
           <div class="big-price num"><small>${L.trend}${p.foil ? ` · <span class="foil">${L.foil}</span>` : ''}</small>${p.trend != null ? eur(p.trend) : `<span style="font-size:18px;color:var(--muted)">${L.noPrice}</span>`}</div>
           ${ch != null ? `<span class="delta num ${ch >= 0 ? 'up' : 'down'}">${pct(ch)} ${L.over30}</span>` : ''}
           <div class="detail-actions">
@@ -942,7 +959,7 @@ function unionData(a, b) {
   return { owned, wish: [...new Set([...(a?.wish ?? []), ...(b?.wish ?? [])])], fav: [...new Set([...(a?.fav ?? []), ...(b?.fav ?? [])])] };
 }
 function applyCloudData(d) {
-  user.owned = { ...(d.owned ?? {}) };
+  user.owned = migrateOwned({ ...(d.owned ?? {}) });
   wish.clear(); (d.wish ?? []).forEach((x) => wish.add(x));
   fav.clear(); (d.fav ?? []).forEach((x) => fav.add(x));
   user.wish = [...wish]; user.fav = [...fav];
@@ -1523,7 +1540,7 @@ async function renderFriend(uid) {
       const [snap, name] = await Promise.all([fsx().getDoc(dref('users', uid)), friendName(uid)]);
       let avatar = null;
       try { const p = await fsx().getDoc(dref('profiles', uid)); avatar = p.exists() ? p.data().avatar : null; } catch { /* pas de photo */ }
-      fr.view = { uid, pseudo: name.pseudo, avatar, owned: snap.exists() ? snap.data().owned ?? {} : {}, wish: snap.exists() ? snap.data().wish ?? [] : [] };
+      fr.view = { uid, pseudo: name.pseudo, avatar, owned: migrateOwned({ ...(snap.exists() ? snap.data().owned ?? {} : {}) }), wish: snap.exists() ? snap.data().wish ?? [] : [] };
     } catch (e) {
       view.innerHTML = `<div class="empty"><strong>${L.fr.cantSee}</strong>${L.fr.cantSeeHint}<a class="btn-ghost" href="#friends" style="text-decoration:none">${L.back}</a></div>`;
       return;
@@ -1531,9 +1548,9 @@ async function renderFriend(uid) {
     if (currentRender !== renderFriendCurrent) return;
   }
   const v = fr.view;
-  const theirs = catalog.cards.concat(sealed).filter((c) => (v.owned[c.id] ?? 0) > 0);
-  const value = theirs.reduce((a, c) => a + (v.owned[c.id] ?? 0) * (price(c.id) ?? 0), 0);
-  const total = theirs.reduce((a, c) => a + (v.owned[c.id] ?? 0), 0);
+  const theirs = catalog.cards.concat(sealed).filter((c) => ownedOf(v.owned, c.id) > 0);
+  const value = theirs.reduce((a, c) => a + ownedOf(v.owned, c.id) * (price(c.id) ?? 0), 0);
+  const total = theirs.reduce((a, c) => a + ownedOf(v.owned, c.id), 0);
   const wishCards = v.wish.map((id) => cardsById.get(id)).filter(Boolean);
   const lists = {
     all: theirs,
@@ -1543,7 +1560,7 @@ async function renderFriend(uid) {
   };
   const shown = sortCards(lists[fr.filter] ?? theirs, 'price-desc');
   setTopbar(`<a class="icon-btn" href="#friends" aria-label="${L.back}">${I.back}</a>
-    <h1 class="small friend-title">${v.avatar ? `<img src="${esc(v.avatar)}" alt="">` : `<span class="f-avatar">${esc(v.pseudo[0]?.toUpperCase() ?? '?')}</span>`}@${esc(v.pseudo)}</h1>`);
+    <h1 class="small friend-title">${v.avatar ? `<img src="${esc(v.avatar)}" alt="">` : `<span class="f-avatar">${esc(v.pseudo[0]?.toUpperCase() ?? '?')}</span>`}@${esc(v.pseudo)}</h1>${langBtn()}`);
   view.innerHTML = `<div class="stack">
     <div class="kpis">
       <div class="stat"><small>${L.kCards}</small><b class="num">${total}</b></div>
@@ -1556,7 +1573,7 @@ async function renderFriend(uid) {
 }
 let renderFriendCurrent = null;
 function friendTile(c, v) {
-  const q = v.owned[c.id] ?? 0, mine = qty(c.id);
+  const q = ownedOf(v.owned, c.id), mine = qty(c.id);
   const tag = mine ? `<span class="ftag own">${L.fr.tagMine}</span>` : (wish.has(c.id) ? `<span class="ftag want">${L.fr.tagWant}</span>` : '');
   return `<div class="card ${q ? 'owned' : 'missing'} ftile" data-cid="${esc(c.id)}">
     <button class="${isSealed(c) ? 'sealed-img' : 'card-img'}" data-open="${esc(c.id)}" aria-label="${esc(cardName(c))}">${cardImg(c)}</button>
@@ -1769,7 +1786,7 @@ document.addEventListener('click', async (e) => {
   if (act === 'close') closeScanner();
   else if (act === 'photo') document.getElementById('scanFile')?.click();
   else if (act === 'again') { scan.paused = false; scan.last = null; scan.res = null; const p = document.getElementById('scanPanel'); if (p) p.innerHTML = `<p class="scan-status">${L.scan.aim}</p><button class="btn-ghost scan-photo" data-scan="photo">${L.scan.photo}</button>`; }
-  else if (act === 'add' && id) { user.owned[id] = qty(id) + 1; save(); refreshCard(id); toast(L.scan.added(qty(id))); scanRenderResult(false); }
+  else if (act === 'add' && id) { user.owned[okey(id)] = qty(id) + 1; save(); refreshCard(id); toast(L.scan.added(qty(id))); scanRenderResult(false); }
   else if (act === 'wish' && id) { wish.has(id) ? wish.delete(id) : wish.add(id); save(); refreshCard(id); scanRenderResult(false); }
   else if (act === 'open' && id) { closeScanner(); openCard(id, true); }
   else if (act === 'torch' && scan.track) { scan.torch = !scan.torch; try { await scan.track.applyConstraints({ advanced: [{ torch: scan.torch }] }); } catch { /* lampe indisponible */ } a.classList.toggle('on', scan.torch); }
@@ -1818,8 +1835,9 @@ function setLang(next) {
 
 // ---------- Actions ----------
 function toggleOwn(id) {
-  user.owned[id] = qty(id) > 0 ? 0 : 1;
-  if (!user.owned[id]) delete user.owned[id];
+  const k = okey(id);
+  user.owned[k] = qty(id) > 0 ? 0 : 1;
+  if (!user.owned[k]) delete user.owned[k];
   save(); refreshCard(id);
   petEvent('own', { on: qty(id) > 0 });
   toast(qty(id) ? L.addedCol : L.removedCol);
@@ -1851,7 +1869,7 @@ document.addEventListener('click', async (e) => {
   else if (d.qty && openId) {
     const id = openId;
     const n = Math.max(0, qty(id) + Number(d.qty));
-    if (n) user.owned[id] = n; else delete user.owned[id];
+    if (n) user.owned[okey(id)] = n; else delete user.owned[okey(id)];
     save(); refreshCard(id); openCard(id);
   } else if (d.close !== undefined) closeCard();
   else if (d.action === 'home-mode') { user.prefs.homeMode = user.prefs.homeMode === 'grid' ? 'list' : 'grid'; save(); currentRender(); }
@@ -1898,7 +1916,7 @@ document.addEventListener('click', async (e) => {
   }
   else if (d.action === 'close') closeCard();
   else if (d.action === 'export') {
-    const data = JSON.stringify({ app: 'NightDex', version: 1, exportedAt: new Date().toISOString(), owned: user.owned, wish: [...wish], fav: [...fav] });
+    const data = JSON.stringify({ app: 'NightDex', version: 2, exportedAt: new Date().toISOString(), owned: user.owned, wish: [...wish], fav: [...fav] });
     const box = document.getElementById('exportBox');
     box.hidden = false; box.value = data;
     try { await navigator.clipboard.writeText(data); toast(L.copied); } catch { box.select(); toast(L.selectCopy); }
@@ -1914,7 +1932,7 @@ document.addEventListener('change', async (e) => {
   try {
     const data = JSON.parse(await f.text());
     if (!data.owned) throw new Error();
-    user.owned = data.owned; wish.clear(); (data.wish ?? []).forEach((x) => wish.add(x));
+    user.owned = migrateOwned({ ...data.owned }); wish.clear(); (data.wish ?? []).forEach((x) => wish.add(x));
     fav.clear(); (data.fav ?? []).forEach((x) => fav.add(x));
     save(); closeCard(); currentRender(); toast(L.imported);
   } catch { toast(L.badFile); }
@@ -2333,6 +2351,7 @@ pcQuery.addEventListener('change', () => {
 renderChrome();
 try {
   await loadData();
+  if (user.prefs.ownV !== 2) { migrateOwned(user.owned); user.prefs.ownV = 2; save(); }
   route();
   initCloud();
 } catch (err) {
