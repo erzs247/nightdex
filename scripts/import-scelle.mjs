@@ -119,5 +119,16 @@ for (const p of file.products.sort((a, b) => a.idProduct - b.idProduct)) {
   console.log(`  Nouveau produit scellé : ${p.name}`);
 }
 
-writeFileSync(join(root, 'data/sealed.json'), JSON.stringify({ generatedAt: new Date().toISOString(), items }));
-console.log(`${items.length} produits scellés, ${items.filter((i) => i.image).length} avec visuel.`);
+// Fusion : les produits déjà dans l'appli ne sont pas modifiés (sauf visuel manquant), les nouveaux sont ajoutés
+const sealedPath = join(root, 'data/sealed.json');
+const oldItems = existsSync(sealedPath) ? JSON.parse(readFileSync(sealedPath, 'utf8')).items : [];
+const oldById = new Map(oldItems.map((i) => [i.id, i]));
+const newItems = items.filter((i) => !oldById.has(i.id));
+let completed = 0;
+for (const i of items) { const o = oldById.get(i.id); if (o && !o.image && i.image) { o.image = i.image; completed++; } }
+const merged = [...oldItems, ...newItems];
+if (newItems.length || completed || !oldItems.length) writeFileSync(sealedPath, JSON.stringify({ generatedAt: new Date().toISOString(), items: merged }));
+const lines = [`${items.length} produits scellés vérifiés sur Cardmarket : ${oldItems.length} déjà dans l'appli, ${newItems.length} nouveau(x), ${completed} visuel(s) ajouté(s).`];
+for (const i of newItems) lines.push(`- Nouveau : ${i.nameEn}`);
+console.log(lines.join('\n'));
+if (process.env.GITHUB_STEP_SUMMARY) writeFileSync(process.env.GITHUB_STEP_SUMMARY, `### Scellé\n${lines.join('\n')}\n`, { flag: 'a' });

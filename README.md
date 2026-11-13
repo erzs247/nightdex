@@ -92,10 +92,15 @@ Le workflow `.github/workflows/prix.yml` fait tout seul :
 | **Chaque lundi** vers 6 h 45 | cherche les **nouvelles séries et cartes** (base officielle, images FR/EN comprises) et les **nouveaux produits scellés** (Cardmarket), puis relève les prix |
 | À chaque envoi de code | republie le site |
 
-Une nouvelle série apparaît en tête de l'accueil dans « Nouvelles séries ». Elle est rattachée automatiquement à son
-extension Cardmarket en comparant les noms des cartes : les prix et les courbes fonctionnent tout de suite, et le bouton
-Cardmarket fait une recherche par nom. Pour avoir les liens directs, son code imprimé (MS02…) et son nom français,
-ajouter une ligne dans `SETS` (`scripts/import-officiel.mjs`) et dans `data/config.json` (nom de l'extension dans les adresses Cardmarket).
+Chaque lundi, **chaque carte et chaque produit est vérifié** :
+- déjà dans l'appli (même identifiant ou même impression officielle) → rien n'est modifié, sauf pour compléter une image ou une langue manquante ;
+- nouveau → ajouté avec ses images FR/EN ; une nouvelle série apparaît en tête de l'accueil dans « Nouvelles séries ».
+
+Une nouvelle série est rattachée **automatiquement** à son extension Cardmarket (comparaison des noms des cartes) :
+prix et courbes dès le premier relevé. Le nom de l'extension dans les adresses Cardmarket est déduit des produits scellés
+de la même extension et du nom officiel de la série, puis vérifié sur Cardmarket : chaque carte reçoit son **lien direct**.
+Le résumé de chaque passage (cartes et produits ajoutés) est visible dans l'onglet *Actions* de GitHub.
+Seuls le code imprimé (MS02…) et le nom français de la série restent à préciser à la main dans `SETS` (`scripts/import-officiel.mjs`).
 
 Le bouton *Actions → Run workflow* permet aussi de lancer la recherche de nouveautés à la main (case « nouveautés »).
 

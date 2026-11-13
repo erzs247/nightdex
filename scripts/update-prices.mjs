@@ -69,7 +69,10 @@ if (pricesFile.demo) pricesFile.prices = {};
 const expMap = { ...config.expansions.map };
 // Séries rattachées automatiquement lors d'un passage précédent (enregistrées dans le catalogue)
 for (const s of catalog.sets) {
-  if (s.cardmarket?.idExpansion && !expMap[s.cardmarket.idExpansion]) expMap[s.cardmarket.idExpansion] = { set: s.code, slug: s.cardmarket.slug ?? null };
+  if (s.cardmarket?.idExpansion && !expMap[s.cardmarket.idExpansion]) {
+    const { slug: sl = null, slugTried, slugChecked } = s.cardmarket;
+    expMap[s.cardmarket.idExpansion] = { set: s.code, slug: sl, slugTried, slugChecked };
+  }
 }
 // Nouvelles séries : on cherche l'extension Cardmarket non attribuée dont les noms de cartes correspondent le mieux.
 // (À noms égaux, une série « Beta » prend l'extension la plus ancienne, les autres la plus récente.)
@@ -99,12 +102,58 @@ for (const s of catalog.sets) {
     console.log(`  Nouvelle série ${s.code} « ${s.nameEn} » rattachée à l'extension Cardmarket ${id}.`);
   }
 }
+// Nom de l'extension dans les adresses Cardmarket (liens directs) pour les séries rattachées automatiquement.
+// Candidats : noms des produits scellés de la même extension (« X Booster » → X) puis nom officiel de la série.
+// Chaque candidat est vérifié en ouvrant la page Cardmarket ; une fois par semaine au plus par série.
+async function loadNonSingles() {
+  try {
+    if (dir) {
+      const f = readdirSync(dir).find((n) => n.startsWith('products_nonsingles') && n.endsWith('.json'));
+      return f ? JSON.parse(readFileSync(join(dir, f), 'utf8')).products : [];
+    }
+    const r = await fetch(config.cardmarket.productsUrl.replace('products_singles', 'products_nonsingles').replace('{idGame}', idGame));
+    return r.ok ? (await r.json()).products : [];
+  } catch { return []; }
+}
+const SUFFIXES = [/ 6 Booster Box Case$/, / Booster Box$/, / Booster$/, / - (Retail |Beta )?Starter Deck$/, / - Demo Deck$/, / (Participation|Braindance) Pack$/, / Kit$/];
+async function detectSlug(idExp, set, nonSingles) {
+  const names = [];
+  for (const p of nonSingles.filter((x) => x.idExpansion === Number(idExp))) {
+    const re = SUFFIXES.find((r) => r.test(p.name));
+    if (re) names.push(p.name.replace(re, ''));
+  }
+  names.push(String(set.nameEn ?? set.name).replace(/\s+[—–]\s+/g, ' - ').replace(/ - (FR|French)$/i, ''));
+  let fallback = null;
+  for (const sl of [...new Set(names.map(slug).filter(Boolean))]) {
+    try {
+      const r = await fetch(`https://www.cardmarket.com/en/${config.cardmarket.gameSlug}/Products/Singles/${sl}`, { method: 'HEAD', redirect: 'manual' });
+      if (r.status === 200) return { slug: sl, checked: true };
+      if (r.status !== 404 && !fallback) fallback = sl; // page protégée (anti-robots) : on garde la meilleure supposition
+    } catch { fallback ??= sl; }
+  }
+  return fallback ? { slug: fallback, checked: false } : null;
+}
+let nonSingles = null;
+for (const [idExp, m] of Object.entries(expMap)) {
+  if (m.slug) continue;
+  const set = catalog.sets.find((s) => s.code === m.set);
+  if (!set || (m.slugTried && Date.now() - Date.parse(m.slugTried) < 7 * 864e5)) continue;
+  nonSingles ??= await loadNonSingles();
+  const found = await detectSlug(idExp, set, nonSingles);
+  m.slugTried = today;
+  if (found) {
+    m.slug = found.slug; m.slugChecked = found.checked;
+    console.log(`  Liens Cardmarket de ${m.set} : « ${found.slug} » (${found.checked ? 'page vérifiée' : 'non vérifiable, supposition'}).`);
+  }
+}
+
 let linked = 0;
-for (const [idExp, { set: code, slug: expSlug }] of Object.entries(expMap)) {
+for (const [idExp, m] of Object.entries(expMap)) {
+  const { set: code, slug: expSlug } = m;
   const set = catalog.sets.find((s) => s.code === code);
   if (!set) continue;
   // sans le nom d'extension Cardmarket (expSlug), les prix fonctionnent et le bouton fait une recherche par nom
-  set.cardmarket = { idExpansion: Number(idExp), slug: expSlug };
+  set.cardmarket = { idExpansion: Number(idExp), slug: expSlug, ...(m.slugTried ? { slugTried: m.slugTried, slugChecked: !!m.slugChecked } : {}) };
   const groups = new Map();
   for (const p of products.filter((x) => x.idExpansion === Number(idExp)).sort((a, b) => a.idProduct - b.idProduct)) {
     const k = norm(p.name);

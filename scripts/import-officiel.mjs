@@ -135,20 +135,50 @@ async function worker() {
 await Promise.all([worker(), worker(), worker(), worker()]);
 cards.sort((a, b) => a.set.localeCompare(b.set) || a.number.localeCompare(b.number, 'en', { numeric: true }));
 
-// 5. Écriture (on garde les rattachements Cardmarket déjà faits)
+// 5. Fusion avec le catalogue existant : les cartes et séries déjà présentes ne sont pas modifiées
+//    (sauf pour compléter une image ou une langue manquante) ; seules les nouveautés sont ajoutées.
 const catalogPath = join(root, 'data/catalog.json');
 const old = existsSync(catalogPath) ? JSON.parse(readFileSync(catalogPath, 'utf8')) : null;
-if (old && !old.demo) {
-  const prev = new Map(old.cards.map((c) => [c.id, c]));
-  for (const c of cards) if (prev.get(c.id)?.cardmarket?.idProduct) c.cardmarket = prev.get(c.id).cardmarket;
-  for (const s of sets.values()) { const ps = old.sets.find((x) => x.code === s.code); if (ps?.cardmarket?.idExpansion) s.cardmarket = ps.cardmarket; }
+const oldCards = old && !old.demo ? old.cards : [];
+const oldSets = old && !old.demo ? old.sets : [];
+const byId = new Map(oldCards.map((c) => [c.id, c]));
+// une carte est « déjà présente » si son identifiant OU l'une de ses images (= impression officielle) est déjà connue
+const knownImages = new Map();
+for (const c of oldCards) for (const img of [c.image, c.imageEn]) if (img) knownImages.set(img, c);
+const added = [];
+let completed = 0;
+for (const c of cards) {
+  const existing = byId.get(c.id) ?? knownImages.get(c.image) ?? (c.imageEn && knownImages.get(c.imageEn));
+  if (existing) {
+    // déjà dans l'appli : on complète seulement ce qui manque
+    if (!existing.image && c.image) { existing.image = c.image; completed++; }
+    if (!existing.imageEn && c.imageEn && c.imageEn !== existing.image) { existing.imageEn = c.imageEn; completed++; }
+    const langs = [...new Set([...(existing.languages ?? []), ...(c.languages ?? [])])];
+    if (langs.length !== (existing.languages ?? []).length) { existing.languages = langs; if (c.languages.includes('fr') && c.name !== existing.name) existing.name = c.name; completed++; }
+    continue;
+  }
+  added.push(c);
 }
-const setList = [...sets.values()].map((s) => ({ ...s, total: cards.filter((c) => c.set === s.code).length })).sort((a, b) => a.order - b.order);
-writeFileSync(catalogPath, JSON.stringify({ demo: false, source: 'cyberpunktcg.com', generatedAt: new Date().toISOString(), sets: setList, cards }));
+const mergedCards = [...oldCards, ...added].sort((a, b) => a.set.localeCompare(b.set) || a.number.localeCompare(b.number, 'en', { numeric: true }));
+const mergedSets = [...oldSets];
+const newSets = [];
+for (const s of sets.values()) if (!mergedSets.some((x) => x.code === s.code)) { mergedSets.push(s); newSets.push(s); }
+const setList = mergedSets.map((s) => ({ ...s, total: mergedCards.filter((c) => c.set === s.code).length })).sort((a, b) => a.order - b.order);
+
+const changed = added.length || completed || newSets.length || !old || old.demo;
+if (changed) writeFileSync(catalogPath, JSON.stringify({ demo: false, source: 'cyberpunktcg.com', generatedAt: new Date().toISOString(), sets: setList, cards: mergedCards }));
 
 const pricesPath = join(root, 'data/prices.json');
 const prices = existsSync(pricesPath) ? JSON.parse(readFileSync(pricesPath, 'utf8')) : null;
 if (!prices || prices.demo) {
   writeFileSync(pricesPath, JSON.stringify({ demo: false, source: 'Cardmarket', currency: 'EUR', updatedAt: null, prices: {} }));
 }
-console.log(`${cards.length} cartes dans ${setList.length} séries, ${downloaded} images téléchargées.`);
+
+// Résumé (affiché aussi dans l'onglet Actions de GitHub)
+const lines = [`${entries.size} cartes vérifiées dans la base officielle : ${mergedCards.length - added.length} déjà dans l'appli, ${added.length} nouvelle(s), ${completed} complétée(s), ${downloaded} image(s) téléchargée(s).`];
+for (const s of newSets) lines.push(`- Nouvelle série : ${s.code} « ${s.nameEn} » (${added.filter((c) => c.set === s.code).length} cartes)`);
+const bySet = {};
+for (const c of added) if (!newSets.some((s) => s.code === c.set)) (bySet[c.set] ??= []).push(`${c.number} ${c.nameEn}`);
+for (const [code, list] of Object.entries(bySet)) lines.push(`- ${code} : ${list.length} nouvelle(s) carte(s) : ${list.slice(0, 10).join(', ')}${list.length > 10 ? '…' : ''}`);
+console.log(lines.join('\n'));
+if (process.env.GITHUB_STEP_SUMMARY) writeFileSync(process.env.GITHUB_STEP_SUMMARY, `### Cartes\n${lines.join('\n')}\n`, { flag: 'a' });
