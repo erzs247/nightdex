@@ -97,5 +97,27 @@ for (const [re, rule] of RULES) {
     image, cardmarket: { idProduct: p.idProduct, path: `Products/${cat.path}/${slug(p.name)}` },
   });
 }
+// Produits scellés pas encore connus : ajoutés automatiquement (nom français déduit, visuel de remplacement)
+const frName = (n) => n
+  .replace(/^(.*) 6 Booster Box Case$/, 'Case de 6 Booster Box $1')
+  .replace(/^(.*) Booster Box$/, 'Booster Box $1')
+  .replace(/^(.*) Booster$/, 'Booster $1')
+  .replace(/^(.*) - (Retail |Beta )?Starter Deck$/, (m, a, b) => `Deck de démarrage ${a}${b?.trim() === 'Beta' ? ' – Bêta' : ''}`)
+  .replace(/^(.*) - Demo Deck$/, 'Deck de démo $1')
+  .replace(/^Pre-Release (.*) Kit$/, 'Kit d\'avant-première $1')
+  .replace(/ - Retail\b/, '').replace(/ - Beta\b/, ' – Bêta');
+const known = new Set(items.map((i) => i.cardmarket.idProduct));
+for (const p of file.products.sort((a, b) => a.idProduct - b.idProduct)) {
+  const cat = CATEGORIES[p.categoryName];
+  if (!cat || known.has(p.idProduct)) continue;
+  const isCase = /6 Booster Box Case$/.test(p.name);
+  items.push({
+    id: `S-${p.idProduct}`, kind: 'sealed', category: isCase ? 'case' : cat.category, order: order++,
+    name: frName(p.name), nameEn: p.name, set: null, print: null, pack: isCase ? 6 : null,
+    image: null, cardmarket: { idProduct: p.idProduct, path: `Products/${cat.path}/${slug(p.name)}` },
+  });
+  console.log(`  Nouveau produit scellé : ${p.name}`);
+}
+
 writeFileSync(join(root, 'data/sealed.json'), JSON.stringify({ generatedAt: new Date().toISOString(), items }));
 console.log(`${items.length} produits scellés, ${items.filter((i) => i.image).length} avec visuel.`);

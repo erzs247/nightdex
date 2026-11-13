@@ -71,14 +71,14 @@ for (const card of items) for (const p of card.printings) {
 
 // 3. Séries
 const sets = new Map();
-let auto = 50;
+let auto = 0; // nouvelles séries inconnues : ordre négatif → affichées en tête de l'accueil
 for (const e of entries.values()) {
   if (sets.has(e.setKey)) continue;
   const k = SETS[e.setKey];
   const code = k?.code ?? e.setName.replace(/[^A-Za-z0-9 ]/g, '').split(/\s+/).map((w) => w[0]).join('').slice(0, 4).toUpperCase();
   sets.set(e.setKey, {
     code, print: k?.print ?? code, name: k?.fr ?? e.setName, nameEn: k?.en ?? e.setName,
-    block: k?.block ?? 'new', order: k?.order ?? auto++, releaseDate: k?.releaseDate ?? null,
+    block: k?.block ?? 'new', order: k?.order ?? --auto, releaseDate: k?.releaseDate ?? null,
     source: { netdeck: e.setKey }, cardmarket: { idExpansion: null, slug: null },
   });
 }

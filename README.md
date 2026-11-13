@@ -82,14 +82,27 @@ Raretés reconnues pour les couleurs : Commune, Peu commune, Rare, Épique, Lég
 Sans `cardmarket_url`, le bouton ouvre une recherche Cardmarket sur le nom de la carte.
 Sans image, l'appli affiche un visuel de remplacement.
 
-## Mise en ligne automatique (GitHub Pages)
+## Mise en ligne et mises à jour automatiques (GitHub Pages)
 
-Le workflow `.github/workflows/prix.yml` relève les prix chaque matin, enregistre l'historique dans le dépôt
-et publie l'appli sur GitHub Pages.
+Le workflow `.github/workflows/prix.yml` fait tout seul :
 
-1. Pousser ce dossier sur un dépôt GitHub.
+| Quand | Quoi |
+|---|---|
+| **Chaque jour** vers 7 h | relève les prix Cardmarket des cartes et du scellé, ajoute un point à chaque courbe, republie le site |
+| **Chaque lundi** vers 6 h 45 | cherche les **nouvelles séries et cartes** (base officielle, images FR/EN comprises) et les **nouveaux produits scellés** (Cardmarket), puis relève les prix |
+| À chaque envoi de code | republie le site |
+
+Une nouvelle série apparaît en tête de l'accueil dans « Nouvelles séries ». Elle est rattachée automatiquement à son
+extension Cardmarket en comparant les noms des cartes : les prix et les courbes fonctionnent tout de suite, et le bouton
+Cardmarket fait une recherche par nom. Pour avoir les liens directs, son code imprimé (MS02…) et son nom français,
+ajouter une ligne dans `SETS` (`scripts/import-officiel.mjs`) et dans `data/config.json` (nom de l'extension dans les adresses Cardmarket).
+
+Le bouton *Actions → Run workflow* permet aussi de lancer la recherche de nouveautés à la main (case « nouveautés »).
+
+Mise en place :
+1. Pousser ce dossier sur un dépôt GitHub public.
 2. *Settings → Pages* : source « GitHub Actions ».
-3. Lancer une première fois le workflow à la main (*Actions → Run workflow*).
+3. Lancer une première fois le workflow (*Actions → Run workflow*).
 
 Sur le téléphone, ouvrir l'adresse GitHub Pages puis « Ajouter à l'écran d'accueil ».
 

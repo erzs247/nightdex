@@ -1,9 +1,15 @@
-name: Prix Cardmarket et publication
+name: Prix Cardmarket, nouveautés et publication
 
 on:
   schedule:
-    - cron: "17 6 * * *"   # chaque jour vers 7 h (heure de Paris en hiver)
+    - cron: "17 6 * * *"   # chaque jour vers 7 h (heure de Paris en hiver) : prix du jour
+    - cron: "47 5 * * 1"   # chaque lundi vers 6 h 45 : nouvelles séries, cartes et produits scellés
   workflow_dispatch:
+    inputs:
+      nouveautes:
+        description: "Chercher aussi les nouvelles séries et les nouveaux produits scellés"
+        type: boolean
+        default: false
   push:
     branches: [main]
 
@@ -17,11 +23,37 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  prix:
-    if: github.event_name != 'push'
+  nouveautes:
+    # le lundi, ou à la demande : nouvelles cartes (base officielle) et nouveaux produits scellés (Cardmarket)
+    if: github.event.schedule == '47 5 * * 1' || inputs.nouveautes == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Nouvelles cartes et images
+        run: node scripts/import-officiel.mjs
+      - name: Nouveaux produits scellés
+        run: node scripts/import-scelle.mjs
+      - name: Enregistrer les nouveautés
+        run: |
+          git config user.name "nightdex-bot"
+          git config user.email "nightdex-bot@users.noreply.github.com"
+          git add data/ images/
+          git diff --cached --quiet || git commit -m "Nouveautés du $(date +%F)"
+          git push
+
+  prix:
+    needs: [nouveautes]
+    if: always() && github.event_name != 'push' && needs.nouveautes.result != 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-node@v4
         with:
           node-version: 22

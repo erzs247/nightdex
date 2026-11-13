@@ -66,11 +66,44 @@ if (pricesFile.demo) pricesFile.prices = {};
 // 1. Rattachement carte ↔ produit Cardmarket, extension par extension.
 //    Les versions d'une même carte (ex. V — Streetkid 005a, 005b, 144) sont appariées dans l'ordre :
 //    numéro de collection croissant ↔ identifiant Cardmarket croissant (V1, V2, V3).
-const expMap = config.expansions.map;
+const expMap = { ...config.expansions.map };
+// Séries rattachées automatiquement lors d'un passage précédent (enregistrées dans le catalogue)
+for (const s of catalog.sets) {
+  if (s.cardmarket?.idExpansion && !expMap[s.cardmarket.idExpansion]) expMap[s.cardmarket.idExpansion] = { set: s.code, slug: s.cardmarket.slug ?? null };
+}
+// Nouvelles séries : on cherche l'extension Cardmarket non attribuée dont les noms de cartes correspondent le mieux.
+// (À noms égaux, une série « Beta » prend l'extension la plus ancienne, les autres la plus récente.)
+{
+  const taken = new Set(Object.keys(expMap).map(Number));
+  const byExp = new Map();
+  for (const p of products) {
+    if (taken.has(p.idExpansion)) continue;
+    if (!byExp.has(p.idExpansion)) byExp.set(p.idExpansion, { names: new Map(), date: p.dateAdded ?? '' });
+    const e = byExp.get(p.idExpansion);
+    e.names.set(norm(p.name), (e.names.get(norm(p.name)) ?? 0) + 1);
+    if ((p.dateAdded ?? '') < e.date) e.date = p.dateAdded;
+  }
+  const mappedSets = new Set(Object.values(expMap).map((m) => m.set));
+  for (const s of catalog.sets.filter((x) => !mappedSets.has(x.code))) {
+    const names = new Map();
+    for (const c of catalog.cards.filter((x) => x.set === s.code)) names.set(norm(c.nameEn ?? c.name), (names.get(norm(c.nameEn ?? c.name)) ?? 0) + 1);
+    const total = [...names.values()].reduce((a, b) => a + b, 0);
+    const beta = /beta|bêta/i.test(`${s.nameEn} ${s.name}`);
+    const scored = [...byExp].map(([id, e]) => [id, [...names].reduce((a, [k, n]) => a + Math.min(n, e.names.get(k) ?? 0), 0), e.date])
+      .filter(([, sc]) => total && sc / total >= 0.6)
+      .sort((a, b) => b[1] - a[1] || (beta ? a[2].localeCompare(b[2]) : b[2].localeCompare(a[2])));
+    if (!scored.length) continue;
+    const [id] = scored[0];
+    expMap[id] = { set: s.code, slug: null };
+    byExp.delete(id);
+    console.log(`  Nouvelle série ${s.code} « ${s.nameEn} » rattachée à l'extension Cardmarket ${id}.`);
+  }
+}
 let linked = 0;
 for (const [idExp, { set: code, slug: expSlug }] of Object.entries(expMap)) {
   const set = catalog.sets.find((s) => s.code === code);
   if (!set) continue;
+  // sans le nom d'extension Cardmarket (expSlug), les prix fonctionnent et le bouton fait une recherche par nom
   set.cardmarket = { idExpansion: Number(idExp), slug: expSlug };
   const groups = new Map();
   for (const p of products.filter((x) => x.idExpansion === Number(idExp)).sort((a, b) => a.idProduct - b.idProduct)) {
@@ -97,7 +130,7 @@ for (const [idExp, { set: code, slug: expSlug }] of Object.entries(expMap)) {
     cs.forEach((c, i) => {
       const p = ps[i];
       if (!p) return;
-      c.cardmarket = { idProduct: p.idProduct, path: `Products/Singles/${expSlug}/${slug(p.name)}${ps.length > 1 ? `-V${i + 1}` : ''}` };
+      c.cardmarket = { idProduct: p.idProduct, path: expSlug ? `Products/Singles/${expSlug}/${slug(p.name)}${ps.length > 1 ? `-V${i + 1}` : ''}` : null };
       linked++;
     });
   }
