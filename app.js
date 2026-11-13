@@ -52,6 +52,21 @@ const TEXT = {
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue', langToast: 'Langue : français',
     prev: 'Carte précédente', next: 'Carte suivante',
+    fr: {
+      title: 'Amis', gate: 'Connecte-toi à ton compte NightDex pour ajouter des amis et voir leurs collections.',
+      choose: 'Choisis ton pseudo', chooseHint: 'Tes amis t\'ajouteront avec ce pseudo. 3 à 20 caractères : lettres minuscules, chiffres, . _ -',
+      pseudoPh: 'ex. netrunner_77', save: 'Enregistrer', pseudoRule: 'Pseudo invalide : 3 à 20 caractères (a-z, 0-9, . _ -).', pseudoTaken: 'Ce pseudo est déjà pris, essaie-en un autre.', pseudoSaved: 'Pseudo enregistré',
+      add: 'Ajouter un ami', yourPseudo: 'Ton pseudo :', addPh: 'Pseudo de ton ami', send: 'Envoyer',
+      privacy: 'Tes amis acceptés peuvent voir ta collection et tes souhaits. Personne d\'autre.',
+      notFound: (p) => `Aucun compte avec le pseudo « ${p} ».`, self: 'C\'est ton propre pseudo !', already: (p) => `@${p} est déjà ton ami.`,
+      sent: 'Demande envoyée', accepted: 'Ami ajouté', removed: 'Ami retiré', denied: 'Action refusée : vérifie que les règles Firestore sont à jour.', error: 'Une erreur est survenue, réessaie.',
+      requests: 'Demandes reçues', wants: 'veut devenir ton ami', accept: 'Accepter', decline: 'Refuser',
+      mine: 'Mes amis', see: 'Voir sa collection', open: 'Voir', remove: 'Retirer', confirm: 'Confirmer ?',
+      none: 'Pas encore d\'amis', noneHint: 'Ajoute un ami avec son pseudo : il devra accepter ta demande.',
+      loading: 'Chargement de sa collection…', cantSee: 'Collection inaccessible', cantSeeHint: 'Vous n\'êtes peut-être plus amis, ou les règles Firestore ne sont pas à jour.',
+      fAll: 'Sa collection', fTrade: 'Il l\'a, pas moi', fGive: 'Il la cherche, je l\'ai', fWish: 'Ses souhaits', emptyFilter: 'Rien dans ce filtre pour l\'instant.',
+      tagMine: 'Je l\'ai', tagWant: 'Dans mes souhaits',
+    },
     support: 'Soutenir NightDex', supportHint: 'NightDex est gratuit et fait par un fan. Un don aide à le faire vivre et débloque des bonus (photo de profil, cadre doré).',
     supporter: 'Soutien', supporterThanks: 'Merci pour ton soutien ! Tes bonus sont actifs.',
     myId: 'Ton ID NightDex', myIdHint: 'Indique-le dans le message de ton don pour recevoir tes bonus.', copy: 'Copier', copiedId: 'ID copié',
@@ -121,6 +136,21 @@ const TEXT = {
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'Language', langToast: 'Language: English',
     prev: 'Previous card', next: 'Next card',
+    fr: {
+      title: 'Friends', gate: 'Sign in to your NightDex account to add friends and see their collections.',
+      choose: 'Choose your username', chooseHint: 'Friends will add you with this username. 3 to 20 characters: lowercase letters, digits, . _ -',
+      pseudoPh: 'e.g. netrunner_77', save: 'Save', pseudoRule: 'Invalid username: 3 to 20 characters (a-z, 0-9, . _ -).', pseudoTaken: 'This username is taken, try another one.', pseudoSaved: 'Username saved',
+      add: 'Add a friend', yourPseudo: 'Your username:', addPh: 'Your friend\'s username', send: 'Send',
+      privacy: 'Accepted friends can see your collection and wishlist. Nobody else.',
+      notFound: (p) => `No account with the username “${p}”.`, self: 'That\'s your own username!', already: (p) => `@${p} is already your friend.`,
+      sent: 'Request sent', accepted: 'Friend added', removed: 'Friend removed', denied: 'Action refused: check that the Firestore rules are up to date.', error: 'Something went wrong, try again.',
+      requests: 'Requests', wants: 'wants to be your friend', accept: 'Accept', decline: 'Decline',
+      mine: 'My friends', see: 'See their collection', open: 'View', remove: 'Remove', confirm: 'Confirm?',
+      none: 'No friends yet', noneHint: 'Add a friend with their username: they will have to accept.',
+      loading: 'Loading their collection…', cantSee: 'Collection unavailable', cantSeeHint: 'You may no longer be friends, or the Firestore rules are not up to date.',
+      fAll: 'Their collection', fTrade: 'They have, I don\'t', fGive: 'They want, I have', fWish: 'Their wishlist', emptyFilter: 'Nothing in this filter yet.',
+      tagMine: 'I have it', tagWant: 'On my wishlist',
+    },
     support: 'Support NightDex', supportHint: 'NightDex is free and fan-made. A donation keeps it alive and unlocks extras (profile picture, gold frame).',
     supporter: 'Supporter', supporterThanks: 'Thanks for your support! Your extras are active.',
     myId: 'Your NightDex ID', myIdHint: 'Add it to your donation message to receive your extras.', copy: 'Copy', copiedId: 'ID copied',
@@ -536,7 +566,7 @@ function renderSet(code) {
 
 let colSet = '';
 function renderCollection() {
-  setTopbar(`<h1>${L.myCollection}</h1>`);
+  setTopbar(`<h1>${L.myCollection}</h1>${cloud.enabled ? `<a class="chip friends-chip" href="#friends">${L.fr.title}<span class="fbadge" data-friends-badge ${fr.requests.length ? '' : 'hidden'}>${fr.requests.length || ''}</span></a>` : ''}`);
   const owned = catalog.cards.filter((c) => qty(c.id) > 0);
   const ownedSealed = sealed.filter((s) => qty(s.id) > 0);
   if (!owned.length && !ownedSealed.length) {
@@ -894,10 +924,11 @@ function onCloudUser(u) {
   cloud.user = u ? { uid: u.uid, email: u.email, name: u.displayName } : null;
   cloud.confirmDelete = false;
   cloud.supporter = false; cloud.avatar = null;
-  if (!u) { cloud.status = 'off'; refreshAccount(); return; }
+  if (!u) { cloud.status = 'off'; friendsStop(); renderChromeBadges(); refreshAccount(); if (currentRender === renderFriends || currentRender === renderFriendCurrent) currentRender(); return; }
   cloud.status = 'syncing'; refreshAccount();
   const { fsM } = cloud.api;
   loadProfile(u.uid);
+  friendsInit(u.uid);
   let first = true;
   cloud.unsub = fsM.onSnapshot(cloudRef(), async (snap) => {
     if (snap.metadata.hasPendingWrites) return;
@@ -998,6 +1029,7 @@ function openAccount(keep) {
         <div class="id-row"><span class="note">${L.myId} :</span><code id="myId">${esc(u.uid)}</code><button class="chip" data-action="copy-id">${L.copy}</button></div>
         ${cloud.supporter ? '' : `<span class="note">${L.myIdHint}</span>`}
       </div>
+      <a class="btn-ghost" style="text-align:center;text-decoration:none" href="#friends" data-close>${L.fr.mine}${fr.requests.length ? ` · ${L.fr.requests} (${fr.requests.length})` : ''}</a>
       <button class="btn-ghost" data-action="signout">${L.signOut}</button>
       <div class="panel danger-zone">
         <span class="note">${L.deleteNote}</span>
@@ -1272,6 +1304,199 @@ document.addEventListener('click', (e) => {
   else if (a.dataset.capri === 'stop') { capri.stop = true; capri.ctl?.abort(); }
 });
 
+// ---------- Amis : pseudo, demandes, liste d'amis et collection d'un ami ----------
+// Firestore : handles/<pseudo> {uid} (pseudo unique), publicProfiles/<uid> {pseudo},
+// friendRequests/<destinataire>/from/<expéditeur> {pseudo, at}, friends/<uid>/list/<ami> {since}.
+// Les règles Firestore n'autorisent la lecture d'une collection qu'aux amis acceptés.
+const PSEUDO_RE = /^[a-z0-9_.-]{3,20}$/;
+const fr = { me: null, list: [], requests: [], unsub: [], names: new Map(), view: null, filter: 'all', busy: false, msg: '', confirmRemove: null };
+const fsx = () => cloud.api.fsM;
+const dref = (...p) => fsx().doc(cloud.api.db, ...p);
+const cref = (...p) => fsx().collection(cloud.api.db, ...p);
+async function friendName(uid) {
+  if (fr.names.has(uid)) return fr.names.get(uid);
+  let info = { pseudo: '?', avatar: null };
+  try { const s = await fsx().getDoc(dref('publicProfiles', uid)); if (s.exists()) info.pseudo = s.data().pseudo; } catch { /* inconnu */ }
+  fr.names.set(uid, info);
+  return info;
+}
+function friendsStop() { fr.unsub.forEach((f) => f?.()); fr.unsub = []; fr.me = null; fr.list = []; fr.requests = []; fr.view = null; }
+async function friendsInit(uid) {
+  friendsStop();
+  try { const s = await fsx().getDoc(dref('publicProfiles', uid)); fr.me = s.exists() ? s.data() : null; } catch { fr.me = null; }
+  const refresh = () => { renderChromeBadges(); if (currentRender === renderFriends) renderFriends(); };
+  fr.unsub.push(fsx().onSnapshot(cref('friends', uid, 'list'), async (snap) => {
+    fr.list = await Promise.all(snap.docs.map(async (d) => ({ uid: d.id, ...(await friendName(d.id)) })));
+    fr.list.sort((a, b) => a.pseudo.localeCompare(b.pseudo));
+    refresh();
+  }, () => {}));
+  fr.unsub.push(fsx().onSnapshot(cref('friendRequests', uid, 'from'), (snap) => {
+    fr.requests = snap.docs.map((d) => ({ uid: d.id, pseudo: d.data().pseudo ?? '?' }));
+    refresh();
+  }, () => {}));
+  refresh();
+}
+function renderChromeBadges() {
+  const n = fr.requests.length;
+  for (const el of document.querySelectorAll('[data-friends-badge]')) { el.textContent = n || ''; el.hidden = !n; }
+}
+async function friendsAction(fn, okMsg) {
+  fr.busy = true; fr.msg = ''; if (currentRender === renderFriends) renderFriends();
+  try { await fn(); if (okMsg) toast(okMsg); } catch (e) { fr.msg = e.userMsg ?? (e?.code === 'permission-denied' ? L.fr.denied : L.fr.error); }
+  fr.busy = false; if (currentRender === renderFriends) renderFriends();
+}
+const userErr = (msg) => Object.assign(new Error(msg), { userMsg: msg });
+function setPseudo(raw) {
+  return friendsAction(async () => {
+    const p = String(raw ?? '').trim().toLowerCase();
+    if (!PSEUDO_RE.test(p)) throw userErr(L.fr.pseudoRule);
+    const taken = await fsx().getDoc(dref('handles', p));
+    if (taken.exists() && taken.data().uid !== cloud.user.uid) throw userErr(L.fr.pseudoTaken);
+    const b = fsx().writeBatch(cloud.api.db);
+    if (fr.me?.pseudo && fr.me.pseudo !== p) b.delete(dref('handles', fr.me.pseudo));
+    b.set(dref('handles', p), { uid: cloud.user.uid });
+    b.set(dref('publicProfiles', cloud.user.uid), { pseudo: p });
+    await b.commit();
+    fr.me = { pseudo: p };
+  }, L.fr.pseudoSaved);
+}
+function sendRequest(raw) {
+  return friendsAction(async () => {
+    const p = String(raw ?? '').trim().toLowerCase().replace(/^@/, '');
+    if (!PSEUDO_RE.test(p)) throw userErr(L.fr.pseudoRule);
+    const h = await fsx().getDoc(dref('handles', p));
+    if (!h.exists()) throw userErr(L.fr.notFound(p));
+    const to = h.data().uid;
+    if (to === cloud.user.uid) throw userErr(L.fr.self);
+    if (fr.list.some((f) => f.uid === to)) throw userErr(L.fr.already(p));
+    // s'il m'a déjà envoyé une demande, on accepte directement
+    if (fr.requests.some((r) => r.uid === to)) { await acceptRaw(to); return; }
+    await fsx().setDoc(dref('friendRequests', to, 'from', cloud.user.uid), { pseudo: fr.me.pseudo, at: fsx().serverTimestamp() });
+  }, L.fr.sent);
+}
+async function acceptRaw(other) {
+  const me = cloud.user.uid, b = fsx().writeBatch(cloud.api.db), since = fsx().serverTimestamp();
+  b.set(dref('friends', me, 'list', other), { since });
+  b.set(dref('friends', other, 'list', me), { since });
+  b.delete(dref('friendRequests', me, 'from', other));
+  await b.commit();
+}
+const acceptRequest = (other) => friendsAction(() => acceptRaw(other), L.fr.accepted);
+const declineRequest = (other) => friendsAction(() => fsx().deleteDoc(dref('friendRequests', cloud.user.uid, 'from', other)), null);
+function removeFriend(other) {
+  return friendsAction(async () => {
+    const me = cloud.user.uid, b = fsx().writeBatch(cloud.api.db);
+    b.delete(dref('friends', me, 'list', other));
+    b.delete(dref('friends', other, 'list', me));
+    await b.commit();
+    fr.confirmRemove = null;
+  }, L.fr.removed);
+}
+// à la suppression du compte : on retire pseudo, profil public et amitiés (au mieux)
+async function friendsCleanup(uid) {
+  try {
+    const b = fsx().writeBatch(cloud.api.db);
+    if (fr.me?.pseudo) b.delete(dref('handles', fr.me.pseudo));
+    b.delete(dref('publicProfiles', uid));
+    for (const f of fr.list) { b.delete(dref('friends', uid, 'list', f.uid)); b.delete(dref('friends', f.uid, 'list', uid)); }
+    await b.commit();
+  } catch { /* au mieux */ }
+}
+
+function renderFriends() {
+  setTopbar(`<h1>${L.fr.title}</h1>`);
+  if (!cloud.enabled) { view.innerHTML = `<div class="empty"><strong>${L.fr.title}</strong>${L.capriNoCloud}</div>`; return; }
+  if (!cloud.user) { view.innerHTML = `<div class="empty"><strong>${L.fr.title}</strong>${L.fr.gate}<button class="cta" style="width:auto;padding:14px 28px" data-action="account">${L.signIn}</button></div>`; return; }
+  const err = fr.msg ? `<p class="form-err" role="alert">${esc(fr.msg)}</p>` : '';
+  if (!fr.me?.pseudo) {
+    view.innerHTML = `<div class="stack friends">
+      <section class="panel"><h3>${L.fr.choose}</h3><p class="note" style="margin:0">${L.fr.chooseHint}</p>
+        <form class="inline-form" id="pseudoForm"><input class="search" id="pseudoInput" maxlength="20" autocomplete="off" placeholder="${L.fr.pseudoPh}"><button class="cta" ${fr.busy ? 'disabled' : ''}>${L.fr.save}</button></form>${err}</section>
+    </div>`;
+    return;
+  }
+  view.innerHTML = `<div class="stack friends">
+    <section class="panel">
+      <h3>${L.fr.add}<small>${L.fr.yourPseudo} <b class="pseudo">@${esc(fr.me.pseudo)}</b></small></h3>
+      <form class="inline-form" id="addFriendForm"><input class="search" id="friendInput" maxlength="21" autocomplete="off" placeholder="${L.fr.addPh}"><button class="cta" ${fr.busy ? 'disabled' : ''}>${L.fr.send}</button></form>
+      ${err}<p class="note" style="margin:0">${L.fr.privacy}</p>
+    </section>
+    ${fr.requests.length ? `<h2 class="section-title">${L.fr.requests} (${fr.requests.length})</h2>
+    <div class="rows">${fr.requests.map((r) => `<div class="row friend-row"><span class="f-avatar">${esc(r.pseudo[0]?.toUpperCase() ?? '?')}</span><div class="meta"><strong>@${esc(r.pseudo)}</strong><span>${L.fr.wants}</span></div>
+      <button class="chip" data-fr="accept" data-uid="${esc(r.uid)}">${L.fr.accept}</button><button class="chip" data-fr="decline" data-uid="${esc(r.uid)}">${L.fr.decline}</button></div>`).join('')}</div>` : ''}
+    <h2 class="section-title">${L.fr.mine} (${fr.list.length})</h2>
+    ${fr.list.length ? `<div class="rows">${fr.list.map((f) => `<div class="row friend-row"><span class="f-avatar">${esc(f.pseudo[0]?.toUpperCase() ?? '?')}</span>
+      <a class="meta" href="#friend-${esc(f.uid)}"><strong>@${esc(f.pseudo)}</strong><span>${L.fr.see}</span></a>
+      <a class="chip" href="#friend-${esc(f.uid)}">${L.fr.open}</a>
+      <button class="chip ${fr.confirmRemove === f.uid ? 'danger' : ''}" data-fr="remove" data-uid="${esc(f.uid)}">${fr.confirmRemove === f.uid ? L.fr.confirm : L.fr.remove}</button></div>`).join('')}</div>`
+    : `<div class="empty" style="padding:24px 12px"><strong>${L.fr.none}</strong>${L.fr.noneHint}</div>`}
+  </div>`;
+}
+
+async function renderFriend(uid) {
+  setTopbar(`<a class="icon-btn" href="#friends" aria-label="${L.back}">${I.back}</a><h1 class="small">${L.fr.title}</h1>`);
+  if (!cloud.user) { renderFriends(); return; }
+  if (fr.view?.uid !== uid) {
+    view.innerHTML = `<div class="empty"><strong>${L.fr.loading}</strong></div>`;
+    try {
+      const [snap, name] = await Promise.all([fsx().getDoc(dref('users', uid)), friendName(uid)]);
+      let avatar = null;
+      try { const p = await fsx().getDoc(dref('profiles', uid)); avatar = p.exists() ? p.data().avatar : null; } catch { /* pas de photo */ }
+      fr.view = { uid, pseudo: name.pseudo, avatar, owned: snap.exists() ? snap.data().owned ?? {} : {}, wish: snap.exists() ? snap.data().wish ?? [] : [] };
+    } catch (e) {
+      view.innerHTML = `<div class="empty"><strong>${L.fr.cantSee}</strong>${L.fr.cantSeeHint}<a class="btn-ghost" href="#friends" style="text-decoration:none">${L.back}</a></div>`;
+      return;
+    }
+    if (currentRender !== renderFriendCurrent) return;
+  }
+  const v = fr.view;
+  const theirs = catalog.cards.concat(sealed).filter((c) => (v.owned[c.id] ?? 0) > 0);
+  const value = theirs.reduce((a, c) => a + (v.owned[c.id] ?? 0) * (price(c.id) ?? 0), 0);
+  const total = theirs.reduce((a, c) => a + (v.owned[c.id] ?? 0), 0);
+  const wishCards = v.wish.map((id) => cardsById.get(id)).filter(Boolean);
+  const lists = {
+    all: theirs,
+    trade: theirs.filter((c) => !qty(c.id)),                 // il l'a, pas moi
+    give: wishCards.filter((c) => qty(c.id) > 0),             // il la cherche, je l'ai
+    wish: wishCards,
+  };
+  const shown = sortCards(lists[fr.filter] ?? theirs, 'price-desc');
+  setTopbar(`<a class="icon-btn" href="#friends" aria-label="${L.back}">${I.back}</a>
+    <h1 class="small friend-title">${v.avatar ? `<img src="${esc(v.avatar)}" alt="">` : `<span class="f-avatar">${esc(v.pseudo[0]?.toUpperCase() ?? '?')}</span>`}@${esc(v.pseudo)}</h1>`);
+  view.innerHTML = `<div class="stack">
+    <div class="kpis">
+      <div class="stat"><small>${L.kCards}</small><b class="num">${total}</b></div>
+      <div class="stat"><small>${L.kUnique}</small><b class="num">${theirs.length}</b></div>
+      <div class="stat"><small>${L.kValue}</small><b class="num">${eur(value)}</b></div>
+    </div>
+    <div class="chips">${[['all', L.fr.fAll], ['trade', L.fr.fTrade], ['give', L.fr.fGive], ['wish', L.fr.fWish]].map(([k, l]) => `<button class="chip" data-frf="${k}" aria-pressed="${fr.filter === k}">${l} · ${lists[k].length}</button>`).join('')}</div>
+    ${shown.length ? `<div class="cards">${shown.map((c) => friendTile(c, v)).join('')}</div>` : `<div class="empty"><strong>${L.noCards}</strong>${L.fr.emptyFilter}</div>`}
+  </div>`;
+}
+let renderFriendCurrent = null;
+function friendTile(c, v) {
+  const q = v.owned[c.id] ?? 0, mine = qty(c.id);
+  const tag = mine ? `<span class="ftag own">${L.fr.tagMine}</span>` : (wish.has(c.id) ? `<span class="ftag want">${L.fr.tagWant}</span>` : '');
+  return `<div class="card ${q ? 'owned' : 'missing'} ftile" data-cid="${esc(c.id)}">
+    <button class="${isSealed(c) ? 'sealed-img' : 'card-img'}" data-open="${esc(c.id)}" aria-label="${esc(cardName(c))}">${cardImg(c)}</button>
+    ${price(c.id) != null ? `<span class="price num">${eur(price(c.id))}</span>` : ''}
+    <div class="fmeta">${q > 1 ? `<span class="ftag">×${q}</span>` : ''}${tag}</div>
+  </div>`;
+}
+document.addEventListener('submit', (e) => {
+  if (e.target.id === 'pseudoForm') { e.preventDefault(); setPseudo(document.getElementById('pseudoInput').value); }
+  else if (e.target.id === 'addFriendForm') { e.preventDefault(); sendRequest(document.getElementById('friendInput').value); }
+});
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('[data-fr],[data-frf]');
+  if (!a) return;
+  if (a.dataset.frf) { fr.filter = a.dataset.frf; currentRender(); return; }
+  const uid = a.dataset.uid;
+  if (a.dataset.fr === 'accept') acceptRequest(uid);
+  else if (a.dataset.fr === 'decline') declineRequest(uid);
+  else if (a.dataset.fr === 'remove') { if (fr.confirmRemove !== uid) { fr.confirmRemove = uid; renderFriends(); } else removeFriend(uid); }
+});
+
 // ---------- Barre d'onglets et langue ----------
 function renderSupportSide() {
   const nav = document.querySelector('.tabbar');
@@ -1280,7 +1505,7 @@ function renderSupportSide() {
 }
 function renderChrome() {
   document.documentElement.lang = lang;
-  const labels = { capri: 'Capri', home: L.home, sealed: L.sealed, collection: L.collection, search: L.search, values: L.market, wishlist: L.wishlist };
+  const labels = { friends: L.fr.title, capri: 'Capri', home: L.home, sealed: L.sealed, collection: L.collection, search: L.search, values: L.market, wishlist: L.wishlist };
   for (const a of document.querySelectorAll('.tabbar a')) {
     const span = a.querySelector('span');
     if (span && labels[a.dataset.tab]) span.textContent = labels[a.dataset.tab];
@@ -1369,6 +1594,7 @@ document.addEventListener('click', async (e) => {
       cloud.unsub?.(); cloud.unsub = null;
       await cloud.api.fsM.deleteDoc(cloudRef());
       await cloud.api.fsM.deleteDoc(cloud.api.fsM.doc(cloud.api.db, 'profiles', cu.uid)).catch(() => {});
+      await friendsCleanup(cu.uid);
       await cloud.api.authM.deleteUser(cu);
       user.syncedUid = null; save();
     }, L.deleted);
@@ -1433,6 +1659,8 @@ function route() {
   else if (h === 'values') currentRender = renderValues;
   else if (h === 'sealed') { tab = 'sealed'; currentRender = renderSealed; }
   else if (h === 'capri') { currentRender = renderCapri; }
+  else if (h === 'friends') { fr.view = null; fr.msg = ''; currentRender = renderFriends; }
+  else if (h.startsWith('friend-')) { tab = 'friends'; const uid = h.slice(7); if (fr.view?.uid !== uid) fr.filter = 'all'; renderFriendCurrent = () => renderFriend(uid); currentRender = renderFriendCurrent; }
   else { tab = 'home'; currentRender = renderHome; }
   currentTab = tab;
   markTabs();

@@ -652,3 +652,25 @@ button:disabled { opacity: .5; cursor: default; }
   display: flex; margin-top: auto; padding: 10px 14px; font-size: 13px; color: var(--muted); background: none;
 }
 :root[data-device="pc"] .tabbar .support-side:hover { color: var(--hot); background: var(--surface); }
+
+/* ---------- Amis ---------- */
+.fbadge { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 6px; border-radius: 99px; background: var(--hot); color: #fff; font-size: 11px; font-weight: 700; }
+.fbadge[hidden] { display: none; }
+.friends-chip { display: inline-flex; align-items: center; text-decoration: none; margin-left: auto; }
+.inline-form { display: flex; gap: 8px; }
+.inline-form .search { flex: 1; min-width: 0; max-width: none; }
+.inline-form .cta { width: auto; padding: 0 18px; flex: none; }
+.friends .panel h3 small b.pseudo { color: var(--accent); }
+.friend-row { grid-template-columns: 40px minmax(0, 1fr) auto auto; }
+.friend-row .meta { text-decoration: none; color: inherit; }
+.friend-row .chip { text-decoration: none; }
+.friend-row .chip.danger { border-color: var(--down); color: var(--down); }
+.f-avatar { width: 38px; height: 38px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--surface-2); color: var(--accent); font: 700 16px var(--font-display); flex: none; }
+.friend-title { display: flex; align-items: center; gap: 10px; }
+.friend-title img, .friend-title .f-avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; }
+.ftile .fmeta { position: absolute; left: 6px; right: 6px; bottom: 6px; display: flex; gap: 4px; flex-wrap: wrap; pointer-events: none; }
+.ftile .price { bottom: 34px; }
+.ftag { padding: 2px 7px; border-radius: 99px; font-size: 11px; font-weight: 700; background: color-mix(in srgb, var(--bg) 85%, transparent); border: 1px solid var(--line); }
+.ftag.own { color: var(--up); border-color: color-mix(in srgb, var(--up) 60%, transparent); }
+.ftag.want { color: var(--hot); border-color: color-mix(in srgb, var(--hot) 60%, transparent); }
+.ftile .sealed-img { aspect-ratio: 63 / 88; }

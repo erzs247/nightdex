@@ -2,32 +2,71 @@ rules_version = '2';
 // Règles de sécurité Firestore pour NightDex
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isMe(uid) { return signedIn() && request.auth.uid == uid; }
+    // un ami accepté de <owner> figure dans friends/<owner>/list/<son uid>
+    function isFriendOf(owner) { return signedIn() && exists(/databases/$(database)/documents/friends/$(owner)/list/$(request.auth.uid)); }
 
-    // collection de chaque compte : lue et écrite uniquement par son propriétaire
+    // collection de chaque compte : écrite par son propriétaire, lue par lui et ses amis acceptés
     match /users/{uid} {
-      allow read, delete: if request.auth != null && request.auth.uid == uid;
-      allow create, update: if request.auth != null && request.auth.uid == uid
+      allow read: if isMe(uid) || isFriendOf(uid);
+      allow delete: if isMe(uid);
+      allow create, update: if isMe(uid)
         && request.resource.data.keys().hasOnly(['owned', 'wish', 'fav', 'app', 'v', 'updatedAt'])
         && request.resource.data.owned is map
         && request.resource.data.wish is list
         && request.resource.data.fav is list;
     }
 
-    // statut de soutien : le compte peut le lire, personne ne peut l'écrire depuis l'appli
-    // (c'est le propriétaire de NightDex qui l'active dans la console Firebase)
+    // statut de soutien : lisible par le compte, modifiable uniquement depuis la console Firebase
     match /supporters/{uid} {
-      allow read: if request.auth != null && request.auth.uid == uid;
+      allow read: if isMe(uid);
       allow write: if false;
     }
 
-    // photo de profil : réservée aux soutiens actifs, petite image uniquement
+    // photo de profil : visible par le compte et ses amis, réservée aux soutiens actifs
     match /profiles/{uid} {
-      allow read, delete: if request.auth != null && request.auth.uid == uid;
-      allow create, update: if request.auth != null && request.auth.uid == uid
+      allow read: if isMe(uid) || isFriendOf(uid);
+      allow delete: if isMe(uid);
+      allow create, update: if isMe(uid)
         && get(/databases/$(database)/documents/supporters/$(uid)).data.active == true
         && request.resource.data.keys().hasOnly(['avatar', 'updatedAt'])
         && request.resource.data.avatar is string
         && request.resource.data.avatar.size() < 80000;
+    }
+
+    // pseudos uniques : handles/<pseudo> → { uid }
+    match /handles/{pseudo} {
+      allow read: if signedIn();
+      allow create: if signedIn() && pseudo.matches('^[a-z0-9_.-]{3,20}$')
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // profil public (pseudo seulement), doit correspondre à un pseudo réservé par le compte
+    match /publicProfiles/{uid} {
+      allow read: if signedIn();
+      allow delete: if isMe(uid);
+      allow create, update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['pseudo'])
+        && getAfter(/databases/$(database)/documents/handles/$(request.resource.data.pseudo)).data.uid == uid;
+    }
+
+    // demandes d'ami : friendRequests/<destinataire>/from/<expéditeur>
+    match /friendRequests/{to}/from/{from} {
+      allow read, delete: if isMe(to) || isMe(from);
+      allow create: if isMe(from) && from != to
+        && request.resource.data.keys().hasOnly(['pseudo', 'at'])
+        && request.resource.data.pseudo == get(/databases/$(database)/documents/publicProfiles/$(from)).data.pseudo;
+    }
+
+    // amitiés : créées des deux côtés par celui qui accepte une demande existante
+    match /friends/{owner}/list/{friend} {
+      allow read, delete: if isMe(owner) || isMe(friend);
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['since']) && (
+        (isMe(owner) && exists(/databases/$(database)/documents/friendRequests/$(owner)/from/$(friend)))
+        || (isMe(friend) && exists(/databases/$(database)/documents/friendRequests/$(friend)/from/$(owner))));
     }
   }
 }
