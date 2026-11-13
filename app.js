@@ -42,6 +42,7 @@ const TEXT = {
     chartWait: 'Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.', chartNone: 'Pas de prix Cardmarket pour cette carte pour l\'instant.',
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue', langToast: 'Langue : français',
+    disclaimer: 'NightDex est une appli de fan non officielle, sans lien avec CD Projekt ni WeirdCo. Cyberpunk est une marque de CD Projekt ; les images des cartes et des produits appartiennent à leurs ayants droit. Prix : Cardmarket (tendance, mis à jour chaque jour).',
     storage: (n, w) => `Votre collection est enregistrée sur cet appareil (${n} cartes possédées, ${w} souhaits). Exportez-la pour la sauvegarder ou la transférer sur un autre téléphone.`,
     export: 'Exporter ma collection (copier)', import: 'Importer un fichier de sauvegarde', dataLine: (n, m, d) => `Données : ${n} cartes, ${m} séries · prix Cardmarket du ${d}.`, close: 'Fermer',
     copied: 'Sauvegarde copiée', selectCopy: 'Sélectionnez le texte pour le copier', imported: 'Collection importée', badFile: 'Fichier invalide : choisissez un export NightDex',
@@ -85,6 +86,7 @@ const TEXT = {
     chartWait: 'Not enough history to draw a curve yet. Prices are recorded every day.', chartNone: 'No Cardmarket price for this card yet.',
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'Language', langToast: 'Language: English',
+    disclaimer: 'NightDex is an unofficial fan app, not affiliated with CD Projekt or WeirdCo. Cyberpunk is a trademark of CD Projekt; card and product images belong to their respective owners. Prices: Cardmarket (trend, updated daily).',
     storage: (n, w) => `Your collection is saved on this device (${n} cards owned, ${w} in wishlist). Export it to back it up or move it to another phone.`,
     export: 'Export my collection (copy)', import: 'Import a backup file', dataLine: (n, m, d) => `Data: ${n} cards, ${m} sets · Cardmarket prices from ${d}.`, close: 'Close',
     copied: 'Backup copied', selectCopy: 'Select the text to copy it', imported: 'Collection imported', badFile: 'Invalid file: choose a NightDex export',
@@ -724,6 +726,7 @@ function openSettings() {
       <textarea id="exportBox" class="search" rows="4" hidden readonly></textarea>
     </div>
     <p class="note">${L.dataLine(catalog.cards.length, catalog.sets.length, priceFile.updatedAt ? fmt.date.format(parseDay(priceFile.updatedAt)) : '—')}</p>
+    <p class="note">${L.disclaimer}</p>
     <button class="btn-ghost" data-action="close">${L.close}</button>
   </div>`;
   sheet.hidden = false;
