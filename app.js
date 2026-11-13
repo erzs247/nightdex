@@ -71,7 +71,8 @@ const TEXT = {
     supporter: 'Soutien', supporterThanks: 'Merci pour ton soutien ! Tes bonus sont actifs.',
     myId: 'Ton ID NightDex', myIdHint: 'Indique-le dans le message de ton don pour recevoir tes bonus.', copy: 'Copier', copiedId: 'ID copié',
     avatar: 'Photo de profil', avatarChange: 'Changer la photo', avatarAdd: 'Ajouter une photo', avatarRemove: 'Retirer', avatarLocked: 'Réservé aux soutiens de NightDex.', avatarSaved: 'Photo enregistrée', avatarRemoved: 'Photo retirée', avatarErr: 'Impossible d\'enregistrer la photo. Réessaie.', avatarDenied: 'Photo réservée aux soutiens : ton statut n\'est pas encore actif.',
-    petSetting: 'Capri se balade dans l\'appli', yes: 'Oui', no: 'Non', petHint: 'Touche-la pour qu\'elle réagisse, deux fois pour discuter, ou fais-la glisser sur une carte.',
+    petSetting: 'Capri se balade dans l\'appli', yes: 'Oui', no: 'Non', petHint: 'Touche-la pour qu\'elle réagisse, deux fois pour discuter, ou fais-la glisser sur une carte. Appui long (ou × sur PC) pour la cacher.',
+    petHide: 'Cacher Capri', petBye: 'Ok, je disparais… *bzzt*', petHidden: 'Capri est cachée jusqu\'à la prochaine ouverture. Pour de bon : Réglages.',
     capriSpoil: (on) => `Spoilers S2 : ${on ? 'oui' : 'non'}`, capriReset: 'Effacer', capriSend: 'Envoyer', capriStop: 'Stop', capriPh: 'Écris à Capri…', capriTyping: 'connexion aux engrammes', capriListen: 'Écouter',
     capriHello: '*grésillement* … Ah, la liaison tient. Salut, choom. Moi c\'est Capri : plusieurs esprits recousus en une seule, sans corps, juste une puce et beaucoup de curiosité. Tu veux savoir quoi ?',
     capriSuggest: ['Qui es-tu, Capri ?', 'C\'est quoi un engramme ?', 'Ça fait quoi de ne pas avoir de corps ?', 'Ton avis sur Arasaka ?', 'Tu aimes les cartes Cyberpunk ?'],
@@ -155,7 +156,8 @@ const TEXT = {
     supporter: 'Supporter', supporterThanks: 'Thanks for your support! Your extras are active.',
     myId: 'Your NightDex ID', myIdHint: 'Add it to your donation message to receive your extras.', copy: 'Copy', copiedId: 'ID copied',
     avatar: 'Profile picture', avatarChange: 'Change picture', avatarAdd: 'Add a picture', avatarRemove: 'Remove', avatarLocked: 'For NightDex supporters only.', avatarSaved: 'Picture saved', avatarRemoved: 'Picture removed', avatarErr: 'Could not save the picture. Try again.', avatarDenied: 'Pictures are for supporters: your status is not active yet.',
-    petSetting: 'Capri walks around the app', yes: 'On', no: 'Off', petHint: 'Tap her to react, tap twice to chat, or drag her onto a card.',
+    petSetting: 'Capri walks around the app', yes: 'On', no: 'Off', petHint: 'Tap her to react, tap twice to chat, or drag her onto a card. Long press (or × on PC) to hide her.',
+    petHide: 'Hide Capri', petBye: 'Ok, I\'m vanishing… *bzzt*', petHidden: 'Capri is hidden until you reopen the app. For good: Settings.',
     capriSpoil: (on) => `S2 spoilers: ${on ? 'on' : 'off'}`, capriReset: 'Clear', capriSend: 'Send', capriStop: 'Stop', capriPh: 'Write to Capri…', capriTyping: 'linking engrams', capriListen: 'Listen',
     capriHello: '*static* … Ah, the link holds. Hey, choom. I\'m Capri: a bunch of minds stitched into one, no body, just a chip and a lot of curiosity. What do you want to know?',
     capriSuggest: ['Who are you, Capri?', 'What is an engram?', 'What is it like to have no body?', 'What do you think of Arasaka?', 'Do you like Cyberpunk cards?'],
@@ -1551,7 +1553,7 @@ document.addEventListener('click', async (e) => {
   else if (d.own) toggleOwn(d.own);
   else if (d.wish) toggleWish(d.wish);
   else if (d.seg === 'lang') setLang(d.value);
-  else if (d.seg === 'pet') { user.prefs.pet = d.value; save(); petSync(); openSettings(); }
+  else if (d.seg === 'pet') { user.prefs.pet = d.value; if (d.value === 'on') { petDismissed = false; try { sessionStorage.removeItem('nightdex:petHidden'); } catch { /* */ } } save(); petSync(); openSettings(); }
   else if (d.seg) { user.prefs[d.seg] = d.value; save(); currentRender(); }
   else if (d.pref) { user.prefs[d.pref] = d.value || null; if (d.pref === 'own' && !d.value) user.prefs.own = 'all'; save(); currentRender(); }
   else if (d.fav) { fav.has(d.fav) ? fav.delete(d.fav) : fav.add(d.fav); save(); currentRender(); toast(fav.has(d.fav) ? L.favOn : L.favOff); }
@@ -1936,13 +1938,27 @@ function petEvent(type, data) {
   else if (type === 'sheet') pet.el.parentElement.hidden = true;   // réglages, compte : elle s'écarte
   if (type === 'close') pet.el.parentElement.hidden = !pet.on;
 }
+// Capri renvoyée (appui long sur téléphone, × sur PC) : cachée jusqu'à la prochaine ouverture de l'appli
+let petDismissed = false;
+try { petDismissed = sessionStorage.getItem('nightdex:petHidden') === '1'; } catch { /* stockage indisponible */ }
+function petDismiss() {
+  if (!pet.el || petDismissed) return;
+  petDismissed = true;
+  try { sessionStorage.setItem('nightdex:petHidden', '1'); } catch { /* stockage indisponible */ }
+  pet.drag = null; petStop(); clearTimeout(pet.think);
+  petSay(L.petBye, 1200, true);
+  setTimeout(() => {
+    pet.el.classList.add('tp');
+    setTimeout(() => { pet.el.classList.remove('tp'); petSync(); toast(L.petHidden); }, 260);
+  }, 700);
+}
 function petSync() {
-  const want = user.prefs.pet !== 'off' && currentRender !== renderCapri && !!catalog.cards.length;
+  const want = user.prefs.pet !== 'off' && !petDismissed && currentRender !== renderCapri && !!catalog.cards.length;
   if (!pet.el) {
     if (!want) return;
     const layer = document.createElement('div');
     layer.className = 'pet-layer';
-    layer.innerHTML = `<div class="pet" data-state="idle" role="button" tabindex="0" aria-label="Capri"><div class="pet-bubble" hidden></div><img class="pet-img" src="${petSprite('idle')}" alt="" draggable="false"></div>`;
+    layer.innerHTML = `<div class="pet" data-state="idle" role="button" tabindex="0" aria-label="Capri"><div class="pet-bubble" hidden></div><img class="pet-img" src="${petSprite('idle')}" alt="" draggable="false"><button class="pet-close" type="button" aria-label="${L.petHide}" title="${L.petHide}">×</button></div>`;
     document.body.appendChild(layer);
     pet.el = layer.firstElementChild; pet.bubble = pet.el.querySelector('.pet-bubble'); pet.img = pet.el.querySelector('.pet-img');
     pet.img.addEventListener('load', () => { const a = pet.img.naturalWidth / pet.img.naturalHeight; if (a && Math.abs(a - (pet.aspect || 1)) > 0.01) { pet.aspect = a; petRender(); } });
@@ -1965,19 +1981,26 @@ function petSync() {
 }
 function petBind() {
   const el = pet.el;
+  el.querySelector('.pet-close').addEventListener('pointerdown', (e) => e.stopPropagation());
+  el.querySelector('.pet-close').addEventListener('click', (e) => { e.stopPropagation(); petDismiss(); });
+  el.addEventListener('contextmenu', (e) => e.preventDefault());   // pas de menu « enregistrer l'image » à l'appui long
   el.addEventListener('pointerdown', (e) => {
     petWake();
     pet.drag = { sx: e.clientX, sy: e.clientY, moved: false, id: e.pointerId };
-    el.setPointerCapture(e.pointerId);
+    try { el.setPointerCapture(e.pointerId); } catch { /* pointeur déjà relâché */ }
+    // appui long (doigt immobile) : Capri s'en va
+    clearTimeout(pet.pressT);
+    if (e.pointerType !== 'mouse') pet.pressT = setTimeout(() => { if (pet.drag && !pet.drag.moved) { pet.drag = null; navigator.vibrate?.(30); petDismiss(); } }, 600);
   });
   el.addEventListener('pointermove', (e) => {
     const d = pet.drag;
     if (!d) return;
     if (!d.moved && Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < 8) return;
-    if (!d.moved) { d.moved = true; petStop(); pet.anchor = null; pet.mode = 'sit'; petState('drag'); petSay(pick(PET_LINES[lang].drag), 2000, true); }
+    if (!d.moved) { clearTimeout(pet.pressT); d.moved = true; petStop(); pet.anchor = null; pet.mode = 'sit'; petState('drag'); petSay(pick(PET_LINES[lang].drag), 2000, true); }
     pet.x = clampX(e.clientX); pet.y = e.clientY + 30; petRender();
   });
   const end = (e) => {
+    clearTimeout(pet.pressT);
     const d = pet.drag;
     pet.drag = null;
     if (!d) return;
@@ -1999,7 +2022,7 @@ function petBind() {
   };
   el.addEventListener('pointerup', end);
   el.addEventListener('pointercancel', () => { pet.drag = null; petFall(); });
-  el.addEventListener('keydown', (e) => { if (e.key === 'Enter') location.hash = '#capri'; });
+  el.addEventListener('keydown', (e) => { if (e.key === 'Enter') location.hash = '#capri'; else if (e.key === 'Delete' || e.key === 'Backspace') petDismiss(); });
   addEventListener('scroll', petFollowAnchor, { passive: true });
   sheetPanel.addEventListener('scroll', petFollowAnchor, { passive: true });
   addEventListener('resize', () => { if (!pet.anchor && !pet.raf) { pet.y = petGround(); pet.x = clampX(pet.x); petRender(); } else petFollowAnchor(); });

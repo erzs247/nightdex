@@ -674,3 +674,13 @@ button:disabled { opacity: .5; cursor: default; }
 .ftag.own { color: var(--up); border-color: color-mix(in srgb, var(--up) 60%, transparent); }
 .ftag.want { color: var(--hot); border-color: color-mix(in srgb, var(--hot) 60%, transparent); }
 .ftile .sealed-img { aspect-ratio: 63 / 88; }
+
+/* Capri : bouton × (PC, au survol) et appui long sans menu système */
+.pet { -webkit-touch-callout: none; user-select: none; }
+.pet-close {
+  position: absolute; top: -8px; right: -8px; z-index: 2; width: 24px; height: 24px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: 700 15px/1 var(--font-body);
+  display: none; place-items: center; padding: 0; cursor: pointer; box-shadow: 0 2px 8px rgb(0 0 0 / .5);
+}
+@media (hover: hover) { .pet:hover .pet-close, .pet:focus-visible .pet-close { display: grid; } }
+.pet-close:hover { background: var(--hot); color: #fff; border-color: var(--hot); }
