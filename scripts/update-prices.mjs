@@ -133,9 +133,31 @@ for (const c of catalog.cards) {
   pricesFile.prices[c.id] = entry;
 }
 
+// 3. Produits scellés (data/sealed.json, créé par scripts/import-scelle.mjs)
+let sealedPriced = 0;
+if (existsSync(join(root, 'data/sealed.json'))) {
+  for (const it of readJson('data/sealed.json').items) {
+    const g = guideById.get(it.cardmarket?.idProduct);
+    const trend = g && (num(g.trend) ?? num(g.avg) ?? num(g.low));
+    if (trend == null) continue;
+    sealedPriced++;
+    const entry = pricesFile.prices[it.id] ?? { history: [] };
+    Object.assign(entry, { trend, low: num(g.low), avg: num(g.avg), avg1: num(g.avg1), avg7: num(g.avg7), avg30: num(g.avg30) });
+    if (entry.history.length === 0 && (entry.avg30 || entry.avg7 || entry.avg1)) {
+      entry.seeded = true;
+      if (entry.avg30) entry.history.push([daysAgo(30), entry.avg30]);
+      if (entry.avg7) entry.history.push([daysAgo(7), entry.avg7]);
+      if (entry.avg1) entry.history.push([daysAgo(1), entry.avg1]);
+    }
+    entry.history = entry.history.filter((h) => h[0] !== today);
+    entry.history.push([today, trend]);
+    pricesFile.prices[it.id] = entry;
+  }
+}
+
 writeFileSync(join(root, 'data/catalog.json'), JSON.stringify(catalog));
 writeFileSync(join(root, 'data/prices.json'), JSON.stringify({
   demo: false, source: 'Cardmarket', currency: 'EUR', updatedAt: today,
   cardmarketCreatedAt: guideFile.createdAt ?? null, prices: pricesFile.prices,
 }));
-console.log(`${linked}/${catalog.cards.length} cartes rattachées à Cardmarket, ${priced} avec un prix au ${today}.`);
+console.log(`${linked}/${catalog.cards.length} cartes rattachées à Cardmarket, ${priced} avec un prix au ${today} ; ${sealedPriced} produits scellés avec un prix.`);

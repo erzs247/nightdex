@@ -37,6 +37,18 @@ npm start
 
 Puis ouvrir http://localhost:8080.
 
+## Produits scellés
+
+L'onglet **Scellé** de l'accueil liste les boosters, booster box, cases de 6 booster box, decks et kits
+(dont le set 2 « Edgerunners: Burn Bright »), avec prix, courbe, lien Cardmarket direct et suivi dans la collection.
+
+```bash
+node scripts/import-scelle.mjs
+```
+
+Récupère la liste des produits scellés publiée par Cardmarket et les visuels officiels (cyberpunktcg.com).
+Les prix sont relevés chaque jour avec ceux des cartes.
+
 ## Prix Cardmarket et courbes
 
 Cardmarket publie chaque nuit deux fichiers publics par jeu (Cyberpunk = jeu n° 23) : la liste des cartes et le guide des prix.
@@ -92,6 +104,8 @@ Sur le téléphone, ouvrir l'adresse GitHub Pages puis « Ajouter à l'écran d'
 | `data/config.json` | réglages Cardmarket (langue, idGame, correspondance des extensions) |
 | `scripts/update-prices.mjs` | relevé quotidien des prix Cardmarket |
 | `scripts/import-cards.mjs` | import CSV (images, raretés, liens) |
+| `data/sealed.json`, `images/sealed/` | produits scellés et leurs visuels |
+| `scripts/import-scelle.mjs` | import des produits scellés depuis Cardmarket |
 | `scripts/import-officiel.mjs` | import des cartes et images depuis la base officielle |
 | `images/` | images des cartes, par série |
 | `scripts/make-demo.mjs` | régénère les données de démonstration (cartes fictives) |

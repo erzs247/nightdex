@@ -8,6 +8,11 @@ const parseDay = (s) => new Date(`${s}T00:00:00`);
 const plural = (n, one, many) => (n > 1 ? many : one);
 const TEXT = {
   fr: {
+    sealed: 'Scellé', setsTab: 'Séries', toggleView: 'Changer l\'affichage',
+    cats: { booster: 'Boosters', box: 'Booster Box', case: 'Cases de 6 Booster Box', deck: 'Decks', kit: 'Kits & coffrets' },
+    catOne: { booster: 'Booster', box: 'Booster Box', case: 'Case de 6 Booster Box', deck: 'Deck', kit: 'Kit' },
+    sealedNote: (d) => `Prix tendance Cardmarket des produits scellés${d ? ` · mis à jour le ${d}` : ''}. Les produits sans prix n'ont pas encore de ventes.`,
+    sealedCount: (n) => `${n} ${plural(n, 'produit scellé', 'produits scellés')}`,
     home: 'Accueil', collection: 'Collection', market: 'Cotes', wishlist: 'Souhaits', search: 'Recherche', searchCard: 'Rechercher une carte',
     settings: 'Réglages', list: 'Liste', grid: 'Grille', cards: 'Cartes', searchSet: 'Rechercher une série', noSet: 'Aucune série trouvée', favorites: 'Favoris',
     blocks: { wnc: 'Welcome to Night City', op: 'Jeu organisé & promos', beta: 'Bêta (Kickstarter, en anglais)', demo: 'Decks de démo (en anglais)', new: 'Nouvelles séries' },
@@ -46,6 +51,11 @@ const TEXT = {
     color: { Red: 'Rouge', Blue: 'Bleu', Green: 'Vert', Yellow: 'Jaune' },
   },
   en: {
+    sealed: 'Sealed', setsTab: 'Sets', toggleView: 'Change view',
+    cats: { booster: 'Boosters', box: 'Booster boxes', case: 'Cases of 6 booster boxes', deck: 'Decks', kit: 'Kits & box sets' },
+    catOne: { booster: 'Booster', box: 'Booster box', case: 'Case of 6 booster boxes', deck: 'Deck', kit: 'Kit' },
+    sealedNote: (d) => `Cardmarket trend prices for sealed products${d ? ` · updated ${d}` : ''}. Products without a price have no sales yet.`,
+    sealedCount: (n) => `${n} sealed ${plural(n, 'product', 'products')}`,
     home: 'Home', collection: 'Collection', market: 'Market', wishlist: 'Wishlist', search: 'Search', searchCard: 'Search a card',
     settings: 'Settings', list: 'List', grid: 'Grid', cards: 'Cards', searchSet: 'Search a set', noSet: 'No set found', favorites: 'Favourites',
     blocks: { wnc: 'Welcome to Night City', op: 'Organised play & promos', beta: 'Beta (Kickstarter)', demo: 'Demo decks', new: 'New sets' },
@@ -92,6 +102,8 @@ const I = {
   gear: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
   heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
   own: '<svg viewBox="0 0 24 24"><rect x="6" y="3.5" width="12" height="17" rx="2"/><path d="m9.5 12 2 2 3.5-4"/></svg>',
+  listIcon: '<svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>',
+  gridIcon: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>',
   chevron: '<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>',
   ext: '<svg viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>',
 };
@@ -151,6 +163,7 @@ const blockName = (b) => L.blocks[b] ?? b;
 // ---------- Données ----------
 let catalog = { sets: [], cards: [] };
 let priceFile = { prices: {} };
+let sealed = [];
 let config = { cardmarket: { gameSlug: 'Cyberpunk', languageIds: { en: 1, fr: 2 } } };
 const cardsById = new Map();
 const cardsBySet = new Map();
@@ -159,7 +172,10 @@ async function loadData() {
   // version autonome : données intégrées dans la page (<script type="application/json" id="data/…">)
   const embedded = (p) => { const el = document.getElementById(p); return el ? Promise.resolve(JSON.parse(el.textContent)) : null; };
   const get = (p) => embedded(p) ?? fetch(p, { cache: 'no-cache' }).then((r) => { if (!r.ok) throw new Error(p); return r.json(); });
-  [catalog, priceFile, config] = await Promise.all([get('data/catalog.json'), get('data/prices.json'), get('data/config.json').catch(() => config)]);
+  let sealedFile;
+  [catalog, priceFile, config, sealedFile] = await Promise.all([get('data/catalog.json'), get('data/prices.json'), get('data/config.json').catch(() => config), get('data/sealed.json').catch(() => ({ items: [] }))]);
+  sealed = sealedFile.items ?? [];
+  for (const it of sealed) cardsById.set(it.id, it);
   for (const c of catalog.cards) {
     cardsById.set(c.id, c);
     if (!cardsBySet.has(c.set)) cardsBySet.set(c.set, []);
@@ -178,6 +194,9 @@ const setOf = (code) => catalog.sets.find((s) => s.code === code);
 const setTotal = (s) => s.total ?? cardsBySet.get(s.code)?.length ?? 0;
 const ownedIn = (code) => (cardsBySet.get(code) ?? []).filter((c) => qty(c.id) > 0).length;
 const printCode = (code) => setOf(code)?.print ?? code;
+const isSealed = (c) => c.kind === 'sealed';
+const itemCode = (c) => (isSealed(c) ? c.print ?? (c.set ? printCode(c.set) : '') : printCode(c.set));
+const allItems = () => [...catalog.cards, ...sealed];
 
 function valueAt(hist, day) {
   let v = null;
@@ -195,6 +214,7 @@ function change(id, days) {
 // Lien Cardmarket : page exacte de la carte (avec filtre de langue), sinon recherche par nom
 function cmUrl(card) {
   const { gameSlug = 'Cyberpunk', languageIds = { en: 1, fr: 2 } } = config.cardmarket ?? {};
+  if (card.cardmarket?.path && isSealed(card)) return { url: `https://www.cardmarket.com/${lang}/${gameSlug}/${card.cardmarket.path}`, exact: true };
   if (card.cardmarket?.path) {
     const printedIn = lang === 'fr' && card.languages?.includes('fr') ? 'fr' : 'en';
     return { url: `https://www.cardmarket.com/${lang}/${gameSlug}/${card.cardmarket.path}?language=${languageIds[printedIn]}`, exact: true };
@@ -204,9 +224,20 @@ function cmUrl(card) {
 
 // ---------- Images ----------
 const artCache = new Map();
+function sealedArt(it) {
+  const words = String(cardName(it)).split(' ');
+  const lines = [''];
+  for (const w of words) { if ((lines[lines.length - 1] + ' ' + w).trim().length > 18 && lines.length < 4) lines.push(w); else lines[lines.length - 1] = (lines[lines.length - 1] + ' ' + w).trim(); }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+<polygon points="300,60 520,170 520,430 300,540 80,430 80,170" fill="#1d2337" stroke="#f5e50b" stroke-width="6"/>
+<polygon points="300,60 520,170 300,280 80,170" fill="#2b3250"/><line x1="300" y1="280" x2="300" y2="540" stroke="#f5e50b" stroke-width="4" stroke-opacity=".5"/>
+${lines.map((l, i) => `<text x="300" y="${340 + i * 40}" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="30" fill="#eceef6">${esc(l)}</text>`).join('')}</svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
 function placeholderArt(card) {
   const k = `${card.id}|${lang}`;
   if (artCache.has(k)) return artCache.get(k);
+  if (isSealed(card)) { const u = sealedArt(card); artCache.set(k, u); return u; }
   const c1 = FACTION[card.color] ?? '#3ad8df';
   const rc = RARITY_HEX[card.rarity] ?? '#8e96b2';
   const lines = [''];
@@ -214,7 +245,7 @@ function placeholderArt(card) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 630 880">
 <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}" stop-opacity=".55"/><stop offset=".55" stop-color="#141826"/><stop offset="1" stop-color="#0b0d14"/></linearGradient></defs>
 <rect width="630" height="880" rx="34" fill="#0b0d14"/><rect x="18" y="18" width="594" height="844" rx="22" fill="url(#g)"/>
-<text x="46" y="78" font-family="sans-serif" font-weight="700" font-size="40" fill="#eceef6">${esc(printCode(card.set))} · ${esc(card.number ?? '')}</text>
+<text x="46" y="78" font-family="sans-serif" font-weight="700" font-size="40" fill="#eceef6">${esc(itemCode(card))} · ${esc(card.number ?? '')}</text>
 ${lines.map((l, i) => `<text x="46" y="${200 + i * 64}" font-family="sans-serif" font-weight="700" font-size="56" fill="#eceef6">${esc(l)}</text>`).join('')}
 <polygon points="315,420 405,472 405,576 315,628 225,576 225,472" fill="none" stroke="${rc}" stroke-width="6"/></svg>`;
   const uri = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
@@ -263,6 +294,19 @@ function cardTile(c) {
     </div>
   </div>`;
 }
+function sealedTile(it) {
+  const q = qty(it.id);
+  const code = itemCode(it);
+  return `<div class="sealed ${q ? 'owned' : ''}" data-cid="${esc(it.id)}" data-kind="sealed">
+    <button class="sealed-img" data-open="${esc(it.id)}" aria-label="${esc(cardName(it))}">${cardImg(it)}${it.pack ? `<span class="pack-badge num">×${it.pack}</span>` : ''}</button>
+    <div class="sealed-info"><strong>${esc(cardName(it))}</strong><span>${code ? `<b class="print">${esc(code)}</b> · ` : ''}${esc(L.catOne[it.category] ?? '')}</span></div>
+    <div class="sealed-foot">
+      <span class="sprice num">${price(it.id) != null ? eur(price(it.id)) : `<small>${L.noPrice}</small>`}</span>
+      <button class="mini-btn heart" data-wish="${esc(it.id)}" aria-pressed="${wish.has(it.id)}" aria-label="${L.wishBtn}">${I.heart}</button>
+      <button class="mini-btn own" data-own="${esc(it.id)}" aria-pressed="${q > 0}" aria-label="${L.ownBtn}">${I.own}${q > 1 ? `<span class="qty">${q}</span>` : ''}</button>
+    </div>
+  </div>`;
+}
 function compactTile(c) {
   const q = qty(c.id);
   return `<div class="card ${q ? 'owned' : 'missing'}" data-cid="${esc(c.id)}" data-kind="compact">
@@ -273,10 +317,10 @@ function cardRow(c, days = 30) {
   const q = qty(c.id);
   const ch = change(c.id, days);
   return `<div class="row" data-cid="${esc(c.id)}" data-kind="row" data-days="${days}">
-    <button class="thumb" data-open="${esc(c.id)}" aria-label="${esc(cardName(c))}">${cardImg(c)}</button>
+    <button class="thumb ${isSealed(c) ? 'is-sealed' : ''}" data-open="${esc(c.id)}" aria-label="${esc(cardName(c))}">${cardImg(c)}</button>
     <button class="meta" data-open="${esc(c.id)}">
       <strong>${esc(cardName(c))}</strong>
-      <span>${esc(printCode(c.set))} · ${esc(c.number)}${c.rarity ? ` · <span class="rarity" ${rarityStyle(c.rarity)}>${esc(rarityLabel(c.rarity))}</span>` : ''}</span>
+      <span>${isSealed(c) ? `${itemCode(c) ? `${esc(itemCode(c))} · ` : ''}${esc(L.catOne[c.category] ?? '')}` : `${esc(printCode(c.set))} · ${esc(c.number)}${c.rarity ? ` · <span class="rarity" ${rarityStyle(c.rarity)}>${esc(rarityLabel(c.rarity))}</span>` : ''}`}</span>
     </button>
     <div class="rprice num">${eur(price(c.id))}${ch != null ? `<small class="${ch >= 0 ? 'up' : 'down'}">${pct(ch)} ${days} ${lang === 'en' ? 'd' : 'j'}</small>` : ''}</div>
     <button class="mini-btn own" data-own="${esc(c.id)}" aria-pressed="${q > 0}" aria-label="${L.ownBtn}">${I.own}${q > 1 ? `<span class="qty">${q}</span>` : ''}</button>
@@ -286,7 +330,7 @@ function refreshCard(id) {
   const c = cardsById.get(id);
   for (const el of document.querySelectorAll(`[data-cid="${CSS.escape(id)}"]`)) {
     const kind = el.dataset.kind;
-    el.outerHTML = kind === 'row' ? cardRow(c, Number(el.dataset.days) || 30) : kind === 'compact' ? compactTile(c) : cardTile(c);
+    el.outerHTML = kind === 'row' ? cardRow(c, Number(el.dataset.days) || 30) : kind === 'compact' ? compactTile(c) : kind === 'sealed' ? sealedTile(c) : cardTile(c);
   }
 }
 
@@ -322,8 +366,23 @@ function progressTile(s) {
 }
 
 let homeQuery = '';
+function homeTopbar(withMode) {
+  const mode = user.prefs.homeMode;
+  setTopbar(`<h1>${L.home}</h1>${withMode ? `<button class="icon-btn" data-action="home-mode" aria-label="${L.toggleView}">${mode === 'grid' ? I.listIcon : I.gridIcon}</button>` : ''}${langBtn()}<button class="icon-btn" data-action="settings" aria-label="${L.settings}">${I.gear}</button>`);
+}
+const homeTabs = (active) => `<div class="seg" role="tablist">${[['home', L.setsTab], ['sealed', L.sealed]].map(([h, l]) => `<button data-nav="${h}" aria-pressed="${active === h}">${l}</button>`).join('')}</div>`;
+function renderSealed() {
+  homeTopbar(false);
+  const updated = priceFile.updatedAt ? fmt.date.format(parseDay(priceFile.updatedAt)) : '';
+  const cats = ['booster', 'box', 'case', 'deck', 'kit'];
+  view.innerHTML = `<div class="stack">
+    ${homeTabs('sealed')}
+    ${cats.map((cat) => { const list = sealed.filter((s) => s.category === cat).sort((a, b) => a.order - b.order); return list.length ? `<h2 class="section-title">${L.cats[cat]}</h2><div class="sealed-grid">${list.map(sealedTile).join('')}</div>` : ''; }).join('')}
+    <p class="note">${L.sealedNote(updated)}</p>
+  </div>`;
+}
 function renderHome() {
-  setTopbar(`<h1>${L.home}</h1>${langBtn()}<button class="icon-btn" data-action="settings" aria-label="${L.settings}">${I.gear}</button>`);
+  homeTopbar(true);
   const mode = user.prefs.homeMode;
   const q = homeQuery.trim().toLowerCase();
   const sets = [...catalog.sets]
@@ -338,7 +397,7 @@ function renderHome() {
       ${mode === 'grid' ? `<div class="set-tiles">${list.map(progressTile).join('')}</div>` : `<div class="set-list">${list.map(progressRow).join('')}</div>`}
     </details>`).join('');
   view.innerHTML = `<div class="stack">
-    ${seg('homeMode', mode, [['list', L.list], ['grid', L.grid]])}
+    ${homeTabs('home')}
     <input class="search" id="setSearch" type="search" placeholder="${L.searchSet}" value="${esc(homeQuery)}" autocomplete="off">
     ${body || `<div class="empty"><strong>${L.noSet}</strong></div>`}
   </div>`;
@@ -402,23 +461,26 @@ let colSet = '';
 function renderCollection() {
   setTopbar(`<h1>${L.myCollection}</h1>`);
   const owned = catalog.cards.filter((c) => qty(c.id) > 0);
-  if (!owned.length) {
+  const ownedSealed = sealed.filter((s) => qty(s.id) > 0);
+  if (!owned.length && !ownedSealed.length) {
     view.innerHTML = `<div class="empty"><strong>${L.emptyCol}</strong>${L.emptyColHint}<a class="btn-ghost" href="#home" style="text-decoration:none">${L.browseSets}</a></div>`;
     return;
   }
   const total = owned.reduce((a, c) => a + qty(c.id), 0);
-  const value = owned.reduce((a, c) => a + qty(c.id) * (price(c.id) ?? 0), 0);
+  const value = [...owned, ...ownedSealed].reduce((a, c) => a + qty(c.id) * (price(c.id) ?? 0), 0);
+  const sealedQty = ownedSealed.reduce((a, s) => a + qty(s.id), 0);
   const sets = [...catalog.sets].sort((a, b) => (a.order ?? 999) - (b.order ?? 999)).filter((s) => ownedIn(s.code) > 0);
-  const shown = sortCards(owned.filter((c) => !colSet || c.set === colSet), 'price-desc');
+  const shown = colSet === '__sealed' ? [] : sortCards(owned.filter((c) => !colSet || c.set === colSet), 'price-desc');
+  const sealedShown = !colSet || colSet === '__sealed' ? ownedSealed : [];
   view.innerHTML = `<div class="stack">
     <div class="kpis">
       <div class="stat"><small>${L.kCards}</small><b class="num">${total}</b></div>
       <div class="stat"><small>${L.kUnique}</small><b class="num">${owned.length}</b></div>
       <div class="stat"><small>${L.kValue}</small><b class="num">${eur(value)}</b></div>
     </div>
-    <div class="chips"><button class="chip" data-colset="" aria-pressed="${!colSet}">${L.all}</button>${sets.map((s) => `<button class="chip" data-colset="${esc(s.code)}" aria-pressed="${colSet === s.code}">${esc(s.print ?? s.code)} · ${ownedIn(s.code)}</button>`).join('')}</div>
-    ${seg('setMode', user.prefs.setMode, [['cards', L.cards], ['list', L.list], ['grid', L.grid]])}
-    ${cardsBlock(shown, user.prefs.setMode)}
+    <div class="chips"><button class="chip" data-colset="" aria-pressed="${!colSet}">${L.all}</button>${ownedSealed.length ? `<button class="chip" data-colset="__sealed" aria-pressed="${colSet === '__sealed'}">${L.sealed} · ${sealedQty}</button>` : ''}${sets.map((s) => `<button class="chip" data-colset="${esc(s.code)}" aria-pressed="${colSet === s.code}">${esc(s.print ?? s.code)} · ${ownedIn(s.code)}</button>`).join('')}</div>
+    ${shown.length ? `${seg('setMode', user.prefs.setMode, [['cards', L.cards], ['list', L.list], ['grid', L.grid]])}${cardsBlock(shown, user.prefs.setMode)}` : ''}
+    ${sealedShown.length ? `<h2 class="section-title">${L.sealed} · ${L.sealedCount(sealedQty)}</h2><div class="sealed-grid">${sealedShown.map(sealedTile).join('')}</div>` : ''}
   </div>`;
 }
 
@@ -442,7 +504,7 @@ let searchQuery = '';
 function renderSearch() {
   setTopbar(`<h1>${L.search}</h1>`);
   const q = searchQuery.trim().toLowerCase();
-  const res = q.length < 2 ? [] : catalog.cards.filter((c) => [c.name, c.nameEn, `${printCode(c.set)} ${c.number}`, `${c.set} ${c.number}`].some((x) => String(x ?? '').toLowerCase().includes(q)));
+  const res = q.length < 2 ? [] : allItems().filter((c) => [c.name, c.nameEn, `${itemCode(c)} ${c.number ?? ''}`, `${c.set} ${c.number ?? ''}`].some((x) => String(x ?? '').toLowerCase().includes(q)));
   view.innerHTML = `<div class="stack">
     <input class="search" id="cardSearch" type="search" placeholder="${L.searchPh}" value="${esc(searchQuery)}" autocomplete="off">
     <div id="searchResults">${q.length < 2 ? `<p class="note">${L.searchHint(catalog.cards.length, catalog.sets.length)}</p>`
@@ -452,7 +514,7 @@ function renderSearch() {
 }
 
 function portfolioSeries() {
-  const owned = catalog.cards.filter((c) => qty(c.id) > 0 && P(c.id)?.history?.length);
+  const owned = allItems().filter((c) => qty(c.id) > 0 && P(c.id)?.history?.length);
   if (!owned.length) return [];
   // la courbe commence quand toutes les cartes possédées ont un prix (sinon faux saut depuis 0 €)
   const start = owned.reduce((m, c) => (P(c.id).history[0][0] > m ? P(c.id).history[0][0] : m), '');
@@ -462,9 +524,9 @@ function portfolioSeries() {
 }
 function renderValues() {
   setTopbar(`<h1>${L.market}</h1>`);
-  const owned = catalog.cards.filter((c) => qty(c.id) > 0);
+  const owned = allItems().filter((c) => qty(c.id) > 0);
   const value = owned.reduce((a, c) => a + qty(c.id) * (price(c.id) ?? 0), 0);
-  const priced = catalog.cards.filter((c) => (price(c.id) ?? 0) >= 0.5);
+  const priced = allItems().filter((c) => (price(c.id) ?? 0) >= 0.5);
   const movers = priced.map((c) => [c, change(c.id, 7)]).filter(([, v]) => v != null && v !== 0);
   const ups = [...movers].filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 5);
   const downs = [...movers].filter(([, v]) => v < 0).sort((a, b) => a[1] - b[1]).slice(0, 5);
@@ -596,13 +658,16 @@ function openCard(id) {
   const q = qty(id);
   const stats = [c.cost != null ? `${L.cost} ${c.cost}` : '', c.power != null ? `${L.power} ${c.power}` : '', c.ram != null ? `${L.ram} ${c.ram}` : ''].filter(Boolean).join(' · ');
   const enOnly = lang === 'fr' && c.languages && !c.languages.includes('fr');
+  const sealedItem = isSealed(c);
   sheetPanel.innerHTML = `<div class="grab"></div>
     <div class="stack">
-      <div class="detail-top" ${rarityStyle(c.rarity)}>
-        <div class="card-img">${cardImg(c, true)}</div>
+      <div class="detail-top ${sealedItem ? 'is-sealed' : ''}" ${rarityStyle(c.rarity)}>
+        <div class="card-img">${cardImg(c, true)}${c.pack ? `<span class="pack-badge num">×${c.pack}</span>` : ''}</div>
         <div class="detail-info">
           <h2 id="sheetTitle">${esc(cardName(c))}</h2>
-          <div class="sub">${esc(s ? setName(s) : c.set)}<br><span class="num"><b class="print">${esc(printCode(c.set))}</b> · ${esc(c.number)}/${setTotal(s ?? {})}</span></div>
+          ${sealedItem
+            ? `<div class="sub">${esc(L.catOne[c.category] ?? '')}${itemCode(c) ? `<br><b class="print">${esc(itemCode(c))}</b>${s ? ` · ${esc(setName(s))}` : ''}` : ''}</div>`
+            : `<div class="sub">${esc(s ? setName(s) : c.set)}<br><span class="num"><b class="print">${esc(printCode(c.set))}</b> · ${esc(c.number)}/${setTotal(s ?? {})}</span></div>`}
           ${c.rarity ? `<span class="rarity" ${rarityStyle(c.rarity)}>${esc(rarityLabel(c.rarity))}${c.type ? ` · ${esc(typeLabel(c.type))}` : ''}${c.color ? ` · ${esc(colorLabel(c.color))}` : ''}</span>` : ''}
           ${stats ? `<span class="sub num">${stats}</span>` : ''}
           ${enOnly ? `<span class="sub">${L.enOnly}</span>` : ''}
@@ -709,6 +774,8 @@ function toggleWish(id) {
 }
 
 document.addEventListener('click', async (e) => {
+  const nav = e.target.closest('[data-nav]');
+  if (nav) { location.hash = `#${nav.dataset.nav}`; return; }
   const t = e.target.closest('[data-open],[data-own],[data-wish],[data-seg],[data-pref],[data-fav],[data-action],[data-qty],[data-colset],[data-close]');
   if (!t) return;
   const d = t.dataset;
@@ -726,6 +793,7 @@ document.addEventListener('click', async (e) => {
     if (n) user.owned[id] = n; else delete user.owned[id];
     save(); refreshCard(id); openCard(id);
   } else if (d.close !== undefined) closeCard();
+  else if (d.action === 'home-mode') { user.prefs.homeMode = user.prefs.homeMode === 'grid' ? 'list' : 'grid'; save(); currentRender(); }
   else if (d.action === 'lang') setLang(lang === 'fr' ? 'en' : 'fr');
   else if (d.action === 'cycle-sort') {
     const i = SORTS.indexOf(user.prefs.sort);
@@ -775,6 +843,7 @@ function route() {
   else if (h === 'wishlist') currentRender = renderWishlist;
   else if (h === 'search') currentRender = renderSearch;
   else if (h === 'values') currentRender = renderValues;
+  else if (h === 'sealed') { tab = 'home'; currentRender = renderSealed; }
   else { tab = 'home'; currentRender = renderHome; }
   for (const a of document.querySelectorAll('.tabbar a')) {
     if (a.dataset.tab === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
