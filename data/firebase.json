@@ -1,1 +1,8 @@
-{}
+{
+  "apiKey": "AIzaSyBveColQvgggWL4dqkfaPXN5t1Y1sgNW9c",
+  "authDomain": "nightdex.firebaseapp.com",
+  "projectId": "nightdex",
+  "storageBucket": "nightdex.firebasestorage.app",
+  "messagingSenderId": "407770745054",
+  "appId": "1:407770745054:web:fcf71a899a832da1465a4f"
+}
