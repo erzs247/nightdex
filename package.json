@@ -9,5 +9,8 @@
     "demo": "node scripts/make-demo.mjs",
     "update": "node scripts/update-prices.mjs",
     "import": "node scripts/import-cards.mjs"
+  },
+  "dependencies": {
+    "sharp": "^0.33.5"
   }
 }

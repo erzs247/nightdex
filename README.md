@@ -12,8 +12,19 @@ Appli web (installable sur téléphone) pour suivre sa collection du **Cyberpunk
 
 Aucune dépendance : HTML, CSS et JavaScript, plus trois scripts Node pour les données.
 
-> Le dépôt contient au départ des **données de démonstration** (cartes et prix fictifs, signalés par un bandeau jaune).
-> Elles sont remplacées dès le premier import Cardmarket.
+Le dépôt contient les **591 cartes** de la base officielle (cyberpunktcg.com) avec leurs images dans `images/`.
+La version française est utilisée quand elle existe (Welcome to Night City, decks de démarrage, Brawl…), sinon l'anglaise (Bêta, decks de démo, promos).
+Les prix arrivent avec l'import Cardmarket ci-dessous.
+
+## Mettre à jour les cartes et les images
+
+```bash
+npm install
+node scripts/import-officiel.mjs
+```
+
+Récupère les nouvelles cartes et télécharge les images manquantes (360 px de large, format WebP).
+Les prix déjà relevés sont conservés. Derrière un proxy, ajouter `NODE_USE_ENV_PROXY=1` devant la commande.
 
 ## Lancer en local
 
@@ -29,15 +40,9 @@ Cardmarket publie chaque jour deux fichiers publics par jeu : la liste des produ
 (`products_singles_<idGame>.json` et `price_guide_<idGame>.json`).
 
 1. Trouver l'`idGame` du Cyberpunk TCG sur Cardmarket. Il figure dans le nom de ces fichiers.
-2. Premier import, qui construit la liste des cartes à partir de Cardmarket :
-
-   ```bash
-   node scripts/update-prices.mjs --game <idGame> --bootstrap
-   ```
-
-3. Dans `data/config.json`, associer chaque extension Cardmarket à un code de série (`"map": { "1234": "WNC" }`),
-   puis relancer avec `--bootstrap`. Le nom de la série peut être modifié dans `data/catalog.json` ou par le CSV ci-dessous.
-4. Ensuite, **une fois par jour** :
+2. Dans `data/catalog.json`, renseigner pour chaque série son `cardmarket.idExpansion` (l'identifiant d'extension
+   Cardmarket). Les cartes sont alors rattachées à leur produit Cardmarket par leur nom anglais.
+3. Ensuite, **une fois par jour** :
 
    ```bash
    node scripts/update-prices.mjs --game <idGame>
@@ -89,4 +94,6 @@ Sur le téléphone, ouvrir l'adresse GitHub Pages puis « Ajouter à l'écran d'
 | `data/config.json` | réglages Cardmarket (langue, idGame, correspondance des extensions) |
 | `scripts/update-prices.mjs` | relevé quotidien des prix Cardmarket |
 | `scripts/import-cards.mjs` | import CSV (images, raretés, liens) |
-| `scripts/make-demo.mjs` | régénère les données de démonstration |
+| `scripts/import-officiel.mjs` | import des cartes et images depuis la base officielle |
+| `images/` | images des cartes, par série |
+| `scripts/make-demo.mjs` | régénère les données de démonstration (cartes fictives) |

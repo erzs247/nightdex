@@ -14,12 +14,17 @@
   --hot: #ff3d6e;         /* coeur / souhaits */
   --up: #3ddc84;
   --down: #ff6170;
-  --r-common: #8e96b2;
-  --r-uncommon: #3ad8df;
+  /* raretés (variables générées depuis RARITY_HEX dans app.js) */
+  --r-commune: #8e96b2;
+  --r-peu-commune: #6fd38a;
   --r-rare: #5b8cff;
-  --r-epic: #b36bff;
-  --r-legend: #ff9f2e;
-  --r-secret: #f5e50b;
+  --r-epique: #b36bff;
+  --r-nova-rare: #3ad8df;
+  --r-legendaire: #ff9f2e;
+  --r-legende-iconique: #ff9f2e;
+  --r-iconique: #ff5fa2;
+  --r-secrete: #f5e50b;
+  --r-secrete-iconique: #ffd84a;
 
   --font-display: "Chakra Petch", "Rajdhani", "Segoe UI", system-ui, sans-serif;
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -271,6 +276,7 @@ main { padding: 0 var(--gutter-r) 0 var(--gutter-l); outline: none; }
   font-size: 12px; white-space: nowrap; color: var(--fg);
 }
 .chart .tip b { display: block; font-size: 14px; }
+.chart:has(.chart-empty) { height: auto; }
 .chart-empty { color: var(--muted); font-size: 13.5px; padding: 30px 0; text-align: center; }
 .note { color: var(--muted); font-size: 12px; }
 

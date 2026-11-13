@@ -98,7 +98,7 @@ let matched = 0;
 for (const c of catalog.cards) {
   if (!c.cardmarket?.idProduct) {
     const set = catalog.sets.find((s) => s.code === c.set);
-    const p = byName.get(`${set?.cardmarket?.idExpansion}|${norm(c.name)}`);
+    const p = byName.get(`${set?.cardmarket?.idExpansion}|${norm(c.nameEn ?? c.name)}`);
     if (p) c.cardmarket = { ...(c.cardmarket ?? {}), idProduct: p.idProduct };
   }
   const g = guideById.get(c.cardmarket?.idProduct);

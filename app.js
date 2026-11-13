@@ -26,8 +26,9 @@ const I = {
 };
 
 // ---------- Raretés & couleurs ----------
-const RARITIES = ['Commune', 'Peu commune', 'Rare', 'Épique', 'Légendaire', 'Secrète'];
-const RARITY_VAR = { 'Commune': '--r-common', 'Peu commune': '--r-uncommon', 'Rare': '--r-rare', 'Épique': '--r-epic', 'Légendaire': '--r-legend', 'Secrète': '--r-secret' };
+const RARITIES = ['Commune', 'Peu commune', 'Rare', 'Épique', 'Nova Rare', 'Légendaire', 'Légende iconique', 'Iconique', 'Secrète', 'Secrète iconique'];
+const RARITY_HEX = { 'Commune': '#8e96b2', 'Peu commune': '#6fd38a', 'Rare': '#5b8cff', 'Épique': '#b36bff', 'Nova Rare': '#3ad8df', 'Légendaire': '#ff9f2e', 'Légende iconique': '#ff9f2e', 'Iconique': '#ff5fa2', 'Secrète': '#f5e50b', 'Secrète iconique': '#ffd84a' };
+const RARITY_VAR = Object.fromEntries(Object.keys(RARITY_HEX).map((r) => [r, `--r-${r.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]+/g, '-')}`]));
 const rarityStyle = (r) => (RARITY_VAR[r] ? `style="--rc: var(${RARITY_VAR[r]})"` : '');
 const FACTION = { Jaune: '#f5e50b', Rouge: '#ff4d5e', Bleu: '#3f7bff', Vert: '#2fd88a', Violet: '#a65cff' };
 
@@ -73,6 +74,7 @@ async function loadData() {
 }
 
 const P = (id) => priceFile.prices[id];
+const hasPrices = () => Object.keys(priceFile.prices ?? {}).length > 0;
 const price = (id) => P(id)?.trend ?? null;
 const qty = (id) => user.owned[id] ?? 0;
 const setOf = (code) => catalog.sets.find((s) => s.code === code);
@@ -96,7 +98,7 @@ function change(id, days) {
 function cmUrl(card) {
   if (card.cardmarket?.url) return { url: card.cardmarket.url, exact: true };
   const { lang = 'fr', gameSlug = 'Cyberpunk' } = config.cardmarket ?? {};
-  return { url: `https://www.cardmarket.com/${lang}/${gameSlug}/Products/Search?searchString=${encodeURIComponent(card.name)}`, exact: false };
+  return { url: `https://www.cardmarket.com/${lang}/${gameSlug}/Products/Search?searchString=${encodeURIComponent(card.nameEn ?? card.name)}`, exact: false };
 }
 
 // ---------- Visuel de remplacement (quand une carte n'a pas encore d'image) ----------
@@ -104,7 +106,7 @@ const artCache = new Map();
 function placeholderArt(card) {
   if (artCache.has(card.id)) return artCache.get(card.id);
   const c1 = FACTION[card.color] ?? '#3ad8df';
-  const rc = { 'Commune': '#8e96b2', 'Peu commune': '#3ad8df', 'Rare': '#5b8cff', 'Épique': '#b36bff', 'Légendaire': '#ff9f2e', 'Secrète': '#f5e50b' }[card.rarity] ?? '#8e96b2';
+  const rc = RARITY_HEX[card.rarity] ?? '#8e96b2';
   const words = String(card.name).split(' ');
   const lines = [''];
   for (const w of words) { if ((lines[lines.length - 1] + ' ' + w).trim().length > 16 && lines.length < 3) lines.push(w); else lines[lines.length - 1] = (lines[lines.length - 1] + ' ' + w).trim(); }
@@ -124,10 +126,26 @@ ${lines.map((l, i) => `<text x="46" y="${200 + i * 64}" font-family="Chakra Petc
   artCache.set(card.id, uri);
   return uri;
 }
+// Version autonome : les images sont regroupées par série dans packs/<série>.json (chargés à la demande)
+const packs = new Map();
+function ensurePack(set) {
+  if (packs.has(set)) return;
+  packs.set(set, null);
+  fetch(`packs/${set}.json`).then((r) => r.json()).then((map) => {
+    packs.set(set, map);
+    for (const img of document.querySelectorAll(`img[data-pack="${CSS.escape(set)}"]`)) if (map[img.dataset.key]) img.src = map[img.dataset.key];
+  }).catch(() => packs.delete(set));
+}
 function cardImg(card, eager = false) {
   const ph = placeholderArt(card);
-  const src = card.image || ph;
-  return `<img src="${esc(src)}" alt="${esc(card.name)}" ${eager ? '' : 'loading="lazy"'} decoding="async" data-ph="${esc(ph)}">`;
+  let src = card.image || ph;
+  let extra = '';
+  if (card.image?.startsWith('pack:')) {
+    const map = packs.get(card.set);
+    src = map?.[card.id] ?? ph;
+    if (!map) { extra = ` data-pack="${esc(card.set)}" data-key="${esc(card.id)}"`; ensurePack(card.set); }
+  }
+  return `<img src="${esc(src)}" alt="${esc(card.name)}" ${eager ? '' : 'loading="lazy"'} decoding="async" data-ph="${esc(ph)}"${extra}>`;
 }
 // image distante cassée → visuel de remplacement
 document.addEventListener('error', (e) => {
@@ -140,7 +158,7 @@ function cardTile(c) {
   const q = qty(c.id);
   return `<div class="card ${q ? 'owned' : 'missing'}" data-cid="${esc(c.id)}">
     <button class="card-img" data-open="${esc(c.id)}" aria-label="${esc(c.name)}, ${esc(c.set)} ${esc(c.number)}">${cardImg(c)}</button>
-    <span class="price num">${eur(price(c.id))}</span>
+    ${price(c.id) != null ? `<span class="price num">${eur(price(c.id))}</span>` : ''}
     <div class="actions">
       <button class="mini-btn heart" data-wish="${esc(c.id)}" aria-pressed="${wish.has(c.id)}" aria-label="Liste de souhaits">${I.heart}</button>
       <button class="mini-btn own" data-own="${esc(c.id)}" aria-pressed="${q > 0}" aria-label="Je possède cette carte">${I.own}${q > 1 ? `<span class="qty">${q}</span>` : ''}</button>
@@ -212,7 +230,7 @@ function renderHome() {
   const q = homeQuery.trim().toLowerCase();
   const sets = [...catalog.sets]
     .filter((s) => !q || s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q))
-    .sort((a, b) => String(b.releaseDate ?? '').localeCompare(String(a.releaseDate ?? '')));
+    .sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || String(b.releaseDate ?? '').localeCompare(String(a.releaseDate ?? '')));
   const groups = new Map();
   const favSets = sets.filter((s) => fav.has(s.code));
   if (favSets.length) groups.set('Favoris', favSets);
@@ -275,10 +293,10 @@ function renderSet(code) {
     ${showFilters ? filtersPanel(all) : ''}
     <div class="toolbar num">
       <span>${ownedIn(code)}/${setTotal(s)} possédées</span><span class="grow"></span>
-      <span>Ma valeur : <b style="color:var(--fg)">${eur(value)}</b></span>
+      ${hasPrices() ? `<span>Ma valeur : <b style="color:var(--fg)">${eur(value)}</b></span>` : '<span>Prix Cardmarket à venir</span>'}
     </div>
     ${cardsBlock(list, user.prefs.setMode)}
-    <p class="note num">Tri : ${SORTS.find(([v]) => v === user.prefs.sort)[1]} · ${list.length} carte${list.length > 1 ? 's' : ''} affichée${list.length > 1 ? 's' : ''} · série complète ≈ ${eur(full)}</p>
+    <p class="note num">Tri : ${SORTS.find(([v]) => v === user.prefs.sort)[1]} · ${list.length} carte${list.length > 1 ? 's' : ''} affichée${list.length > 1 ? 's' : ''}${hasPrices() ? ` · série complète ≈ ${eur(full)}` : ''}</p>
   </div>`;
 }
 
@@ -359,14 +377,14 @@ function renderValues() {
     <section class="panel">
       <div class="hero-value"><small>Valeur de ma collection</small><strong class="num">${eur(value)}</strong></div>
       ${owned.length ? `<div class="ranges" id="pfRanges"></div><div class="chart" id="pfChart"></div>` : '<p class="note">Marquez des cartes comme possédées pour suivre la valeur de votre collection dans le temps.</p>'}
-      <p class="note">Prix ${esc(priceFile.source ?? 'Cardmarket')} (tendance, en euros) · mis à jour le ${updated}</p>
+      <p class="note">${hasPrices() ? `Prix ${esc(priceFile.source ?? 'Cardmarket')} (tendance, en euros) · mis à jour le ${updated}` : 'Les prix Cardmarket ne sont pas encore importés : la valeur et les tendances apparaîtront après le premier relevé.'}</p>
     </section>
     <h2 class="section-title">Plus fortes hausses sur 7 jours</h2>
     <div class="rows">${ups.map(([c]) => cardRow(c, 7)).join('') || '<p class="note" style="padding:12px">Pas encore assez d\'historique.</p>'}</div>
     <h2 class="section-title">Plus fortes baisses sur 7 jours</h2>
     <div class="rows">${downs.map(([c]) => cardRow(c, 7)).join('') || '<p class="note" style="padding:12px">Pas encore assez d\'historique.</p>'}</div>
     <h2 class="section-title">Cartes les plus chères</h2>
-    <div class="rows">${top.map((c) => cardRow(c)).join('')}</div>
+    ${hasPrices() ? `<div class="rows">${top.map((c) => cardRow(c)).join('')}</div>` : '<p class="note">Aucun prix pour l\'instant.</p>'}
   </div>`;
   if (owned.length) mountRangedChart(document.getElementById('pfRanges'), document.getElementById('pfChart'), series, 'valueRange');
 }
@@ -408,7 +426,9 @@ function niceTicks(min, max, count = 4) {
 let chartSeq = 0;
 function drawChart(el, pts) {
   if (!pts || pts.length < 2) {
-    el.innerHTML = '<div class="chart-empty">Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.</div>';
+    el.innerHTML = hasPrices()
+      ? '<div class="chart-empty">Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.</div>'
+      : '<div class="chart-empty">Les prix Cardmarket ne sont pas encore importés. La courbe apparaîtra dès le premier relevé.</div>';
     return;
   }
   const W = Math.max(260, el.clientWidth || 320), H = el.clientHeight || 210;
@@ -485,8 +505,9 @@ function openCard(id) {
         <div class="detail-info">
           <h2 id="sheetTitle">${esc(c.name)}</h2>
           <div class="sub">${esc(s?.name ?? c.set)}<br><span class="num">${esc(c.set)} · n° ${esc(c.number)}/${setTotal(s ?? {})}</span></div>
-          ${c.rarity ? `<span class="rarity" ${rarityStyle(c.rarity)}>${esc(c.rarity)}${c.type ? ` · ${esc(c.type)}` : ''}</span>` : ''}
-          <div class="big-price num"><small>Tendance Cardmarket</small>${eur(p.trend)}</div>
+          ${c.rarity ? `<span class="rarity" ${rarityStyle(c.rarity)}>${esc(c.rarity)}${c.type ? ` · ${esc(c.type)}` : ''}${c.color ? ` · ${esc(c.color)}` : ''}</span>` : ''}
+          ${c.cost != null || c.power != null ? `<span class="sub num">${[c.cost != null ? `Coût ${c.cost}` : '', c.power != null ? `Puissance ${c.power}` : '', c.ram != null ? `RAM ${c.ram}` : ''].filter(Boolean).join(' · ')}</span>` : ''}
+          <div class="big-price num"><small>Tendance Cardmarket</small>${p.trend != null ? eur(p.trend) : '<span style="font-size:18px;color:var(--muted)">Prix à venir</span>'}</div>
           ${ch != null ? `<span class="delta num ${ch >= 0 ? 'up' : 'down'}">${pct(ch)} sur 30 jours</span>` : ''}
           <div class="detail-actions">
             <div class="stepper" role="group" aria-label="Exemplaires possédés">
@@ -498,18 +519,20 @@ function openCard(id) {
           </div>
         </div>
       </div>
-      <div class="stats">
+      ${p.trend != null ? `<div class="stats">
         <div class="stat"><small>À partir de</small><b class="num">${eur(p.low)}</b></div>
         <div class="stat"><small>Moy. 7 j</small><b class="num">${eur(p.avg7)}</b></div>
         <div class="stat"><small>Moy. 30 j</small><b class="num">${eur(p.avg30)}</b></div>
-      </div>
+      </div>` : ''}
       <section class="panel">
-        <h3>Courbe de prix <small>${esc(priceFile.source ?? 'Cardmarket')} · ${priceFile.updatedAt ? fmtDate.format(parseDay(priceFile.updatedAt)) : ''}</small></h3>
+        <h3>Courbe de prix <small>${esc(priceFile.source ?? 'Cardmarket')}${priceFile.updatedAt ? ` · ${fmtDate.format(parseDay(priceFile.updatedAt))}` : ''}</small></h3>
         <div class="ranges" id="cardRanges"></div>
         <div class="chart" id="cardChart"></div>
         ${p.seeded ? '<p class="note">Les premiers points sont les moyennes 30 j, 7 j et 1 j de Cardmarket ; ensuite un relevé par jour.</p>' : ''}
       </section>
       <a class="cta" href="${esc(cm.url)}" target="_blank" rel="noopener">${cm.exact ? 'Voir sur Cardmarket' : 'Rechercher sur Cardmarket'} ${I.ext}</a>
+      ${c.official ? `<a class="btn-ghost" style="text-align:center;text-decoration:none" href="${esc(c.official)}" target="_blank" rel="noopener">Fiche officielle (règles, versions)</a>` : ''}
+      ${c.artist ? `<p class="note" style="text-align:center">Illustration : ${esc(c.artist)}</p>` : ''}
       ${q > 0 && p.trend ? `<p class="note num" style="text-align:center">${q > 1 ? `Vos ${q} exemplaires valent` : 'Votre exemplaire vaut'} ${eur(q * p.trend)}</p>` : ''}
     </div>`;
   sheet.hidden = false;
