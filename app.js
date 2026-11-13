@@ -1213,21 +1213,9 @@ function capriError(e) {
   return { text, detail };
 }
 const capriFmt = (t) => esc(t).replace(/\*([^*\n]{1,120})\*/g, '<em>$1</em>');
-function capriSpeak(btn, text) {
-  if (!('speechSynthesis' in window)) return;
-  if (btn.classList.contains('on')) { speechSynthesis.cancel(); return; }
-  speechSynthesis.cancel();
-  document.querySelectorAll('.cspeak.on').forEach((b) => b.classList.remove('on'));
-  const u = new SpeechSynthesisUtterance(text.replace(/\*[^*]+\*/g, ''));
-  u.lang = /[àâçéèêëîïôûùüÿœ]|\b(tu|je|le|la|les|est|pas)\b/i.test(text) ? 'fr-FR' : 'en-US';
-  u.rate = 1.05; u.pitch = 1.25;
-  btn.classList.add('on');
-  u.onend = u.onerror = () => btn.classList.remove('on');
-  speechSynthesis.speak(u);
-}
 function capriBubble(t, i) {
   const me = t.role === 'user';
-  return `<div class="cmsg ${me ? 'me' : 'capri'}">${me ? '' : '<img class="cmini" src="images/capri/avatar.webp" alt="">'}<div class="cbubble${t.err ? ' err' : ''}">${capriFmt(t.content)}${t.detail ? `<small class="cdetail">${esc(t.detail)}</small>` : ''}</div>${!me && !t.err && 'speechSynthesis' in window ? `<button class="cspeak" data-speak="${i}" aria-label="${L.capriListen}">${I.speaker}</button>` : ''}</div>`;
+  return `<div class="cmsg ${me ? 'me' : 'capri'}">${me ? '' : '<img class="cmini" src="images/capri/avatar.webp" alt="">'}<div class="cbubble${t.err ? ' err' : ''}">${capriFmt(t.content)}${t.detail ? `<small class="cdetail">${esc(t.detail)}</small>` : ''}</div></div>`;
 }
 function renderCapri() {
   setTopbar(`<h1 class="small capri-title"><img src="images/capri/avatar.webp" alt="">Capri</h1>
@@ -1295,14 +1283,11 @@ document.addEventListener('keydown', (e) => {
   if (e.target.id === 'capriInput' && e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); capriSend(e.target.value); }
 });
 document.addEventListener('click', (e) => {
-  const a = e.target.closest('[data-ask],[data-capri],[data-speak]');
+  const a = e.target.closest('[data-ask],[data-capri]');
   if (!a) return;
   if (a.dataset.ask) capriSend(a.dataset.ask);
-  else if (a.dataset.speak) {
-    const i = Number(a.dataset.speak);
-    capriSpeak(a, i < 0 ? L.capriHello : capri.turns[i]?.content ?? '');
-  } else if (a.dataset.capri === 'spoil') { capri.spoilers = !capri.spoilers; capriSave(); renderCapri(); }
-  else if (a.dataset.capri === 'reset') { capri.stop = true; capri.ctl?.abort(); capri.turns = []; capri.busy = false; capriSave(); if ('speechSynthesis' in window) speechSynthesis.cancel(); renderCapri(); }
+  else if (a.dataset.capri === 'spoil') { capri.spoilers = !capri.spoilers; capriSave(); renderCapri(); }
+  else if (a.dataset.capri === 'reset') { capri.stop = true; capri.ctl?.abort(); capri.turns = []; capri.busy = false; capriSave(); renderCapri(); }
   else if (a.dataset.capri === 'stop') { capri.stop = true; capri.ctl?.abort(); }
 });
 

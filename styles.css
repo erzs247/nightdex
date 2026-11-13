@@ -542,9 +542,6 @@ button:disabled { opacity: .5; cursor: default; }
 .ctyping::after { content: "▍"; animation: cblink 1s steps(2) infinite; }
 @keyframes cblink { 50% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .ctyping::after { animation: none; } }
-.cspeak { border: 0; background: none; padding: 2px; color: var(--muted); align-self: center; }
-.cspeak svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: block; }
-.cspeak.on { color: var(--up); }
 .capri-sugg { display: flex; flex-wrap: wrap; gap: 8px; }
 .capri-sugg button { border: 1px dashed color-mix(in srgb, var(--up) 55%, var(--line)); background: none; border-radius: 99px; padding: 7px 12px; color: var(--fg); font-size: 14px; }
 .capri-sugg button:hover { border-style: solid; }
