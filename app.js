@@ -67,6 +67,7 @@ const TEXT = {
       fAll: 'Sa collection', fTrade: 'Il l\'a, pas moi', fGive: 'Il la cherche, je l\'ai', fWish: 'Ses souhaits', emptyFilter: 'Rien dans ce filtre pour l\'instant.',
       tagMine: 'Je l\'ai', tagWant: 'Dans mes souhaits',
     },
+    adm: { title: 'Administration', role: 'rôle admin', idPh: 'ID NightDex du donateur', activate: 'Activer', remove: 'Retirer', listTitle: 'Soutiens actifs', none: 'Aucun soutien pour l\'instant.', on: 'Soutien activé', off: 'Soutien retiré', badId: 'ID invalide : copie-le depuis « Mon compte » du donateur.', denied: 'Refusé : les règles Firestore ne reconnaissent pas encore ce compte comme admin (publie les nouvelles règles).' },
     support: 'Soutenir NightDex', supportHint: 'NightDex est gratuit et fait par un fan. Un don aide à le faire vivre et débloque des bonus (photo de profil, cadre doré).',
     supporter: 'Soutien', supporterThanks: 'Merci pour ton soutien ! Tes bonus sont actifs.',
     myId: 'Ton ID NightDex', myIdHint: 'Indique-le dans le message de ton don pour recevoir tes bonus.', copy: 'Copier', copiedId: 'ID copié',
@@ -152,6 +153,7 @@ const TEXT = {
       fAll: 'Their collection', fTrade: 'They have, I don\'t', fGive: 'They want, I have', fWish: 'Their wishlist', emptyFilter: 'Nothing in this filter yet.',
       tagMine: 'I have it', tagWant: 'On my wishlist',
     },
+    adm: { title: 'Administration', role: 'admin role', idPh: 'Donor\'s NightDex ID', activate: 'Activate', remove: 'Remove', listTitle: 'Active supporters', none: 'No supporters yet.', on: 'Supporter activated', off: 'Supporter removed', badId: 'Invalid ID: copy it from the donor\'s “My account”.', denied: 'Refused: the Firestore rules do not recognise this account as admin yet (publish the new rules).' },
     support: 'Support NightDex', supportHint: 'NightDex is free and fan-made. A donation keeps it alive and unlocks extras (profile picture, gold frame).',
     supporter: 'Supporter', supporterThanks: 'Thanks for your support! Your extras are active.',
     myId: 'Your NightDex ID', myIdHint: 'Add it to your donation message to receive your extras.', copy: 'Copy', copiedId: 'ID copied',
@@ -961,6 +963,49 @@ const accountBtn = () => (cloud.enabled ? `<button class="icon-btn acct-btn ${cl
 // supporters/<uid> { active: true } : lisible par le compte, modifiable seulement depuis la console (règles Firestore).
 // profiles/<uid> { avatar } : petite image (160 px) réservée aux soutiens actifs.
 const supportUrl = () => config.support?.url || '';
+// Administrateurs : liste dans data/config.json (affichage du panneau) ; la vraie protection est dans firestore.rules
+const isAdmin = () => !!cloud.user && (config.admins ?? []).includes(cloud.user.uid);
+const admin = { list: null, busy: false, msg: '' };
+async function adminLoad() {
+  try {
+    const snap = await fsx().getDocs(cref('supporters'));
+    admin.list = await Promise.all(snap.docs.filter((d) => d.data().active === true).map(async (d) => ({ uid: d.id, pseudo: (await friendName(d.id)).pseudo })));
+  } catch (e) { admin.list = []; admin.msg = e?.code === 'permission-denied' ? L.adm.denied : L.fr.error; }
+  if (sheetMode === 'account' && !sheet.hidden) openAccount(true);
+}
+async function adminSet(uid, on) {
+  uid = String(uid ?? '').trim();
+  if (!/^[A-Za-z0-9]{20,40}$/.test(uid)) { admin.msg = L.adm.badId; openAccount(true); return; }
+  admin.busy = true; admin.msg = ''; openAccount(true);
+  try {
+    if (on) await fsx().setDoc(dref('supporters', uid), { active: true, since: fsx().serverTimestamp() });
+    else await fsx().deleteDoc(dref('supporters', uid));
+    toast(on ? L.adm.on : L.adm.off);
+    if (uid === cloud.user.uid) { cloud.supporter = on; refreshAccount(); }
+  } catch (e) { admin.msg = e?.code === 'permission-denied' ? L.adm.denied : L.fr.error; }
+  admin.busy = false;
+  await adminLoad();
+}
+function adminPanel() {
+  if (!isAdmin()) return '';
+  if (admin.list === null) { admin.list = []; adminLoad(); }
+  return `<div class="panel admin-panel">
+    <h3>${L.adm.title}<small>${L.adm.role}</small></h3>
+    <form class="inline-form" id="adminForm"><input class="search" id="adminId" autocomplete="off" placeholder="${L.adm.idPh}"><button class="cta" ${admin.busy ? 'disabled' : ''}>${L.adm.activate}</button></form>
+    ${admin.msg ? `<p class="form-err">${esc(admin.msg)}</p>` : ''}
+    <span class="note">${L.adm.listTitle} (${admin.list.length})</span>
+    ${admin.list.map((a) => `<div class="id-row"><b>${a.pseudo !== '?' ? '@' + esc(a.pseudo) : '—'}</b><code>${esc(a.uid)}</code><button class="chip" data-admin-off="${esc(a.uid)}">${L.adm.remove}</button></div>`).join('') || `<span class="note">${L.adm.none}</span>`}
+  </div>`;
+}
+document.addEventListener('submit', (e) => {
+  if (e.target.id !== 'adminForm') return;
+  e.preventDefault();
+  adminSet(document.getElementById('adminId').value, true);
+});
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-admin-off]');
+  if (b) adminSet(b.dataset.adminOff, false);
+});
 async function loadProfile(uid) {
   const { fsM, db } = cloud.api;
   try { const s = await fsM.getDoc(fsM.doc(db, 'supporters', uid)); if (cloud.user?.uid === uid) cloud.supporter = s.exists() && s.data().active === true; } catch { /* pas de statut */ }
@@ -1031,6 +1076,7 @@ function openAccount(keep) {
         <div class="id-row"><span class="note">${L.myId} :</span><code id="myId">${esc(u.uid)}</code><button class="chip" data-action="copy-id">${L.copy}</button></div>
         ${cloud.supporter ? '' : `<span class="note">${L.myIdHint}</span>`}
       </div>
+      ${adminPanel()}
       <a class="btn-ghost" style="text-align:center;text-decoration:none" href="#friends" data-close>${L.fr.mine}${fr.requests.length ? ` · ${L.fr.requests} (${fr.requests.length})` : ''}</a>
       <button class="btn-ghost" data-action="signout">${L.signOut}</button>
       <div class="panel danger-zone">

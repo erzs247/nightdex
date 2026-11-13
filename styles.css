@@ -681,3 +681,6 @@ button:disabled { opacity: .5; cursor: default; }
 }
 @media (hover: hover) { .pet:hover .pet-close, .pet:focus-visible .pet-close { display: grid; } }
 .pet-close:hover { background: var(--hot); color: #fff; border-color: var(--hot); }
+
+.admin-panel { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.admin-panel .id-row b { font-size: 13px; }

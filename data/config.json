@@ -82,5 +82,8 @@
   "support": {
     "_aide": "Lien de ta page de dons (Ko-fi, Buy Me a Coffee, PayPal…). Vide = bouton masqué.",
     "url": "https://ko-fi.com/erzs247"
-  }
+  },
+  "admins": [
+    "XYVqyK7LCoQ7Gbfq9weJB2jnKQN2"
+  ]
 }

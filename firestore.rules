@@ -6,6 +6,8 @@ service cloud.firestore {
     function isMe(uid) { return signedIn() && request.auth.uid == uid; }
     // un ami accepté de <owner> figure dans friends/<owner>/list/<son uid>
     function isFriendOf(owner) { return signedIn() && exists(/databases/$(database)/documents/friends/$(owner)/list/$(request.auth.uid)); }
+    // administrateurs de NightDex (gèrent les soutiens depuis l'appli)
+    function isAdmin() { return signedIn() && request.auth.uid in ['XYVqyK7LCoQ7Gbfq9weJB2jnKQN2']; }
 
     // collection de chaque compte : écrite par son propriétaire, lue par lui et ses amis acceptés
     match /users/{uid} {
@@ -18,10 +20,13 @@ service cloud.firestore {
         && request.resource.data.fav is list;
     }
 
-    // statut de soutien : lisible par le compte, modifiable uniquement depuis la console Firebase
+    // statut de soutien : lisible par le compte ; activé ou retiré uniquement par un administrateur (ou la console)
     match /supporters/{uid} {
-      allow read: if isMe(uid);
-      allow write: if false;
+      allow read: if isMe(uid) || isAdmin();
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['active', 'since'])
+        && request.resource.data.active is bool;
     }
 
     // photo de profil : visible par le compte et ses amis, réservée aux soutiens actifs
