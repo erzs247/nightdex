@@ -1042,7 +1042,13 @@ async function capriAsk(onText) {
   }
   const { aiM, ai } = capri;
   const models = cloud.cfg?.capriModels?.length ? cloud.cfg.capriModels : CAPRI_MODELS_DEFAULT;
-  const turns = capri.turns.filter((t) => !t.err).slice(-20);
+  // historique propre pour Gemini : tours alternés toi / Capri, sans les erreurs ni les questions restées sans réponse
+  const clean = [];
+  for (const t of capri.turns) {
+    if (t.err) { if (clean.at(-1)?.role === 'user') clean.pop(); continue; }
+    if (clean.at(-1)?.role === t.role) clean[clean.length - 1] = t; else clean.push(t);
+  }
+  const turns = clean.slice(-20);
   while (turns.length && turns[0].role !== 'user') turns.shift();
   const last = turns.pop();
   const history = turns.map((t) => ({ role: t.role === 'user' ? 'user' : 'model', parts: [{ text: t.content }] }));
