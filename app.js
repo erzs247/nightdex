@@ -59,7 +59,9 @@ const cardsById = new Map();
 const cardsBySet = new Map();
 
 async function loadData() {
-  const get = (p) => fetch(p, { cache: 'no-cache' }).then((r) => { if (!r.ok) throw new Error(p); return r.json(); });
+  // version autonome : données intégrées dans la page (<script type="application/json" id="data/…">)
+  const embedded = (p) => { const el = document.getElementById(p); return el ? Promise.resolve(JSON.parse(el.textContent)) : null; };
+  const get = (p) => embedded(p) ?? fetch(p, { cache: 'no-cache' }).then((r) => { if (!r.ok) throw new Error(p); return r.json(); });
   [catalog, priceFile, config] = await Promise.all([get('data/catalog.json'), get('data/prices.json'), get('data/config.json').catch(() => config)]);
   for (const c of catalog.cards) {
     cardsById.set(c.id, c);
