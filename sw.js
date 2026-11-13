@@ -1,8 +1,12 @@
-// Cache hors ligne : l'interface est servie depuis le cache, les données sont rafraîchies dès que possible.
-const CACHE = 'nightdex-v4';
+// Cache hors ligne : l'interface et les images sont servies depuis le cache, les données sont rafraîchies dès que possible.
+// Seules les réponses valides sont mises en cache : une erreur passagère (réseau coupé, mise à jour du site)
+// n'est jamais mémorisée, la ressource est simplement redemandée la fois suivante.
+const CACHE = 'nightdex-v5';
 const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'manifest.webmanifest', 'icons/icon.svg', 'data/config.json'];
+const keep = (req, r) => { if (r && r.ok && r.type === 'basic') { const copy = r.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); } return r; };
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener('activate', (e) => {
+  // supprime les anciens caches (dont d'éventuelles réponses en erreur mémorisées par les versions précédentes)
   e.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))));
   self.clients.claim();
 });
@@ -11,8 +15,9 @@ self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET' || url.origin !== location.origin) return;
   if (url.pathname.includes('/data/')) {
     // données : réseau d'abord, cache si hors ligne
-    e.respondWith(fetch(e.request).then((r) => { const copy = r.clone(); caches.open(CACHE).then((c) => c.put(e.request, copy)); return r; }).catch(() => caches.match(e.request)));
+    e.respondWith(fetch(e.request).then((r) => keep(e.request, r)).catch(() => caches.match(e.request)));
   } else {
-    e.respondWith(caches.match(e.request).then((hit) => hit || fetch(e.request).then((r) => { const copy = r.clone(); caches.open(CACHE).then((c) => c.put(e.request, copy)); return r; })));
+    // interface et images : cache d'abord (rapide, hors ligne), sinon réseau
+    e.respondWith(caches.match(e.request).then((hit) => (hit && hit.ok ? hit : fetch(e.request).then((r) => keep(e.request, r)))));
   }
 });

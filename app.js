@@ -319,9 +319,15 @@ function cardImg(card, eager = false) {
   }
   return `<img src="${esc(src)}" alt="${esc(cardName(card))}" ${eager ? '' : 'loading="lazy"'} decoding="async" data-ph="${esc(ph)}"${extra}>`;
 }
+// image en échec : un nouvel essai direct sur le serveur, puis le visuel de remplacement
 document.addEventListener('error', (e) => {
   const img = e.target;
-  if (img.tagName === 'IMG' && img.dataset.ph && img.src !== img.dataset.ph) img.src = img.dataset.ph;
+  if (img.tagName !== 'IMG' || !img.dataset.ph || img.src === img.dataset.ph) return;
+  if (!img.dataset.retried && !img.src.startsWith('data:')) {
+    img.dataset.retried = '1';
+    const u = new URL(img.src, location.href); u.searchParams.set('r', Date.now());
+    img.src = u.href;
+  } else img.src = img.dataset.ph;
 }, true);
 
 // ---------- Rendu des cartes ----------
