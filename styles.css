@@ -14,17 +14,16 @@
   --hot: #ff3d6e;         /* coeur / souhaits */
   --up: #3ddc84;
   --down: #ff6170;
-  /* raretés (variables générées depuis RARITY_HEX dans app.js) */
-  --r-commune: #8e96b2;
-  --r-peu-commune: #6fd38a;
+  /* raretés (clés anglaises des données, voir RARITY_HEX dans app.js) */
+  --r-common: #8e96b2;
+  --r-uncommon: #6fd38a;
   --r-rare: #5b8cff;
-  --r-epique: #b36bff;
+  --r-epic: #b36bff;
   --r-nova-rare: #3ad8df;
-  --r-legendaire: #ff9f2e;
-  --r-legende-iconique: #ff9f2e;
-  --r-iconique: #ff5fa2;
-  --r-secrete: #f5e50b;
-  --r-secrete-iconique: #ffd84a;
+  --r-iconic-legend: #ff9f2e;
+  --r-iconic-other: #ff5fa2;
+  --r-secret: #f5e50b;
+  --r-iconic-secret: #ffd84a;
 
   --font-display: "Chakra Petch", "Rajdhani", "Segoe UI", system-ui, sans-serif;
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -328,3 +327,25 @@ main { padding: 0 var(--gutter-r) 0 var(--gutter-l); outline: none; }
 .menu { display: flex; flex-direction: column; gap: 10px; }
 .menu label.btn-ghost { text-align: center; cursor: pointer; }
 .menu .btn-ghost { width: 100%; }
+
+/* Bouton de langue FR / EN */
+.lang-btn {
+  flex: none; display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--surface); font: 700 13px/1 var(--font-display); letter-spacing: .04em;
+}
+.lang-btn span { padding: 7px 8px; border-radius: 7px; color: var(--muted); }
+.lang-btn span.on { background: var(--accent); color: var(--accent-ink); }
+
+/* Code imprimé de la série (MS01, SD01…) */
+.title-code {
+  display: inline-block; vertical-align: 3px; margin-right: 8px; padding: 4px 6px;
+  font: 700 12px/1 var(--font-display); letter-spacing: .06em; color: var(--accent-ink); background: var(--accent);
+  clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+}
+.print { color: var(--accent); font-weight: 600; }
+.foil {
+  padding: 1px 6px; border-radius: 5px; color: var(--accent-ink); letter-spacing: .04em;
+  background: linear-gradient(90deg, var(--cyan), var(--accent), #ff5fa2);
+}
+.chart .pt { fill: var(--accent); }
+.set-code { white-space: nowrap; }

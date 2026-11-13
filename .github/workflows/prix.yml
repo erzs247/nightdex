@@ -25,9 +25,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Relevé des prix du jour
-        env:
-          CM_GAME_ID: ${{ vars.CM_GAME_ID }}
+      - name: Relevé des prix Cardmarket du jour
         run: node scripts/update-prices.mjs
       - name: Enregistrer l'historique
         run: |

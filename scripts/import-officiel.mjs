@@ -1,12 +1,12 @@
 // Importe toutes les cartes depuis la base de cartes du site officiel (cyberpunktcg.com, fournie par Netdeck),
-// avec leurs images. La version française d'une série est utilisée quand elle existe, sinon la version anglaise.
+// avec leurs images en français et en anglais.
 //
 // Usage :
 //   node scripts/import-officiel.mjs                 récupère les cartes et télécharge les images manquantes
 //   node scripts/import-officiel.mjs --raw <dossier> réutilise des images déjà téléchargées (<id>.webp)
 //
 // Derrière un proxy (ex. session cloud) : NODE_USE_ENV_PROXY=1 node scripts/import-officiel.mjs
-// Les prix déjà relevés (data/prices.json) sont conservés : seules les cartes et les images sont mises à jour.
+// Les prix déjà relevés (data/prices.json) et les liens Cardmarket sont conservés.
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -19,33 +19,32 @@ const rawDir = opt('raw');
 const API = 'https://api.netdeck.gg/api/cards/cyberpunk';
 const WIDTH = 360;
 
-// Séries connues : code court, nom affiché, bloc, ordre d'affichage, date de sortie (si connue)
+// Séries : code interne (stable), code imprimé sur les cartes, noms FR/EN, bloc, ordre, date
 const SETS = {
-  'welcometonightcityretail-fr': { code: 'WNC', name: 'Welcome to Night City', block: 'Welcome to Night City', order: 1, releaseDate: '2026-11-06' },
-  'embracingpowerretailstarterde-fr': { code: 'EMP', name: 'Embracing Power – Deck de démarrage', block: 'Welcome to Night City', order: 2, releaseDate: '2026-11-06' },
-  'theheistretailstarterdeck-fr': { code: 'HST', name: 'The Heist – Deck de démarrage', block: 'Welcome to Night City', order: 3, releaseDate: '2026-11-06' },
-  'prereleaseretail-FR': { code: 'PRE', name: 'Avant-première', block: 'Welcome to Night City', order: 4 },
-  'boxtoppersretail-fr': { code: 'BTR', name: 'Box Toppers', block: 'Welcome to Night City', order: 5 },
-  'nightcitybrawls1-FR': { code: 'NCB', name: 'Night City Brawl S1', block: 'Jeu organisé & promos', order: 10 },
-  'nightcityshowdowns1-FR': { code: 'NCS', name: 'Night City Showdown S1', block: 'Jeu organisé & promos', order: 11 },
-  'edgerunneropens1': { code: 'EOS', name: 'Edgerunner Open S1', block: 'Jeu organisé & promos', order: 12 },
-  'PRM01': { code: 'PR1', name: 'Promos Set 1', block: 'Jeu organisé & promos', order: 13 },
-  'judgepromos': { code: 'JDG', name: 'Promos Juge', block: 'Jeu organisé & promos', order: 14 },
-  'welcometonightcitybeta': { code: 'WNB', name: 'Welcome to Night City – Bêta', block: 'Bêta (Kickstarter, en anglais)', order: 20 },
-  'embracingpowerbetastarterdeck': { code: 'EMB', name: 'Embracing Power – Bêta', block: 'Bêta (Kickstarter, en anglais)', order: 21 },
-  'theheistbetastarterdeck': { code: 'HSB', name: 'The Heist – Bêta', block: 'Bêta (Kickstarter, en anglais)', order: 22 },
-  'prereleasebeta': { code: 'PRB', name: 'Avant-première Bêta', block: 'Bêta (Kickstarter, en anglais)', order: 23 },
-  'boxtoppersbeta': { code: 'BTB', name: 'Box Toppers Bêta', block: 'Bêta (Kickstarter, en anglais)', order: 24 },
-  'arasakademodeck': { code: 'ARA', name: 'Deck de démo Arasaka', block: 'Decks de démo (en anglais)', order: 30 },
-  'mercdemodeck': { code: 'MRC', name: 'Deck de démo Mercs', block: 'Decks de démo (en anglais)', order: 31 },
+  'welcometonightcityretail': { code: 'WNC', print: 'MS01', fr: 'Welcome to Night City', en: 'Welcome to Night City', block: 'wnc', order: 1, releaseDate: '2026-11-06' },
+  'embracingpowerretailstarterdeck': { code: 'EMP', print: 'SD02', fr: 'Embracing Power – Deck de démarrage', en: 'Embracing Power – Starter Deck', block: 'wnc', order: 2, releaseDate: '2026-11-06' },
+  'theheistretailstarterdeck': { code: 'HST', print: 'SD01', fr: 'The Heist – Deck de démarrage', en: 'The Heist – Starter Deck', block: 'wnc', order: 3, releaseDate: '2026-11-06' },
+  'prereleaseretail': { code: 'PRE', print: 'PRR02', fr: 'Avant-première', en: 'Pre-Release', block: 'wnc', order: 4 },
+  'boxtoppersretail': { code: 'BTR', print: 'PRM-WNC', fr: 'Box Toppers', en: 'Box Toppers', block: 'wnc', order: 5 },
+  'nightcitybrawls1': { code: 'NCB', print: 'NCB01', fr: 'Night City Brawl S1', en: 'Night City Brawl S1', block: 'op', order: 10 },
+  'nightcityshowdowns1': { code: 'NCS', print: 'NCS01', fr: 'Night City Showdown S1', en: 'Night City Showdown S1', block: 'op', order: 11 },
+  'edgerunneropens1': { code: 'EOS', print: 'EOR01', fr: 'Edgerunner Open S1', en: 'Edgerunner Open S1', block: 'op', order: 12 },
+  'prm01': { code: 'PR1', print: 'PRM01', fr: 'Promos Set 1', en: 'Set 1 Promos', block: 'op', order: 13 },
+  'judgepromos': { code: 'JDG', print: 'JDG', fr: 'Promos Juge', en: 'Judge Promos', block: 'op', order: 14 },
+  'welcometonightcitybeta': { code: 'WNB', print: 'MS01 β', fr: 'Welcome to Night City – Bêta', en: 'Welcome to Night City – Beta', block: 'beta', order: 20 },
+  'embracingpowerbetastarterdeck': { code: 'EMB', print: 'SD02 β', fr: 'Embracing Power – Bêta', en: 'Embracing Power – Beta', block: 'beta', order: 21 },
+  'theheistbetastarterdeck': { code: 'HSB', print: 'SD01 β', fr: 'The Heist – Bêta', en: 'The Heist – Beta', block: 'beta', order: 22 },
+  'prereleasebeta': { code: 'PRB', print: 'PRR01', fr: 'Avant-première Bêta', en: 'Pre-Release Beta', block: 'beta', order: 23 },
+  'boxtoppersbeta': { code: 'BTB', print: 'PRM-WNC β', fr: 'Box Toppers Bêta', en: 'Box Toppers Beta', block: 'beta', order: 24 },
+  'arasakademodeck': { code: 'ARA', print: 'DD2', fr: 'Deck de démo Embracing Power', en: 'Embracing Power – Demo Deck', block: 'demo', order: 30 },
+  'mercdemodeck': { code: 'MRC', print: 'DD1', fr: 'Deck de démo The Heist', en: 'The Heist – Demo Deck', block: 'demo', order: 31 },
 };
-const RARITY = {
-  'Common': 'Commune', 'Uncommon': 'Peu commune', 'Rare': 'Rare', 'Epic': 'Épique', 'Nova Rare': 'Nova Rare',
-  'Iconic Legend': 'Légende iconique', 'Iconic Other': 'Iconique', 'Secret': 'Secrète', 'Iconic Secret': 'Secrète iconique',
+// identifiant de série officiel → clé commune FR/EN (« …-fr », « …-FR » et noms tronqués)
+const KEYS = Object.keys(SETS);
+const setKey = (code) => {
+  const b = code.toLowerCase().replace(/-fr$/, '');
+  return KEYS.find((k) => k === b) ?? KEYS.find((k) => b.length >= 28 && k.startsWith(b)) ?? b;
 };
-const TYPE = { Unit: 'Unité', Program: 'Programme', Legend: 'Légende', Gear: 'Équipement' };
-const COLOR = { Red: 'Rouge', Blue: 'Bleu', Green: 'Vert', Yellow: 'Jaune' };
-const base = (code) => code.toLowerCase().replace(/-fr$/, '');
 
 // 1. Cartes
 const items = [];
@@ -58,33 +57,36 @@ for (let o = 0; ; o += 100) {
 }
 console.log(`${items.length} cartes dans la base officielle.`);
 
-// 2. Impressions retenues : FR, ou EN sans série FR équivalente
-const frBases = new Set();
-for (const i of items) for (const p of i.printings) if (p.language === 'fr') frBases.add(base(p.set.code));
-const isTwinOfFr = (code) => [...frBases].some((f) => f === base(code) || (f.length >= 28 && base(code).startsWith(f)));
-const printings = [];
+// 2. Une entrée par (série, numéro), avec la version FR et la version EN quand elles existent
+// numéros sur 3 chiffres (la base contient parfois « 10 » au lieu de « 010 »)
+const padNum = (n) => String(n).replace(/^(\D*)(\d+)/, (_, pre, d) => pre + d.padStart(3, '0'));
+const entries = new Map();
 for (const card of items) for (const p of card.printings) {
-  if (p.language === 'fr' || !isTwinOfFr(p.set.code)) printings.push({ card, p });
+  const number = padNum(p.collector_number);
+  const key = `${setKey(p.set.code)}|${number}`;
+  const e = entries.get(key) ?? { card, setKey: setKey(p.set.code), number, setName: p.set.name };
+  e[p.language === 'fr' ? 'fr' : 'en'] = p;
+  entries.set(key, e);
 }
 
 // 3. Séries
 const sets = new Map();
 let auto = 50;
-for (const { p } of printings) {
-  if (sets.has(p.set.code)) continue;
-  const known = SETS[p.set.code];
-  const code = known?.code ?? p.set.name.replace(/[^A-Za-z0-9 ]/g, '').split(/\s+/).map((w) => w[0]).join('').slice(0, 4).toUpperCase();
-  sets.set(p.set.code, {
-    code, name: known?.name ?? p.set.name, block: known?.block ?? 'Nouvelles séries', order: known?.order ?? auto++,
-    releaseDate: known?.releaseDate ?? null, language: p.language,
-    source: { netdeck: p.set.code }, cardmarket: { idExpansion: null },
+for (const e of entries.values()) {
+  if (sets.has(e.setKey)) continue;
+  const k = SETS[e.setKey];
+  const code = k?.code ?? e.setName.replace(/[^A-Za-z0-9 ]/g, '').split(/\s+/).map((w) => w[0]).join('').slice(0, 4).toUpperCase();
+  sets.set(e.setKey, {
+    code, print: k?.print ?? code, name: k?.fr ?? e.setName, nameEn: k?.en ?? e.setName,
+    block: k?.block ?? 'new', order: k?.order ?? auto++, releaseDate: k?.releaseDate ?? null,
+    source: { netdeck: e.setKey }, cardmarket: { idExpansion: null, slug: null },
   });
 }
 
-// 4. Images (redimensionnées à 360 px de large)
-mkdirSync(join(root, 'images'), { recursive: true });
+// 4. Images (360 px de large, WebP)
 let downloaded = 0;
 async function imageFor(p, setCode) {
+  if (!p) return null;
   const rel = `images/${setCode}/${p.id}.webp`;
   const out = join(root, rel);
   if (existsSync(out)) return rel;
@@ -103,36 +105,37 @@ async function imageFor(p, setCode) {
 }
 
 const cards = [];
-const queue = [...printings];
+const queue = [...entries.values()];
 async function worker() {
   while (queue.length) {
-    const { card, p } = queue.shift();
-    const set = sets.get(p.set.code);
-    const image = await imageFor(p, set.code);
+    const e = queue.shift();
+    const { card } = e;
+    const set = sets.get(e.setKey);
+    const main = e.fr ?? e.en;
+    const nameEn = card.canonical_name || card.name;
     cards.push({
-      id: `${set.code}-${p.collector_number}`,
+      id: `${set.code}-${e.number}`,
       set: set.code,
-      number: p.collector_number,
-      name: p.localized_name || card.canonical_name || card.name,
-      nameEn: card.canonical_name || card.name,
-      rarity: RARITY[p.rarity] ?? p.rarity,
-      type: TYPE[card.card_type] ?? card.card_type,
-      color: COLOR[card.color] ?? card.color,
+      number: e.number,
+      name: e.fr?.localized_name || nameEn,
+      nameEn,
+      rarity: main.rarity,
+      type: card.card_type,
+      color: card.color,
       cost: card.cost, power: card.power, ram: card.ram,
-      artist: p.artist ?? card.artist,
-      image,
+      artist: main.artist ?? card.artist,
+      image: await imageFor(e.fr ?? e.en, set.code),
+      imageEn: e.fr && e.en ? await imageFor(e.en, set.code) : null,
+      languages: [e.fr && 'fr', e.en && 'en'].filter(Boolean),
       official: `https://cyberpunktcg.com/cards/${card.slug}`,
-      cardmarket: { idProduct: null, url: null },
+      cardmarket: { idProduct: null, path: null },
     });
   }
 }
 await Promise.all([worker(), worker(), worker(), worker()]);
+cards.sort((a, b) => a.set.localeCompare(b.set) || a.number.localeCompare(b.number, 'en', { numeric: true }));
 
-// Identifiants uniques (au cas où un numéro serait imprimé deux fois)
-const seen = new Map();
-for (const c of cards) { const n = (seen.get(c.id) ?? 0) + 1; seen.set(c.id, n); if (n > 1) c.id += `-${n}`; }
-
-// 5. Écriture (on garde les liens Cardmarket déjà renseignés)
+// 5. Écriture (on garde les rattachements Cardmarket déjà faits)
 const catalogPath = join(root, 'data/catalog.json');
 const old = existsSync(catalogPath) ? JSON.parse(readFileSync(catalogPath, 'utf8')) : null;
 if (old && !old.demo) {

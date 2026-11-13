@@ -12,6 +12,9 @@ Appli web (installable sur téléphone) pour suivre sa collection du **Cyberpunk
 
 Aucune dépendance : HTML, CSS et JavaScript, plus trois scripts Node pour les données.
 
+L'appli est disponible **en français et en anglais** (bouton FR/EN sur l'accueil) : textes, noms et images des cartes.
+Chaque série affiche son code officiel imprimé sur les cartes (MS01, SD01, SD02, PRR02, NCB01…).
+
 Le dépôt contient les **591 cartes** de la base officielle (cyberpunktcg.com) avec leurs images dans `images/`.
 La version française est utilisée quand elle existe (Welcome to Night City, decks de démarrage, Brawl…), sinon l'anglaise (Bêta, decks de démo, promos).
 Les prix arrivent avec l'import Cardmarket ci-dessous.
@@ -34,24 +37,20 @@ npm start
 
 Puis ouvrir http://localhost:8080.
 
-## Brancher les vrais prix Cardmarket
+## Prix Cardmarket et courbes
 
-Cardmarket publie chaque jour deux fichiers publics par jeu : la liste des produits et le guide des prix
-(`products_singles_<idGame>.json` et `price_guide_<idGame>.json`).
+Cardmarket publie chaque nuit deux fichiers publics par jeu (Cyberpunk = jeu n° 23) : la liste des cartes et le guide des prix.
 
-1. Trouver l'`idGame` du Cyberpunk TCG sur Cardmarket. Il figure dans le nom de ces fichiers.
-2. Dans `data/catalog.json`, renseigner pour chaque série son `cardmarket.idExpansion` (l'identifiant d'extension
-   Cardmarket). Les cartes sont alors rattachées à leur produit Cardmarket par leur nom anglais.
-3. Ensuite, **une fois par jour** :
+```bash
+node scripts/update-prices.mjs
+```
 
-   ```bash
-   node scripts/update-prices.mjs --game <idGame>
-   ```
-
-   Chaque exécution ajoute le prix du jour à l'historique. Ce sont ces relevés qui dessinent la courbe.
-   Au tout premier passage, la courbe est amorcée avec les moyennes 30 j, 7 j et 1 j de Cardmarket.
-
-Si les fichiers ont été téléchargés à la main : `node scripts/update-prices.mjs --dir <dossier>`.
+- Chaque carte est rattachée à son produit Cardmarket : le bouton « Voir sur Cardmarket » ouvre **la carte exacte**
+  (versions alternatives comprises : `-V1`, `-V2`…), filtrée sur la langue de la carte.
+- Le prix « tendance » du jour est ajouté à l'historique : **une exécution par jour = un point de plus sur la courbe**.
+  Au premier passage, la courbe démarre avec les moyennes 30 j, 7 j et 1 j de Cardmarket.
+- Les raretés imprimées en foil (Nova Rare, iconiques, secrètes) utilisent le prix foil.
+- La correspondance extension Cardmarket ↔ série est dans `data/config.json`.
 
 ## Images, raretés et liens exacts
 
@@ -78,8 +77,7 @@ et publie l'appli sur GitHub Pages.
 
 1. Pousser ce dossier sur un dépôt GitHub.
 2. *Settings → Pages* : source « GitHub Actions ».
-3. *Settings → Secrets and variables → Actions → Variables* : créer `CM_GAME_ID` avec l'idGame Cardmarket.
-4. Lancer une première fois le workflow à la main (*Actions → Run workflow*).
+3. Lancer une première fois le workflow à la main (*Actions → Run workflow*).
 
 Sur le téléphone, ouvrir l'adresse GitHub Pages puis « Ajouter à l'écran d'accueil ».
 

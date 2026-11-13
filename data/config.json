@@ -1,14 +1,31 @@
 {
   "appName": "NightDex",
   "cardmarket": {
-    "lang": "fr",
     "gameSlug": "Cyberpunk",
-    "idGame": null,
+    "idGame": 23,
     "productsUrl": "https://downloads.s3.cardmarket.com/productCatalog/productList/products_singles_{idGame}.json",
-    "priceGuideUrl": "https://downloads.s3.cardmarket.com/productCatalog/priceGuide/price_guide_{idGame}.json"
+    "priceGuideUrl": "https://downloads.s3.cardmarket.com/productCatalog/priceGuide/price_guide_{idGame}.json",
+    "languageIds": { "en": 1, "fr": 2 }
   },
   "expansions": {
-    "_aide": "Associe l'idExpansion Cardmarket au code de série de l'appli. Exemple : \"5843\": \"WNC\"",
-    "map": {}
+    "_aide": "idExpansion Cardmarket → série de l'appli et nom de l'extension tel qu'il apparaît dans les adresses Cardmarket.",
+    "map": {
+      "6761": { "set": "WNC", "slug": "Welcome-to-Night-City-Retail" },
+      "6763": { "set": "EMP", "slug": "Embracing-Power-Retail-Starter-Deck" },
+      "6762": { "set": "HST", "slug": "The-Heist-Retail-Starter-Deck" },
+      "6765": { "set": "PRE", "slug": "Pre-Release-Retail" },
+      "6764": { "set": "BTR", "slug": "Box-Toppers-Retail" },
+      "6953": { "set": "NCB", "slug": "Night-City-Brawl-S1" },
+      "6954": { "set": "NCS", "slug": "Night-City-Showdown-S1" },
+      "6719": { "set": "PR1", "slug": "Set-1-Promos" },
+      "6952": { "set": "JDG", "slug": "Judge-Promos" },
+      "6714": { "set": "WNB", "slug": "Welcome-to-Night-City-Beta" },
+      "6716": { "set": "EMB", "slug": "Embracing-Power-Beta-Starter-Deck" },
+      "6715": { "set": "HSB", "slug": "The-Heist-Beta-Starter-Deck" },
+      "6718": { "set": "PRB", "slug": "Pre-Release-Beta" },
+      "6717": { "set": "BTB", "slug": "Box-Toppers-Beta" },
+      "6721": { "set": "ARA", "slug": "Embracing-Power-Demo-Deck" },
+      "6720": { "set": "MRC", "slug": "The-Heist-Demo-Deck" }
+    }
   }
 }
