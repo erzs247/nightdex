@@ -1,0 +1,5 @@
+{
+  "_aide": "Images de Capri par posture (idle, walk, sit, sleep, wave, game, jump, drag). Les postures absentes reprennent idle. transparent = true si les images sont détourées (fond transparent).",
+  "transparent": false,
+  "sprites": { "idle": "images/capri/portrait.webp" }
+}

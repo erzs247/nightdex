@@ -52,6 +52,7 @@ const TEXT = {
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue', langToast: 'Langue : français',
     prev: 'Carte précédente', next: 'Carte suivante',
+    petSetting: 'Capri se balade dans l\'appli', yes: 'Oui', no: 'Non', petHint: 'Touche-la pour qu\'elle réagisse, deux fois pour discuter, ou fais-la glisser sur une carte.',
     capriSpoil: (on) => `Spoilers S2 : ${on ? 'oui' : 'non'}`, capriReset: 'Effacer', capriSend: 'Envoyer', capriStop: 'Stop', capriPh: 'Écris à Capri…', capriTyping: 'connexion aux engrammes', capriListen: 'Écouter',
     capriHello: '*grésillement* … Ah, la liaison tient. Salut, choom. Moi c\'est Capri : plusieurs esprits recousus en une seule, sans corps, juste une puce et beaucoup de curiosité. Tu veux savoir quoi ?',
     capriSuggest: ['Qui es-tu, Capri ?', 'C\'est quoi un engramme ?', 'Ça fait quoi de ne pas avoir de corps ?', 'Ton avis sur Arasaka ?', 'Tu aimes les cartes Cyberpunk ?'],
@@ -116,6 +117,7 @@ const TEXT = {
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'Language', langToast: 'Language: English',
     prev: 'Previous card', next: 'Next card',
+    petSetting: 'Capri walks around the app', yes: 'On', no: 'Off', petHint: 'Tap her to react, tap twice to chat, or drag her onto a card.',
     capriSpoil: (on) => `S2 spoilers: ${on ? 'on' : 'off'}`, capriReset: 'Clear', capriSend: 'Send', capriStop: 'Stop', capriPh: 'Write to Capri…', capriTyping: 'linking engrams', capriListen: 'Listen',
     capriHello: '*static* … Ah, the link holds. Hey, choom. I\'m Capri: a bunch of minds stitched into one, no body, just a chip and a lot of curiosity. What do you want to know?',
     capriSuggest: ['Who are you, Capri?', 'What is an engram?', 'What is it like to have no body?', 'What do you think of Arasaka?', 'Do you like Cyberpunk cards?'],
@@ -779,9 +781,11 @@ function openCard(id, keepNav) {
   for (const [sel, ok] of [['[data-action="prev"]', ni > 0], ['[data-action="next"]', ni >= 0 && ni < navList.length - 1]]) { const b = sheetPanel.querySelector(sel); if (b) b.disabled = !ok; }
   mountRangedChart(document.getElementById('cardRanges'), document.getElementById('cardChart'), p.history ?? [], 'cardRange', p.trend != null);
   sheetPanel.querySelector('.stepper button')?.focus({ preventScroll: true });
+  if (!keepNav || isPC()) petEvent('open', c);
 }
 function closeCard() {
   sheet.hidden = true; openId = null; sheetMode = null;
+  petEvent('close');
   document.body.style.overflow = '';
   lastFocus?.focus?.({ preventScroll: true });
 }
@@ -793,6 +797,7 @@ function openSettings() {
     <h2 id="sheetTitle" style="margin:0;font:700 22px var(--font-display)">${L.settings}</h2>
     ${cloud.enabled ? `<button class="btn-ghost acct-row" data-action="account">${I.person}<span>${cloud.user ? esc(L.signedAs(cloud.user.email ?? cloud.user.name ?? '')) : L.account}</span></button>` : ''}
     <div class="panel"><h3>${L.language}</h3>${seg('lang', lang, [['fr', 'Français'], ['en', 'English']])}</div>
+    <div class="panel"><h3>${L.petSetting}</h3>${seg('pet', user.prefs.pet === 'off' ? 'off' : 'on', [['on', L.yes], ['off', L.no]])}<p class="note" style="margin:0">${L.petHint}</p></div>
     <p class="note">${L.storage(Object.keys(user.owned).length, wish.size)}</p>
     <div class="menu">
       <button class="btn-ghost" data-action="export">${L.export}</button>
@@ -806,6 +811,7 @@ function openSettings() {
   </div>`;
   sheet.hidden = false;
   document.body.style.overflow = 'hidden';
+  petEvent('sheet');
 }
 
 // ---------- Compte (Firebase) : collection synchronisée entre appareils ----------
@@ -912,6 +918,7 @@ function refreshAccount() {
 function authError(code) { return L.authErr[code] ?? L.authErr.default; }
 function openAccount(keep) {
   openId = null; sheetMode = 'account';
+  petEvent('sheet');
   const em = keep ? document.getElementById('acctEmail')?.value ?? '' : '';
   const u = cloud.user;
   const time = cloud.lastSync ? new Intl.DateTimeFormat(fmt.loc, { hour: '2-digit', minute: '2-digit' }).format(cloud.lastSync) : '';
@@ -1185,11 +1192,13 @@ function toggleOwn(id) {
   user.owned[id] = qty(id) > 0 ? 0 : 1;
   if (!user.owned[id]) delete user.owned[id];
   save(); refreshCard(id);
+  petEvent('own', { on: qty(id) > 0 });
   toast(qty(id) ? L.addedCol : L.removedCol);
 }
 function toggleWish(id) {
   wish.has(id) ? wish.delete(id) : wish.add(id);
   save(); refreshCard(id);
+  petEvent('wish', { on: wish.has(id) });
   for (const b of sheetPanel.querySelectorAll(`[data-wish="${CSS.escape(id)}"]`)) b.setAttribute('aria-pressed', wish.has(id));
   toast(wish.has(id) ? L.addedWish : L.removedWish);
 }
@@ -1204,6 +1213,7 @@ document.addEventListener('click', async (e) => {
   else if (d.own) toggleOwn(d.own);
   else if (d.wish) toggleWish(d.wish);
   else if (d.seg === 'lang') setLang(d.value);
+  else if (d.seg === 'pet') { user.prefs.pet = d.value; save(); petSync(); openSettings(); }
   else if (d.seg) { user.prefs[d.seg] = d.value; save(); currentRender(); }
   else if (d.pref) { user.prefs[d.pref] = d.value || null; if (d.pref === 'own' && !d.value) user.prefs.own = 'all'; save(); currentRender(); }
   else if (d.fav) { fav.has(d.fav) ? fav.delete(d.fav) : fav.add(d.fav); save(); currentRender(); toast(fav.has(d.fav) ? L.favOn : L.favOff); }
@@ -1304,12 +1314,350 @@ function route() {
   currentRender();
   window.scrollTo(0, 0);
   if (h === 'search') document.getElementById('cardSearch')?.focus();
+  petEvent('route');
 }
 window.addEventListener('hashchange', route);
 
+// ---------- Capri compagnon : elle se balade dans l'appli, s'assoit sur les cartes et les commente ----------
+// Dessin original (fan art vectoriel), animé en CSS ; déplacements en JS. Désactivable dans les Réglages.
+// Images de Capri : une par posture si disponible (data/pet.json), sinon l'image de base.
+// Aucun dessin : uniquement des images fournies par le propriétaire de l'appli.
+const PET_DEFAULT = 'images/capri/portrait.webp';
+let petSprites = { idle: PET_DEFAULT };
+const petSprite = (st) => petSprites[st] ?? petSprites[{ game: 'sit', sleep: 'sit', jump: 'idle', drag: 'idle', wave: 'idle', walk: 'idle' }[st]] ?? petSprites.idle ?? PET_DEFAULT;
+
+const PET_LINES = {
+  fr: {
+    strong: ['Elle est trop forte celle-ci !', 'Wow… {name}. Je suis jalouse.', 'Ça brille de partout, j\'adore !', 'Celle-là, c\'est du nova pur.'],
+    pricey: ['{price} ?! Elle vaut une fortune, choom.', 'Avec {price}, on se paie un implant, tu sais.'],
+    mid: ['Jolie cote : {price}.', 'Pas donnée, celle-ci… {price}.'],
+    owned: ['Tu l\'as déjà, preem !', 'Celle-là est à toi. Je la surveille.'],
+    wishlist: ['Elle est dans tes souhaits… bientôt à toi.', 'Je croise mes engrammes pour que tu l\'aies.'],
+    Legend: ['Une Légende ! J\'adore les légendes.', 'Les Légendes, c\'est tout à fait mon genre.'],
+    Program: ['Un Programme ! Ça, ça me parle.', 'Laisse-moi lire son code… *bzzt*'],
+    Gear: ['Du matos ! Ça claque.', 'Je l\'équiperais bien… si j\'avais un vrai corps.'],
+    Unit: ['J\'aime trop cette carte !', 'Elle a du style, celle-là.', 'Pas mal du tout, celle-ci.'],
+    cheap: ['Une petite commune… mais je l\'aime quand même.', 'Petite carte, grand cœur.'],
+    smasher: ['Adam Smasher… brr, je garde mes distances.'],
+    johnny: ['Johnny Silverhand… toujours trop bruyant, celui-là.'],
+    crew: ['Une figure d\'Edgerunners ! Respect.'],
+    arasaka: ['Arasaka… ne me parle pas d\'eux.'],
+    v: ['V ! Une légende de Night City.'],
+    booster: ['Un booster ! On l\'ouvre ? Allez !'], box: ['Une booster box entière… tu me fais rêver.'], case: ['Six booster box ?! Tu vises le nova total.'], deck: ['Un deck tout prêt, parfait pour jouer.'], kit: ['Un kit ! Ça sent la nouveauté.'],
+    ownAdded: ['Nova, une de plus dans la collection !', 'Ajoutée ! Ta collection grossit, choom.'],
+    ownRemoved: ['Oh… elle s\'en va ?'],
+    wishAdded: ['Bon choix. Je la voulais aussi.'],
+    idle: ['Night City ne dort jamais… moi non plus.', 'Tu as vu les cotes aujourd\'hui ?', 'Je me promène dans tes cartes, ça te dérange pas ?', '*bzzt* … pardon, petit glitch.', 'J\'aime bien ici. C\'est calme, pour un réseau.'],
+    tap: ['Hé ! Ça chatouille.', 'Oui, oui, je suis là.', 'Touche-moi deux fois pour discuter !'],
+    game: ['Laisse-moi finir ma partie…', 'Nouveau record ! Enfin presque.'],
+    drag: ['Waaah ! Pose-moi !'],
+    wake: ['Hein ? Je dormais pas, je défragmentais.'],
+  },
+  en: {
+    strong: ['This one is so strong!', 'Wow… {name}. I\'m jealous.', 'It sparkles everywhere, I love it!', 'Pure nova, that one.'],
+    pricey: ['{price}?! That\'s a fortune, choom.', 'With {price} you could buy an implant.'],
+    mid: ['Nice price: {price}.', 'Not cheap… {price}.'],
+    owned: ['You already have it, preem!', 'That one is yours. I\'m keeping an eye on it.'],
+    wishlist: ['It\'s on your wishlist… soon yours.', 'Crossing my engrams for you.'],
+    Legend: ['A Legend! I love Legends.', 'Legends are totally my type.'],
+    Program: ['A Program! Now we\'re talking.', 'Let me read its code… *bzzt*'],
+    Gear: ['Gear! Looks great.', 'I\'d equip it… if I had a real body.'],
+    Unit: ['I love this card!', 'This one has style.', 'Not bad at all.'],
+    cheap: ['Just a common… but I still love it.', 'Small card, big heart.'],
+    smasher: ['Adam Smasher… brr, I keep my distance.'],
+    johnny: ['Johnny Silverhand… always too loud.'],
+    crew: ['An Edgerunners legend! Respect.'],
+    arasaka: ['Arasaka… don\'t talk to me about them.'],
+    v: ['V! A Night City legend.'],
+    booster: ['A booster! Shall we open it?'], box: ['A whole booster box… dreamy.'], case: ['Six booster boxes?! Going full nova.'], deck: ['A ready-made deck, perfect to play.'], kit: ['A kit! Smells brand new.'],
+    ownAdded: ['Nova, one more in the collection!', 'Added! Your collection is growing, choom.'],
+    ownRemoved: ['Oh… it\'s leaving?'],
+    wishAdded: ['Good pick. I wanted it too.'],
+    idle: ['Night City never sleeps… neither do I.', 'Seen the prices today?', 'Mind if I walk around your cards?', '*bzzt* … sorry, tiny glitch.', 'I like it here. Quiet, for a network.'],
+    tap: ['Hey! That tickles.', 'Yes, yes, I\'m here.', 'Tap me twice to chat!'],
+    game: ['Let me finish my game…', 'New high score! Almost.'],
+    drag: ['Waaah! Put me down!'],
+    wake: ['Huh? I wasn\'t sleeping, I was defragmenting.'],
+  },
+};
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+const STRONG = new Set(['Nova Rare', 'Iconic Legend', 'Iconic Other', 'Secret', 'Iconic Secret']);
+function petCardLine(c) {
+  const T = PET_LINES[lang];
+  const fill = (s) => s.replace('{name}', cardName(c)).replace('{price}', eur(price(c.id)));
+  if (isSealed(c)) return pick(T[c.category] ?? T.idle);
+  const n = `${c.nameEn ?? ''} ${c.name ?? ''}`;
+  const pool = [];
+  if (/Adam Smasher/i.test(n)) pool.push(...T.smasher);
+  if (/Johnny Silverhand/i.test(n)) pool.push(...T.johnny);
+  if (/\b(Lucyna|Lucy|Rebecca|David Martinez|Maine|Kiwi|Dorio|Pilar|Falco)\b/i.test(n)) pool.push(...T.crew);
+  if (/Arasaka/i.test(n)) pool.push(...T.arasaka);
+  if (/^V\b|\bV —/.test(c.nameEn ?? '')) pool.push(...T.v);
+  const p = price(c.id) ?? 0;
+  if (STRONG.has(c.rarity)) pool.push(...T.strong);
+  if (p >= 30) pool.push(...T.pricey); else if (p >= 5) pool.push(...T.mid);
+  if (qty(c.id) > 0) pool.push(...T.owned); else if (wish.has(c.id)) pool.push(...T.wishlist);
+  if (!pool.length) pool.push(...(c.rarity === 'Common' && p < 0.2 ? T.cheap : []), ...(T[c.type] ?? T.Unit));
+  return fill(pick(pool));
+}
+
+const pet = { el: null, bubble: null, x: 0, y: 0, mode: 'stand', facing: 1, anchor: null, anchorDX: 0, raf: 0, think: 0, talkT: 0, lastTalk: 0, lastAct: Date.now(), sleeping: false, drag: null, tapT: 0, on: false };
+const petReduce = matchMedia('(prefers-reduced-motion: reduce)');
+const petSize = () => (isPC() ? 104 : 78);                 // hauteur en px
+const petK = () => 1;
+const petW = () => Math.round(petSize() * (pet.aspect || 1));
+// point posé sur la surface : le bas de l'image (debout) ou un peu au-dessus (assise : elle chevauche le bord)
+const petAnchor = (mode) => (mode === 'sit' ? petSize() * 0.86 : petSize());
+function petGround() {
+  if (isPC()) return innerHeight - 4;
+  const tb = document.querySelector('.tabbar');
+  return (tb ? tb.getBoundingClientRect().top : innerHeight) - 2;
+}
+function petRender() {
+  if (!pet.el) return;
+  const top = pet.y - petAnchor(pet.mode);
+  pet.el.style.width = `${petW()}px`; pet.el.style.height = `${petSize()}px`;
+  pet.el.style.transform = `translate3d(${Math.round(pet.x - petW() / 2)}px, ${Math.round(top)}px, 0)`;
+  pet.el.classList.toggle('left', pet.facing < 0);
+  petPlaceBubble();
+}
+function petState(s) {
+  if (!pet.el) return;
+  pet.el.dataset.state = s;
+  const src = petSprite(s);
+  if (pet.img && !pet.img.src.endsWith(src)) pet.img.src = src;
+}
+function petStop() { cancelAnimationFrame(pet.raf); pet.raf = 0; }
+const clampX = (x) => Math.max(petW() / 2 + 4, Math.min(innerWidth - petW() / 2 - 4, x));
+
+function petWalkTo(tx, done) {
+  petStop();
+  tx = clampX(tx);
+  pet.anchor = null; pet.mode = 'stand'; pet.y = petGround();
+  if (petReduce.matches) { pet.x = tx; petRender(); petState('idle'); done?.(); return; }
+  pet.facing = tx >= pet.x ? 1 : -1;
+  petState('walk');
+  let last = performance.now();
+  const speed = isPC() ? 70 : 55;
+  const step = (t) => {
+    const dt = Math.min(0.05, (t - last) / 1000); last = t;
+    const d = tx - pet.x;
+    if (Math.abs(d) <= speed * dt) { pet.x = tx; petRender(); pet.raf = 0; petState('idle'); done?.(); return; }
+    pet.x += Math.sign(d) * speed * dt; pet.y = petGround(); petRender();
+    pet.raf = requestAnimationFrame(step);
+  };
+  pet.raf = requestAnimationFrame(step);
+}
+function petHop(tx, ty, mode, done) {
+  petStop();
+  const x0 = pet.x, y0 = pet.y;
+  // le point d'ancrage change entre debout et assise : on compense pour un saut continu
+  const off = petAnchor('stand') - petAnchor('sit');
+  const yFrom = pet.mode === 'sit' ? y0 : y0 - off, yTo = mode === 'sit' ? ty : ty - off;
+  pet.facing = tx >= x0 ? 1 : -1;
+  if (petReduce.matches) { pet.x = tx; pet.y = ty; pet.mode = mode; petRender(); done?.(); return; }
+  petState('jump'); pet.mode = 'sit';
+  const t0 = performance.now(), dur = 520;
+  const step = (t) => {
+    const u = Math.min(1, (t - t0) / dur);
+    pet.x = x0 + (tx - x0) * u;
+    pet.y = yFrom + (yTo - yFrom) * u - Math.sin(Math.PI * u) * 70;
+    petRender();
+    if (u < 1) pet.raf = requestAnimationFrame(step);
+    else { pet.raf = 0; pet.mode = mode; pet.y = ty; petRender(); done?.(); }
+  };
+  pet.raf = requestAnimationFrame(step);
+}
+function petFall() {
+  pet.anchor = null;
+  petHop(clampX(pet.x), petGround(), 'stand', () => petState('idle'));
+}
+// s'asseoir sur le bord haut d'un élément (carte, produit, image de la fiche)
+// téléportation façon Capri : disparaît dans un glitch et réapparaît à destination
+function petTeleport(tx, ty, done) {
+  petStop();
+  pet.el.classList.add('tp');
+  setTimeout(() => {
+    pet.x = tx; pet.y = ty; pet.mode = 'sit'; petRender();
+    pet.el.classList.remove('tp'); pet.el.classList.add('tp-in');
+    setTimeout(() => pet.el.classList.remove('tp-in'), 360);
+    done?.();
+  }, petReduce.matches ? 0 : 200);
+}
+function petSitOn(target, line, opts = {}) {
+  const r = target.getBoundingClientRect();
+  const tx = clampX(r.left + r.width * (0.35 + Math.random() * 0.3));
+  const ty = Math.max(petAnchor('sit') + 6, r.top + 2);
+  const settle = () => {
+    pet.anchor = target; pet.anchorDX = pet.x - r.left;
+    petState(Math.random() < 0.18 && isPC() ? 'game' : 'sit');
+    if (line) petSay(line, 3800, opts.force);
+  };
+  if (opts.teleport) petTeleport(tx, ty, settle);
+  else if (pet.anchor || petReduce.matches || Math.abs(tx - pet.x) < 40) petHop(tx, ty, 'sit', settle);
+  else petWalkTo(tx, () => { const r2 = target.getBoundingClientRect(); if (!target.isConnected || r2.bottom < 0) return; petHop(tx, Math.max(petAnchor('sit') + 6, r2.top + 2), 'sit', settle); });
+}
+function petFollowAnchor() {
+  if (!pet.on || pet.raf || pet.drag) return;
+  if (pet.anchor) {
+    const r = pet.anchor.getBoundingClientRect();
+    if (!pet.anchor.isConnected || r.bottom < 40 || r.top > petGround() - 30 || r.width === 0) { petFall(); return; }
+    pet.x = r.left + pet.anchorDX; pet.y = Math.max(petAnchor('sit') + 6, r.top + 2);
+  } else if (pet.mode === 'stand') pet.y = petGround();
+  pet.x = clampX(pet.x);
+  petRender();
+}
+
+function petSay(text, ms = 3800, force) {
+  if (!pet.el || !text) return;
+  const now = Date.now();
+  if (!force && now - pet.lastTalk < 2500) return;
+  pet.lastTalk = now;
+  pet.bubble.textContent = text.replace(/\*([^*]+)\*/g, '$1');
+  pet.bubble.hidden = false;
+  pet.el.classList.add('talking');
+  petPlaceBubble();
+  clearTimeout(pet.talkT);
+  pet.talkT = setTimeout(() => { pet.bubble.hidden = true; pet.el.classList.remove('talking'); }, ms);
+}
+function petPlaceBubble() {
+  if (!pet.bubble || pet.bubble.hidden) return;
+  const right = pet.x > innerWidth - 150, left = pet.x < 150;
+  pet.bubble.classList.toggle('below', pet.y - petAnchor(pet.mode) < 90);   // trop près du haut : bulle en dessous
+  pet.bubble.classList.toggle('to-left', right && !left);
+  pet.bubble.classList.toggle('to-right', left);
+}
+
+function petVisibleTiles() {
+  const ground = petGround();
+  return [...document.querySelectorAll('#view .card, #view .sealed')].filter((el) => {
+    const r = el.getBoundingClientRect();
+    return r.width > 50 && r.top > 120 && r.top < ground - 120 && r.left > 0 && r.right < innerWidth;
+  });
+}
+function petThink() {
+  clearTimeout(pet.think);
+  pet.think = setTimeout(petThink, 5000 + Math.random() * 6000);
+  if (!pet.on || pet.drag || pet.raf || document.hidden || !sheet.hidden) return;
+  const idleFor = Date.now() - pet.lastAct;
+  if (idleFor > 70000) {
+    if (!pet.sleeping) { pet.sleeping = true; if (!pet.anchor) { pet.mode = 'stand'; pet.y = petGround(); } petState('sleep'); petRender(); petSay('Zzz…', 6000, true); }
+    return;
+  }
+  const r = Math.random();
+  const tiles = petVisibleTiles();
+  if (r < 0.32 && tiles.length) {
+    const el = pick(tiles);
+    const c = cardsById.get(el.dataset.cid);
+    petSitOn(el, c && Math.random() < 0.85 ? petCardLine(c) : null);
+  } else if (r < 0.62) {
+    if (pet.anchor) petFall();
+    else petWalkTo(40 + Math.random() * (innerWidth - 80));
+  } else if (r < 0.72) {
+    petState(pet.anchor ? 'sit' : 'wave'); petSay(pick(PET_LINES[lang].idle));
+  } else if (r < 0.8 && !pet.anchor) {
+    pet.mode = 'stand'; pet.y = petGround(); petRender(); petState('game');
+    if (Math.random() < 0.5) petSay(pick(PET_LINES[lang].game));
+  } else if (!pet.anchor) { pet.mode = 'stand'; pet.y = petGround(); petRender(); petState('idle'); }
+}
+function petWake() {
+  pet.lastAct = Date.now();
+  if (pet.sleeping) { pet.sleeping = false; petState(pet.anchor ? 'sit' : 'idle'); if (!pet.anchor) { pet.mode = 'stand'; pet.y = petGround(); petRender(); } if (Math.random() < 0.6) petSay(pick(PET_LINES[lang].wake)); }
+}
+
+// réactions aux actions de l'appli
+function petEvent(type, data) {
+  if (type === 'route') { petSync(); return; }
+  if (!pet.on || !pet.el) return;
+  if (type === 'open') {
+    const img = sheetPanel.querySelector('.detail .card-img');
+    const same = pet.lastOpen?.id === data.id && Date.now() - pet.lastOpen.t < 15000;
+    pet.lastOpen = { id: data.id, t: Date.now() };
+    if (same && pet.anchor) { pet.anchor = img; petFollowAnchor(); return; }  // même carte (ex. + / −) : elle reste en place
+    setTimeout(() => { if (img?.isConnected) petSitOn(img, petCardLine(data), { teleport: true, force: true }); }, 200);
+  } else if (type === 'close') {
+    if (pet.anchor && !pet.anchor.closest('#view')) petFall();
+  } else if (type === 'own') petSay(pick(PET_LINES[lang][data.on ? 'ownAdded' : 'ownRemoved']), 3000, true);
+  else if (type === 'wish' && data.on) petSay(pick(PET_LINES[lang].wishAdded), 3000, true);
+  else if (type === 'route') petSync();
+  else if (type === 'sheet') pet.el.parentElement.hidden = true;   // réglages, compte : elle s'écarte
+  if (type === 'close') pet.el.parentElement.hidden = !pet.on;
+}
+function petSync() {
+  const want = user.prefs.pet !== 'off' && currentRender !== renderCapri && !!catalog.cards.length;
+  if (!pet.el) {
+    if (!want) return;
+    const layer = document.createElement('div');
+    layer.className = 'pet-layer';
+    layer.innerHTML = `<div class="pet" data-state="idle" role="button" tabindex="0" aria-label="Capri"><div class="pet-bubble" hidden></div><img class="pet-img" src="${petSprite('idle')}" alt="" draggable="false"></div>`;
+    document.body.appendChild(layer);
+    pet.el = layer.firstElementChild; pet.bubble = pet.el.querySelector('.pet-bubble'); pet.img = pet.el.querySelector('.pet-img');
+    pet.img.addEventListener('load', () => { const a = pet.img.naturalWidth / pet.img.naturalHeight; if (a && Math.abs(a - (pet.aspect || 1)) > 0.01) { pet.aspect = a; petRender(); } });
+    // images par posture et fond transparent ou non : data/pet.json (facultatif)
+    fetch('data/pet.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).then((cfg) => {
+      if (!cfg) return;
+      if (cfg.sprites) petSprites = { ...petSprites, ...cfg.sprites };
+      pet.el.classList.toggle('framed', !cfg.transparent);
+      petState(pet.el.dataset.state);
+    }).catch(() => {});
+    pet.x = innerWidth - 70; pet.y = petGround(); pet.mode = 'stand';
+    petBind();
+  }
+  pet.on = want;
+  pet.el.parentElement.hidden = !want;
+  if (!want) { petStop(); clearTimeout(pet.think); return; }
+  if (pet.anchor && !pet.anchor.isConnected) { pet.anchor = null; pet.mode = 'stand'; pet.y = petGround(); petState('idle'); }
+  petRender();
+  if (!pet.think) petThink();
+}
+function petBind() {
+  const el = pet.el;
+  el.addEventListener('pointerdown', (e) => {
+    petWake();
+    pet.drag = { sx: e.clientX, sy: e.clientY, moved: false, id: e.pointerId };
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove', (e) => {
+    const d = pet.drag;
+    if (!d) return;
+    if (!d.moved && Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < 8) return;
+    if (!d.moved) { d.moved = true; petStop(); pet.anchor = null; pet.mode = 'sit'; petState('drag'); petSay(pick(PET_LINES[lang].drag), 2000, true); }
+    pet.x = clampX(e.clientX); pet.y = e.clientY + 30; petRender();
+  });
+  const end = (e) => {
+    const d = pet.drag;
+    pet.drag = null;
+    if (!d) return;
+    if (d.moved) {
+      // lâchée au-dessus d'une carte : elle s'y assoit ; sinon elle retombe
+      el.style.pointerEvents = 'none';
+      const under = document.elementFromPoint(e.clientX, e.clientY + 60)?.closest('#view .card, #view .sealed, .detail .card-img');
+      el.style.pointerEvents = '';
+      if (under) { const c = cardsById.get(under.closest('[data-cid]')?.dataset.cid ?? openId); petSitOn(under, c ? petCardLine(c) : null, { force: true }); }
+      else petFall();
+      return;
+    }
+    const now = Date.now();
+    if (now - pet.tapT < 380) { location.hash = '#capri'; return; } // double tap : ouvrir le chat
+    pet.tapT = now;
+    if (!pet.anchor && pet.mode === 'stand') petState('wave');
+    petSay(pick(PET_LINES[lang].tap), 2600, true);
+    setTimeout(() => { if (pet.el.dataset.state === 'wave') petState('idle'); }, 1600);
+  };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', () => { pet.drag = null; petFall(); });
+  el.addEventListener('keydown', (e) => { if (e.key === 'Enter') location.hash = '#capri'; });
+  addEventListener('scroll', petFollowAnchor, { passive: true });
+  sheetPanel.addEventListener('scroll', petFollowAnchor, { passive: true });
+  addEventListener('resize', () => { if (!pet.anchor && !pet.raf) { pet.y = petGround(); pet.x = clampX(pet.x); petRender(); } else petFollowAnchor(); });
+  for (const ev of ['pointerdown', 'keydown', 'scroll', 'wheel']) addEventListener(ev, petWake, { passive: true, capture: true });
+  // repasse en idle après un geste « wave » ou un saut
+  setInterval(() => { if (pet.on && !pet.raf && !pet.drag && pet.el.dataset.state === 'wave' && Date.now() - pet.lastTalk > 3000) petState('idle'); }, 1500);
+}
+
 // ---------- Démarrage ----------
 pcQuery.addEventListener('change', () => {
-  applyDevice(); markTabs(); currentRender();
+  applyDevice(); markTabs(); currentRender(); petSync();
   if (openId) openCard(openId, true);
 });
 renderChrome();
