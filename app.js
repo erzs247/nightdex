@@ -4,6 +4,15 @@
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const parseDay = (s) => new Date(`${s}T00:00:00`);
 
+// ---------- Détection de l'appareil : interface PC ou téléphone ----------
+// « PC » = grand écran avec souris ou pavé tactile, ou très grand écran (tablette en paysage, TV…).
+// On se base sur l'écran et le pointeur plutôt que sur le nom de l'appareil : c'est plus fiable,
+// et l'interface bascule en direct si la fenêtre est redimensionnée ou l'écran tourné.
+const pcQuery = matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine), (min-width: 1280px)');
+const isPC = () => pcQuery.matches;
+const applyDevice = () => { document.documentElement.dataset.device = isPC() ? 'pc' : 'mobile'; };
+applyDevice();
+
 // ---------- Textes FR / EN ----------
 const plural = (n, one, many) => (n > 1 ? many : one);
 const TEXT = {
@@ -42,6 +51,7 @@ const TEXT = {
     chartWait: 'Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.', chartNone: 'Pas de prix Cardmarket pour cette carte pour l\'instant.',
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue', langToast: 'Langue : français',
+    prev: 'Carte précédente', next: 'Carte suivante',
     account: 'Mon compte', accountShort: 'Compte',
     accountPitch: 'Connecte-toi pour retrouver ta collection, tes souhaits et tes séries favorites sur tous tes appareils. Sans compte, elles restent enregistrées sur ce téléphone.',
     google: 'Continuer avec Google', or: 'ou', email: 'Adresse e-mail', password: 'Mot de passe (6 caractères minimum)',
@@ -97,6 +107,7 @@ const TEXT = {
     chartWait: 'Not enough history to draw a curve yet. Prices are recorded every day.', chartNone: 'No Cardmarket price for this card yet.',
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'Language', langToast: 'Language: English',
+    prev: 'Previous card', next: 'Next card',
     account: 'My account', accountShort: 'Account',
     accountPitch: 'Sign in to find your collection, wishlist and favourite sets on all your devices. Without an account, they stay on this phone.',
     google: 'Continue with Google', or: 'or', email: 'Email address', password: 'Password (at least 6 characters)',
@@ -124,6 +135,7 @@ const I = {
   sort: '<svg viewBox="0 0 24 24"><path d="M8 4v16"/><path d="m4 8 4-4 4 4"/><path d="M16 20V4"/><path d="m12 16 4 4 4-4"/></svg>',
   filter: '<svg viewBox="0 0 24 24"><path d="M4 7h10"/><path d="M18 7h2"/><circle cx="16" cy="7" r="2"/><path d="M4 17h2"/><path d="M10 17h10"/><circle cx="8" cy="17" r="2"/></svg>',
   gear: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  x: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',
   person: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
   heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
   own: '<svg viewBox="0 0 24 24"><rect x="6" y="3.5" width="12" height="17" rx="2"/><path d="m9.5 12 2 2 3.5-4"/></svg>',
@@ -672,13 +684,22 @@ function drawChart(el, pts, hasData) {
 
 // ---------- Fiche carte ----------
 const sheet = document.getElementById('sheet');
+// haut des panneaux : poignée (téléphone), boutons précédent / suivant (PC) et fermer
+const sheetTop = (nav) => `<div class="grab"></div><div class="sheet-tools">${nav ? `<button class="icon-btn nav-btn" data-action="prev" aria-label="${L.prev}">${I.back}</button><button class="icon-btn nav-btn flip" data-action="next" aria-label="${L.next}">${I.back}</button>` : ''}<button class="icon-btn" data-close aria-label="${L.close}">${I.x}</button></div>`;
+let navList = [];
+function navStep(dir) {
+  const i = navList.indexOf(openId);
+  const next = navList[i + dir];
+  if (i >= 0 && next) openCard(next, true);
+}
 const sheetPanel = document.getElementById('sheetPanel');
 let openId = null;
 let lastFocus = null;
 
-function openCard(id) {
+function openCard(id, keepNav) {
   const c = cardsById.get(id);
   if (!c) return;
+  if (!keepNav) navList = [...new Set([...view.querySelectorAll('[data-open]')].map((e) => e.dataset.open))];
   if (!openId) lastFocus = document.activeElement;
   openId = id;
   const s = setOf(c.set);
@@ -689,8 +710,8 @@ function openCard(id) {
   const stats = [c.cost != null ? `${L.cost} ${c.cost}` : '', c.power != null ? `${L.power} ${c.power}` : '', c.ram != null ? `${L.ram} ${c.ram}` : ''].filter(Boolean).join(' · ');
   const enOnly = lang === 'fr' && c.languages && !c.languages.includes('fr');
   const sealedItem = isSealed(c);
-  sheetPanel.innerHTML = `<div class="grab"></div>
-    <div class="stack">
+  sheetPanel.innerHTML = `${sheetTop(navList.length > 1)}
+    <div class="stack detail">
       <div class="detail-top ${sealedItem ? 'is-sealed' : ''}" ${rarityStyle(c.rarity)}>
         <div class="card-img">${cardImg(c, true)}${c.pack ? `<span class="pack-badge num">×${c.pack}</span>` : ''}</div>
         <div class="detail-info">
@@ -722,7 +743,7 @@ function openCard(id) {
         <h3>${L.curve} <small>Cardmarket${priceFile.updatedAt ? ` · ${fmt.date.format(parseDay(priceFile.updatedAt))}` : ''}</small></h3>
         <div class="ranges" id="cardRanges"></div>
         <div class="chart" id="cardChart"></div>
-        ${p.seeded ? `<p class="note">${L.seeded}</p>` : ''}
+        ${p.seeded && (p.history?.length ?? 0) > 1 ? `<p class="note">${L.seeded}</p>` : ''}
       </section>
       <a class="cta" href="${esc(cm.url)}" target="_blank" rel="noopener">${cm.exact ? L.cmView : L.cmSearch} ${I.ext}</a>
       ${c.official ? `<a class="btn-ghost" style="text-align:center;text-decoration:none" href="${esc(c.official)}" target="_blank" rel="noopener">${L.official}</a>` : ''}
@@ -731,6 +752,8 @@ function openCard(id) {
     </div>`;
   sheet.hidden = false;
   document.body.style.overflow = 'hidden';
+  const ni = navList.indexOf(id);
+  for (const [sel, ok] of [['[data-action="prev"]', ni > 0], ['[data-action="next"]', ni >= 0 && ni < navList.length - 1]]) { const b = sheetPanel.querySelector(sel); if (b) b.disabled = !ok; }
   mountRangedChart(document.getElementById('cardRanges'), document.getElementById('cardChart'), p.history ?? [], 'cardRange', p.trend != null);
   sheetPanel.querySelector('.stepper button')?.focus({ preventScroll: true });
 }
@@ -743,7 +766,7 @@ function closeCard() {
 // ---------- Réglages ----------
 function openSettings() {
   openId = null; sheetMode = null;
-  sheetPanel.innerHTML = `<div class="grab"></div><div class="stack">
+  sheetPanel.innerHTML = `${sheetTop()}<div class="stack">
     <h2 id="sheetTitle" style="margin:0;font:700 22px var(--font-display)">${L.settings}</h2>
     ${cloud.enabled ? `<button class="btn-ghost acct-row" data-action="account">${I.person}<span>${cloud.user ? esc(L.signedAs(cloud.user.email ?? cloud.user.name ?? '')) : L.account}</span></button>` : ''}
     <div class="panel"><h3>${L.language}</h3>${seg('lang', lang, [['fr', 'Français'], ['en', 'English']])}</div>
@@ -869,7 +892,7 @@ function openAccount(keep) {
   const u = cloud.user;
   const time = cloud.lastSync ? new Intl.DateTimeFormat(fmt.loc, { hour: '2-digit', minute: '2-digit' }).format(cloud.lastSync) : '';
   const status = cloud.status === 'ok' ? `<span class="sync ok">● ${L.syncOk(time)}</span>` : cloud.status === 'syncing' ? `<span class="sync wait">● ${L.syncing}</span>` : cloud.status === 'error' ? `<span class="sync err">● ${L.syncErr}</span>` : '';
-  sheetPanel.innerHTML = `<div class="grab"></div><div class="stack account">
+  sheetPanel.innerHTML = `${sheetTop()}<div class="stack account">
     <h2 id="sheetTitle" style="margin:0;font:700 22px var(--font-display)">${L.account}</h2>
     ${u ? `
       <div class="panel">
@@ -937,7 +960,7 @@ function toast(msg) {
 // ---------- Barre d'onglets et langue ----------
 function renderChrome() {
   document.documentElement.lang = lang;
-  const labels = { home: L.home, collection: L.collection, values: L.market, wishlist: L.wishlist };
+  const labels = { home: L.home, sealed: L.sealed, collection: L.collection, search: L.search, values: L.market, wishlist: L.wishlist };
   for (const a of document.querySelectorAll('.tabbar a')) {
     const span = a.querySelector('span');
     if (span && labels[a.dataset.tab]) span.textContent = labels[a.dataset.tab];
@@ -1000,6 +1023,8 @@ document.addEventListener('click', async (e) => {
   } else if (d.action === 'filters') { showFilters = !showFilters; currentRender(); }
   else if (d.action === 'settings') openSettings();
   else if (d.action === 'account') openAccount();
+  else if (d.action === 'prev') navStep(-1);
+  else if (d.action === 'next') navStep(1);
   else if (d.action === 'google') signInGoogle();
   else if (d.action === 'forgot') {
     const email = document.getElementById('acctEmail')?.value.trim();
@@ -1046,10 +1071,22 @@ document.addEventListener('input', (e) => {
   m[1]();
   const el = document.getElementById(e.target.id); el.focus(); el.setSelectionRange(pos, pos);
 });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden) closeCard(); });
+document.addEventListener('keydown', (e) => {
+  if (sheet.hidden) return;
+  if (e.key === 'Escape') closeCard();
+  else if (openId && (e.key === 'ArrowRight' || e.key === 'ArrowLeft') && !e.target.closest('input, textarea')) { e.preventDefault(); navStep(e.key === 'ArrowRight' ? 1 : -1); }
+});
 sheet.addEventListener('click', (e) => { if (e.target.matches('.sheet-backdrop')) closeCard(); });
 
 // ---------- Navigation ----------
+let currentTab = 'home';
+function markTabs() {
+  const pc = isPC();
+  for (const a of document.querySelectorAll('.tabbar a')) {
+    const on = a.dataset.tab === currentTab || (!pc && currentTab === 'sealed' && a.dataset.tab === 'home');
+    if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  }
+}
 function route() {
   const h = location.hash.slice(1) || 'home';
   if (!sheet.hidden) closeCard();
@@ -1059,11 +1096,10 @@ function route() {
   else if (h === 'wishlist') currentRender = renderWishlist;
   else if (h === 'search') currentRender = renderSearch;
   else if (h === 'values') currentRender = renderValues;
-  else if (h === 'sealed') { tab = 'home'; currentRender = renderSealed; }
+  else if (h === 'sealed') { tab = 'sealed'; currentRender = renderSealed; }
   else { tab = 'home'; currentRender = renderHome; }
-  for (const a of document.querySelectorAll('.tabbar a')) {
-    if (a.dataset.tab === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
-  }
+  currentTab = tab;
+  markTabs();
   currentRender();
   window.scrollTo(0, 0);
   if (h === 'search') document.getElementById('cardSearch')?.focus();
@@ -1071,6 +1107,10 @@ function route() {
 window.addEventListener('hashchange', route);
 
 // ---------- Démarrage ----------
+pcQuery.addEventListener('change', () => {
+  applyDevice(); markTabs(); currentRender();
+  if (openId) openCard(openId, true);
+});
 renderChrome();
 try {
   await loadData();

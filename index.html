@@ -24,9 +24,14 @@
   </div>
 
   <nav class="tabbar" aria-label="Navigation principale">
+    <div class="brand pc-only" aria-hidden="true"><svg viewBox="0 0 512 512"><path d="M150 96h250l40 40v280H190l-40-40z" fill="#f5e50b"/><path d="M196 150h148l40 40v170H236l-40-40z" fill="#0b0d14"/><path d="M232 330V190h30l52 82v-82h34v140h-30l-52-82v82z" fill="#f5e50b"/></svg>NightDex</div>
     <a href="#home" data-tab="home">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
       <span>Accueil</span>
+    </a>
+    <a href="#sealed" data-tab="sealed" class="pc-only">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7.5v9L12 21l9-4.5v-9z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/></svg>
+      <span>Scellé</span>
     </a>
     <a href="#collection" data-tab="collection">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="12" height="17" rx="2"/><path d="M19 6v14a1 1 0 0 1-1 1H8"/></svg>
@@ -34,6 +39,7 @@
     </a>
     <a href="#search" data-tab="search" class="tab-main" aria-label="Rechercher une carte">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+      <span>Recherche</span>
     </a>
     <a href="#values" data-tab="values">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19h18"/><path d="m4 15 5-5 4 3 7-7"/><path d="M15 6h5v5"/></svg>

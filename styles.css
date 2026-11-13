@@ -407,3 +407,116 @@ main { padding: 0 var(--gutter-r) 0 var(--gutter-l); outline: none; }
 .danger-zone { border-color: color-mix(in srgb, var(--down) 45%, var(--line)); }
 .btn-danger { color: var(--down); }
 button:disabled { opacity: .5; cursor: default; }
+
+/* ---------- Panneaux : boutons du haut ---------- */
+.sheet-panel { position: absolute; }
+.sheet-tools { position: absolute; top: 8px; right: max(8px, env(safe-area-inset-right, 0px)); display: flex; gap: 4px; z-index: 2; }
+.sheet-tools .icon-btn { width: 38px; height: 38px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.sheet-tools .flip svg { transform: scaleX(-1); }
+.sheet-tools .nav-btn { display: none; }
+.sheet-tools .icon-btn:disabled { opacity: .3; }
+.detail-info h2, .account h2, #sheetTitle { padding-right: 46px; }
+
+/* ---------- Téléphone : éléments réservés au PC ---------- */
+.tabbar .pc-only { display: none; }
+.tabbar .tab-main span { display: none; }
+
+/* =====================================================================
+   Interface PC : activée par app.js (html[data-device="pc"]) quand l'écran est grand
+   et piloté à la souris. Barre latérale, contenu large, fiche en fenêtre centrée.
+   ===================================================================== */
+:root[data-device="pc"] { --side: 236px; --gutter-l: 40px; --gutter-r: 40px; }
+:root[data-device="pc"] body { padding-bottom: 40px; }
+:root[data-device="pc"] body::before { display: none; }
+
+/* Barre latérale */
+:root[data-device="pc"] .tabbar {
+  top: 0; bottom: 0; right: auto; width: var(--side); min-height: 0;
+  display: flex; flex-direction: column; align-items: stretch; gap: 4px;
+  padding: calc(22px + env(safe-area-inset-top, 0px)) 14px 22px max(14px, env(safe-area-inset-left, 0px));
+  border-top: 0; border-right: 1px solid var(--line); background: var(--bg); backdrop-filter: none;
+}
+:root[data-device="pc"] .tabbar .brand {
+  display: flex; align-items: center; gap: 10px; padding: 4px 12px 26px;
+  font: 700 23px/1 var(--font-display); letter-spacing: .02em; color: var(--fg);
+}
+:root[data-device="pc"] .tabbar .brand svg { width: 34px; height: 34px; stroke: none; }
+:root[data-device="pc"] .tabbar a,
+:root[data-device="pc"] .tabbar .tab-main {
+  display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 14px;
+  width: auto; height: auto; margin: 0; padding: 11px 14px; border-radius: 12px;
+  background: none; color: var(--muted); clip-path: none; font-size: 15px; font-weight: 500;
+}
+:root[data-device="pc"] .tabbar a.pc-only { display: flex; }
+:root[data-device="pc"] .tabbar .tab-main span { display: inline; }
+:root[data-device="pc"] .tabbar .tab-main svg { width: 24px; height: 24px; stroke-width: 1.8; }
+:root[data-device="pc"] .tabbar a:hover { background: var(--surface); color: var(--fg); }
+:root[data-device="pc"] .tabbar a[aria-current="page"] { background: var(--surface-2); color: var(--fg); }
+:root[data-device="pc"] .tabbar a[aria-current="page"] span { border-bottom: 0; }
+:root[data-device="pc"] .tabbar a[aria-current="page"] svg { color: var(--accent); }
+
+/* Contenu */
+:root[data-device="pc"] #app { margin-left: var(--side); }
+:root[data-device="pc"] .topbar { top: 0; padding-block: 22px 14px; max-width: 1480px; margin-inline: auto; }
+:root[data-device="pc"] .topbar h1 { font-size: 32px; }
+:root[data-device="pc"] .topbar h1.small { font-size: 26px; }
+:root[data-device="pc"] main { max-width: 1480px; margin-inline: auto; }
+:root[data-device="pc"] .demo-banner { max-width: 1400px; margin-inline: auto; }
+:root[data-device="pc"] .stack { gap: 18px; }
+:root[data-device="pc"] .seg { max-width: 560px; }
+:root[data-device="pc"] .search { max-width: 560px; }
+:root[data-device="pc"] .kpis { max-width: 760px; }
+:root[data-device="pc"] .section-title { font-size: 22px; margin-top: 10px; }
+
+/* Accueil : séries sur deux colonnes, tuiles plus nombreuses */
+:root[data-device="pc"] .set-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 48px; padding-bottom: 12px; }
+:root[data-device="pc"] .set-row + .set-row { border-top: 0; }
+:root[data-device="pc"] .set-row:nth-child(n + 3) { border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent); }
+:root[data-device="pc"] .set-tiles { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; padding: 0 18px 18px; }
+:root[data-device="pc"] .block > summary { padding: 20px 22px; font-size: 22px; }
+:root[data-device="pc"] .set-list { padding-inline: 22px; }
+
+/* Grilles de cartes et de produits */
+:root[data-device="pc"] .cards { grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 24px 18px; }
+:root[data-device="pc"] .cards.compact { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+:root[data-device="pc"] .sealed-grid { grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 18px; }
+:root[data-device="pc"] .rows { max-width: 1100px; }
+:root[data-device="pc"] .row { padding: 10px 16px; grid-template-columns: 52px minmax(0, 1fr) auto auto; }
+:root[data-device="pc"] .row .thumb { width: 52px; }
+:root[data-device="pc"] .row:hover { background: var(--surface-2); }
+
+/* Survol à la souris */
+@media (hover: hover) {
+  .card .card-img, .sealed { transition: transform .16s ease, box-shadow .16s ease; }
+  .card:hover .card-img { transform: translateY(-4px); box-shadow: 0 14px 34px -12px rgb(0 0 0 / .8), 0 0 0 1px var(--line); }
+  .sealed:hover { transform: translateY(-3px); box-shadow: 0 14px 34px -14px rgb(0 0 0 / .8); }
+  .set-row:hover .set-name, .set-tile:hover .set-name { color: var(--accent); }
+}
+@media (prefers-reduced-motion: reduce) { .card .card-img, .sealed { transition: none; } .card:hover .card-img, .sealed:hover { transform: none; } }
+
+/* Fiche carte : fenêtre centrée sur deux colonnes */
+:root[data-device="pc"] .sheet-backdrop { background: rgb(0 0 0 / .72); }
+:root[data-device="pc"] .sheet-panel {
+  left: 50%; right: auto; top: 50%; bottom: auto; width: min(1040px, calc(100vw - 64px)); max-height: calc(100vh - 64px);
+  transform: translate(-50%, -50%); border: 1px solid var(--line); border-radius: 20px; padding: 30px 36px 32px;
+  animation: pop .18s ease-out;
+}
+@keyframes pop { from { opacity: 0; transform: translate(-50%, -47%); } }
+@media (prefers-reduced-motion: reduce) { :root[data-device="pc"] .sheet-panel { animation: none; } }
+:root[data-device="pc"] .grab { display: none; }
+:root[data-device="pc"] .sheet-tools { top: 16px; right: 16px; }
+:root[data-device="pc"] .sheet-tools .nav-btn { display: grid; }
+:root[data-device="pc"] .sheet-panel:has(.account),
+:root[data-device="pc"] .sheet-panel:has(.menu) { width: min(560px, calc(100vw - 64px)); }
+:root[data-device="pc"] .detail {
+  display: grid; grid-template-columns: 360px minmax(0, 1fr); column-gap: 40px; row-gap: 16px; align-items: start;
+}
+:root[data-device="pc"] .detail > * { grid-column: 2; }
+:root[data-device="pc"] .detail .detail-top { display: contents; }
+:root[data-device="pc"] .detail .detail-top > .card-img { grid-column: 1; grid-row: 1 / span 8; position: sticky; top: 0; }
+:root[data-device="pc"] .detail .detail-info { grid-column: 2; }
+:root[data-device="pc"] .detail-info h2 { font-size: 32px; }
+:root[data-device="pc"] .chart:not(:has(.chart-empty)) { height: 250px; }
+
+/* Messages */
+:root[data-device="pc"] .toast { bottom: 28px; left: calc(50% + var(--side) / 2); }

@@ -1,5 +1,5 @@
 // Cache hors ligne : l'interface est servie depuis le cache, les données sont rafraîchies dès que possible.
-const CACHE = 'nightdex-v3';
+const CACHE = 'nightdex-v4';
 const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'manifest.webmanifest', 'icons/icon.svg', 'data/config.json'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener('activate', (e) => {
