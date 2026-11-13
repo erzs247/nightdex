@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>NightDex</title>
+  <meta name="description" content="Suivi de collection Cyberpunk TCG : cartes, prix Cardmarket et courbes de prix.">
+  <meta name="theme-color" content="#0b0d14">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar" id="topbar"></header>
+    <div class="demo-banner" id="demoBanner" hidden>
+      Données de démonstration : cartes et prix fictifs. Lancez l'import Cardmarket pour afficher les vraies cartes.
+    </div>
+    <main id="view" tabindex="-1"></main>
+  </div>
+
+  <nav class="tabbar" aria-label="Navigation principale">
+    <a href="#home" data-tab="home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+      <span>Accueil</span>
+    </a>
+    <a href="#collection" data-tab="collection">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="12" height="17" rx="2"/><path d="M19 6v14a1 1 0 0 1-1 1H8"/></svg>
+      <span>Collection</span>
+    </a>
+    <a href="#search" data-tab="search" class="tab-main" aria-label="Rechercher une carte">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+    </a>
+    <a href="#values" data-tab="values">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19h18"/><path d="m4 15 5-5 4 3 7-7"/><path d="M15 6h5v5"/></svg>
+      <span>Cotes</span>
+    </a>
+    <a href="#wishlist" data-tab="wishlist">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+      <span>Souhaits</span>
+    </a>
+  </nav>
+
+  <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-backdrop" data-close></div>
+    <div class="sheet-panel" id="sheetPanel"></div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>

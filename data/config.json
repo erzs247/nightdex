@@ -1,0 +1,14 @@
+{
+  "appName": "NightDex",
+  "cardmarket": {
+    "lang": "fr",
+    "gameSlug": "Cyberpunk",
+    "idGame": null,
+    "productsUrl": "https://downloads.s3.cardmarket.com/productCatalog/productList/products_singles_{idGame}.json",
+    "priceGuideUrl": "https://downloads.s3.cardmarket.com/productCatalog/priceGuide/price_guide_{idGame}.json"
+  },
+  "expansions": {
+    "_aide": "Associe l'idExpansion Cardmarket au code de série de l'appli. Exemple : \"5843\": \"WNC\"",
+    "map": {}
+  }
+}

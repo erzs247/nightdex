@@ -1,0 +1,13 @@
+{
+  "name": "nightdex",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Suivi de collection Cyberpunk TCG avec prix Cardmarket et courbes de prix",
+  "type": "module",
+  "scripts": {
+    "start": "npx --yes serve -l 8080 .",
+    "demo": "node scripts/make-demo.mjs",
+    "update": "node scripts/update-prices.mjs",
+    "import": "node scripts/import-cards.mjs"
+  }
+}

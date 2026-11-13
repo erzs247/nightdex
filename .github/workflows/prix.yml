@@ -1,0 +1,56 @@
+name: Prix Cardmarket et publication
+
+on:
+  schedule:
+    - cron: "17 6 * * *"   # chaque jour vers 7 h (heure de Paris en hiver)
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  prix:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Relevé des prix du jour
+        env:
+          CM_GAME_ID: ${{ vars.CM_GAME_ID }}
+        run: node scripts/update-prices.mjs
+      - name: Enregistrer l'historique
+        run: |
+          git config user.name "nightdex-bot"
+          git config user.email "nightdex-bot@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "Prix Cardmarket du $(date +%F)"
+          git push
+
+  publier:
+    needs: [prix]
+    if: always() && (needs.prix.result == 'success' || needs.prix.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deploy
+        uses: actions/deploy-pages@v4
