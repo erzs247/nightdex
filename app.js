@@ -50,7 +50,12 @@ const TEXT = {
     cost: 'Coût', power: 'Puissance', ram: 'RAM', enOnly: 'Carte imprimée en anglais uniquement',
     chartWait: 'Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.', chartNone: 'Pas de prix Cardmarket pour cette carte pour l\'instant.',
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
-    language: 'Langue', langToast: 'Langue : français',
+    language: 'Langue de l\'appli', langToast: 'Appli en français',
+    cardLanguage: 'Langue des cartes', cardLangHint: 'Le bouton FR | EN de l\'accueil fait la même chose : séries, noms et images dans cette langue.',
+    cardLangToast: (l) => (l === 'fr' ? 'Cartes : séries françaises' : 'Cartes : séries anglaises'),
+    langHint: 'Menus, boutons et textes de NightDex.',
+    hiddenSets: (n, l) => `${n} série${n > 1 ? 's' : ''} n'existe${n > 1 ? 'nt' : ''} pas en ${l === 'fr' ? 'français' : 'anglais'}.`, showOther: (l) => `Voir les cartes ${l.toUpperCase()}`,
+    noCardsLang: (l) => `Aucune carte de cette série n'est imprimée en ${l === 'fr' ? 'français' : 'anglais'}.`,
     prev: 'Carte précédente', next: 'Carte suivante',
     fr: {
       title: 'Amis', gate: 'Connecte-toi à ton compte NightDex pour ajouter des amis et voir leurs collections.',
@@ -141,7 +146,12 @@ const TEXT = {
     cost: 'Cost', power: 'Power', ram: 'RAM', enOnly: 'Printed in English only',
     chartWait: 'Not enough history to draw a curve yet. Prices are recorded every day.', chartNone: 'No Cardmarket price for this card yet.',
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
-    language: 'Language', langToast: 'Language: English',
+    language: 'App language', langToast: 'App in English',
+    cardLanguage: 'Card language', cardLangHint: 'The FR | EN button on the home screen does the same: sets, names and images in that language.',
+    cardLangToast: (l) => (l === 'fr' ? 'Cards: French sets' : 'Cards: English sets'),
+    langHint: 'NightDex menus, buttons and texts.',
+    hiddenSets: (n, l) => `${n} set${n > 1 ? 's are' : ' is'} not printed in ${l === 'fr' ? 'French' : 'English'}.`, showOther: (l) => `See ${l.toUpperCase()} cards`,
+    noCardsLang: (l) => `No card from this set is printed in ${l === 'fr' ? 'French' : 'English'}.`,
     prev: 'Previous card', next: 'Next card',
     fr: {
       title: 'Friends', gate: 'Sign in to your NightDex account to add friends and see their collections.',
@@ -210,6 +220,7 @@ const I = {
   heartSmall: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
   camera: '<svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.8"/></svg>',
   bolt: '<svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+  globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>',
   person: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
   heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
   own: '<svg viewBox="0 0 24 24"><rect x="6" y="3.5" width="12" height="17" rx="2"/><path d="m9.5 12 2 2 3.5-4"/></svg>',
@@ -253,8 +264,12 @@ function save() {
 }
 
 // ---------- Langue & formats ----------
-let lang = user.prefs.lang === 'en' ? 'en' : 'fr';
+// langue de l'appli (menus, textes) — choisie dans les Réglages ou avec le bouton 🌐
+const UI_LANGS = [['fr', 'Français'], ['en', 'English']];
+let lang = UI_LANGS.some(([k]) => k === user.prefs.lang) ? user.prefs.lang : 'fr';
 let L = TEXT[lang];
+// langue des cartes (bouton FR | EN) : séries imprimées en français ou en anglais, noms et images correspondants
+let cardLang = user.prefs.cardLang === 'en' || user.prefs.cardLang === 'fr' ? user.prefs.cardLang : lang;
 let fmt;
 function setFormats() {
   const loc = lang === 'en' ? 'en-GB' : 'fr-FR';
@@ -272,8 +287,11 @@ const pct = (v) => (v == null || !isFinite(v) ? '' : fmt.pct.format(v));
 const rarityLabel = (r) => L.rarity[r] ?? r;
 const typeLabel = (t) => L.type[t] ?? t;
 const colorLabel = (c) => L.color[c] ?? c;
-const cardName = (c) => (lang === 'en' ? c.nameEn ?? c.name : c.name);
-const setName = (s) => (lang === 'en' ? s.nameEn ?? s.name : s.name);
+const cardName = (c) => (cardLang === 'en' ? c.nameEn ?? c.name : c.name);
+// la carte existe-t-elle dans la langue choisie ? (le scellé est affiché dans les deux)
+const inCardLang = (c) => isSealed(c) || !c.languages || c.languages.includes(cardLang);
+const setCards = (code) => (cardsBySet.get(code) ?? []).filter(inCardLang);
+const setName = (s) => (cardLang === 'en' ? s.nameEn ?? s.name : s.name);
 const blockName = (b) => L.blocks[b] ?? b;
 
 // ---------- Données ----------
@@ -308,8 +326,9 @@ const hasPrices = () => Object.keys(priceFile.prices ?? {}).length > 0;
 const price = (id) => P(id)?.trend ?? null;
 const qty = (id) => user.owned[id] ?? 0;
 const setOf = (code) => catalog.sets.find((s) => s.code === code);
-const setTotal = (s) => s.total ?? cardsBySet.get(s.code)?.length ?? 0;
-const ownedIn = (code) => (cardsBySet.get(code) ?? []).filter((c) => qty(c.id) > 0).length;
+const setTotal = (s) => setCards(s.code).length;
+const ownedIn = (code) => setCards(code).filter((c) => qty(c.id) > 0).length;
+const ownedAll = (code) => (cardsBySet.get(code) ?? []).filter((c) => qty(c.id) > 0).length;
 const printCode = (code) => setOf(code)?.print ?? code;
 const isSealed = (c) => c.kind === 'sealed';
 const itemCode = (c) => (isSealed(c) ? c.print ?? (c.set ? printCode(c.set) : '') : printCode(c.set));
@@ -333,7 +352,7 @@ function cmUrl(card) {
   const { gameSlug = 'Cyberpunk', languageIds = { en: 1, fr: 2 } } = config.cardmarket ?? {};
   if (card.cardmarket?.path && isSealed(card)) return { url: `https://www.cardmarket.com/${lang}/${gameSlug}/${card.cardmarket.path}`, exact: true };
   if (card.cardmarket?.path) {
-    const printedIn = lang === 'fr' && card.languages?.includes('fr') ? 'fr' : 'en';
+    const printedIn = cardLang === 'fr' && card.languages?.includes('fr') ? 'fr' : 'en';
     return { url: `https://www.cardmarket.com/${lang}/${gameSlug}/${card.cardmarket.path}?language=${languageIds[printedIn]}`, exact: true };
   }
   return { url: `https://www.cardmarket.com/${lang}/${gameSlug}/Products/Search?searchString=${encodeURIComponent(card.nameEn ?? card.name)}`, exact: false };
@@ -369,7 +388,7 @@ ${lines.map((l, i) => `<text x="46" y="${200 + i * 64}" font-family="sans-serif"
   artCache.set(k, uri);
   return uri;
 }
-const imageOf = (c) => (lang === 'en' && c.imageEn ? c.imageEn : c.image);
+const imageOf = (c) => (cardLang === 'en' && c.imageEn ? c.imageEn : c.image);
 
 // Version autonome : images regroupées par série et par langue dans packs/<nom>.json (chargées à la demande)
 const packs = new Map();
@@ -462,7 +481,8 @@ const view = document.getElementById('view');
 const topbar = document.getElementById('topbar');
 let currentRender = () => {};
 
-const langBtn = () => `<button class="lang-btn" data-action="lang" aria-label="${L.language}"><span ${lang === 'fr' ? 'class="on"' : ''}>FR</span><span ${lang === 'en' ? 'class="on"' : ''}>EN</span></button>`;
+const langBtn = () => `<button class="lang-btn" data-action="cardlang" aria-label="${L.cardLanguage}" title="${L.cardLanguage}"><span ${cardLang === 'fr' ? 'class="on"' : ''}>FR</span><span ${cardLang === 'en' ? 'class="on"' : ''}>EN</span></button>`;
+const globeBtn = () => `<button class="icon-btn" data-action="language" aria-label="${L.language}" title="${L.language}">${I.globe}</button>`;
 function setTopbar(html) { topbar.innerHTML = html; }
 function seg(name, value, options) {
   return `<div class="seg" role="group">${options.map(([v, label]) => `<button data-seg="${name}" data-value="${v}" aria-pressed="${value === v}">${label}</button>`).join('')}</div>`;
@@ -491,7 +511,7 @@ function progressTile(s) {
 let homeQuery = '';
 function homeTopbar(withMode) {
   const mode = user.prefs.homeMode;
-  setTopbar(`<h1>${L.home}</h1>${withMode ? `<button class="icon-btn" data-action="home-mode" aria-label="${L.toggleView}">${mode === 'grid' ? I.listIcon : I.gridIcon}</button>` : ''}${langBtn()}<a class="icon-btn capri-btn" href="#capri" aria-label="Capri"><img src="images/capri/avatar.webp" alt=""></a>${accountBtn()}<button class="icon-btn" data-action="settings" aria-label="${L.settings}">${I.gear}</button>`);
+  setTopbar(`<h1>${L.home}</h1>${withMode ? `<button class="icon-btn" data-action="home-mode" aria-label="${L.toggleView}">${mode === 'grid' ? I.listIcon : I.gridIcon}</button>` : ''}${langBtn()}${globeBtn()}<a class="icon-btn capri-btn" href="#capri" aria-label="Capri"><img src="images/capri/avatar.webp" alt=""></a>${accountBtn()}<button class="icon-btn" data-action="settings" aria-label="${L.settings}">${I.gear}</button>`);
 }
 const homeTabs = (active) => `<div class="seg" role="tablist">${[['home', L.setsTab], ['sealed', L.sealed]].map(([h, l]) => `<button data-nav="${h}" aria-pressed="${active === h}">${l}</button>`).join('')}</div>`;
 function renderSealed() {
@@ -508,7 +528,9 @@ function renderHome() {
   homeTopbar(true);
   const mode = user.prefs.homeMode;
   const q = homeQuery.trim().toLowerCase();
+  const hidden = catalog.sets.filter((s) => (cardsBySet.get(s.code) ?? []).length && !setTotal(s)).length;
   const sets = [...catalog.sets]
+    .filter((s) => setTotal(s) > 0 || !(cardsBySet.get(s.code) ?? []).length)
     .filter((s) => !q || [s.name, s.nameEn, s.code, s.print].some((x) => String(x ?? '').toLowerCase().includes(q)))
     .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
   const groups = new Map();
@@ -524,6 +546,7 @@ function renderHome() {
     ${homeTabs('home')}
     <input class="search" id="setSearch" type="search" placeholder="${L.searchSet}" value="${esc(homeQuery)}" autocomplete="off">
     ${body || `<div class="empty"><strong>${L.noSet}</strong></div>`}
+    ${hidden ? `<p class="note lang-note">${L.hiddenSets(hidden, cardLang)} <button class="link-btn" data-action="cardlang">${L.showOther(cardLang === 'fr' ? 'en' : 'fr')}</button></p>` : ''}
   </div>`;
 }
 
@@ -568,7 +591,7 @@ function renderSet(code) {
   const s = setOf(code);
   if (!s) { location.hash = '#home'; return; }
   if (setQueryCode !== code) { setQueryCode = code; setQuery = ''; }
-  const all = cardsBySet.get(code) ?? [];
+  const all = setCards(code);
   const list = sortCards(filterCards(all).filter((c) => matchQuery(c, setQuery)), user.prefs.sort);
   const value = all.reduce((a, c) => a + qty(c.id) * (price(c.id) ?? 0), 0);
   const full = all.reduce((a, c) => a + (price(c.id) ?? 0), 0);
@@ -586,7 +609,7 @@ function renderSet(code) {
       <span>${L.owned(ownedIn(code), setTotal(s))}</span><span class="grow"></span>
       ${hasPrices() ? `<span>${L.myValue} : <b style="color:var(--fg)">${eur(value)}</b></span>` : `<span>${L.pricesSoon}</span>`}
     </div>
-    ${cardsBlock(list, user.prefs.setMode)}
+    ${!all.length && (cardsBySet.get(code) ?? []).length ? `<div class="empty"><strong>${L.noCardsLang(cardLang)}</strong><button class="btn-ghost" data-action="cardlang">${L.showOther(cardLang === 'fr' ? 'en' : 'fr')}</button></div>` : cardsBlock(list, user.prefs.setMode)}
     <p class="note num">${L.setNote(L.sorts[user.prefs.sort], list.length, hasPrices() ? eur(full) : '')}</p>
   </div>`;
 }
@@ -603,7 +626,7 @@ function renderCollection() {
   const total = owned.reduce((a, c) => a + qty(c.id), 0);
   const value = [...owned, ...ownedSealed].reduce((a, c) => a + qty(c.id) * (price(c.id) ?? 0), 0);
   const sealedQty = ownedSealed.reduce((a, s) => a + qty(s.id), 0);
-  const sets = [...catalog.sets].sort((a, b) => (a.order ?? 999) - (b.order ?? 999)).filter((s) => ownedIn(s.code) > 0);
+  const sets = [...catalog.sets].sort((a, b) => (a.order ?? 999) - (b.order ?? 999)).filter((s) => ownedAll(s.code) > 0);
   const shown = colSet === '__sealed' ? [] : sortCards(owned.filter((c) => !colSet || c.set === colSet), 'price-desc');
   const sealedShown = !colSet || colSet === '__sealed' ? ownedSealed : [];
   view.innerHTML = `<div class="stack">
@@ -612,7 +635,7 @@ function renderCollection() {
       <div class="stat"><small>${L.kUnique}</small><b class="num">${owned.length}</b></div>
       <div class="stat"><small>${L.kValue}</small><b class="num">${eur(value)}</b></div>
     </div>
-    <div class="chips"><button class="chip" data-colset="" aria-pressed="${!colSet}">${L.all}</button>${ownedSealed.length ? `<button class="chip" data-colset="__sealed" aria-pressed="${colSet === '__sealed'}">${L.sealed} · ${sealedQty}</button>` : ''}${sets.map((s) => `<button class="chip" data-colset="${esc(s.code)}" aria-pressed="${colSet === s.code}">${esc(s.print ?? s.code)} · ${ownedIn(s.code)}</button>`).join('')}</div>
+    <div class="chips"><button class="chip" data-colset="" aria-pressed="${!colSet}">${L.all}</button>${ownedSealed.length ? `<button class="chip" data-colset="__sealed" aria-pressed="${colSet === '__sealed'}">${L.sealed} · ${sealedQty}</button>` : ''}${sets.map((s) => `<button class="chip" data-colset="${esc(s.code)}" aria-pressed="${colSet === s.code}">${esc(s.print ?? s.code)} · ${ownedAll(s.code)}</button>`).join('')}</div>
     ${shown.length ? `${seg('setMode', user.prefs.setMode, [['cards', L.cards], ['list', L.list], ['grid', L.grid]])}${cardsBlock(shown, user.prefs.setMode)}` : ''}
     ${sealedShown.length ? `<h2 class="section-title">${L.sealed} · ${L.sealedCount(sealedQty)}</h2><div class="sealed-grid">${sealedShown.map(sealedTile).join('')}</div>` : ''}
   </div>`;
@@ -638,7 +661,7 @@ let searchQuery = '';
 function renderSearch() {
   setTopbar(`<h1>${L.search}</h1><button class="chip scan-chip" data-action="scan">${I.camera}<span>${L.scan.btn}</span></button>`);
   const q = searchQuery.trim().toLowerCase();
-  const res = q.length < 2 ? [] : allItems().filter((c) => [c.name, c.nameEn, `${itemCode(c)} ${c.number ?? ''}`, `${c.set} ${c.number ?? ''}`].some((x) => String(x ?? '').toLowerCase().includes(q)));
+  const res = q.length < 2 ? [] : allItems().filter(inCardLang).filter((c) => [c.name, c.nameEn, `${itemCode(c)} ${c.number ?? ''}`, `${c.set} ${c.number ?? ''}`].some((x) => String(x ?? '').toLowerCase().includes(q)));
   view.innerHTML = `<div class="stack">
     <input class="search" id="cardSearch" type="search" placeholder="${L.searchPh}" value="${esc(searchQuery)}" autocomplete="off">
     <div id="searchResults">${q.length < 2 ? `<p class="note">${L.searchHint(catalog.cards.length, catalog.sets.length)}</p>`
@@ -660,11 +683,11 @@ function renderValues() {
   setTopbar(`<h1>${L.market}</h1>`);
   const owned = allItems().filter((c) => qty(c.id) > 0);
   const value = owned.reduce((a, c) => a + qty(c.id) * (price(c.id) ?? 0), 0);
-  const priced = allItems().filter((c) => (price(c.id) ?? 0) >= 0.5);
+  const priced = allItems().filter((c) => inCardLang(c) && (price(c.id) ?? 0) >= 0.5);
   const movers = priced.map((c) => [c, change(c.id, 7)]).filter(([, v]) => v != null && v !== 0);
   const ups = [...movers].filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 5);
   const downs = [...movers].filter(([, v]) => v < 0).sort((a, b) => a[1] - b[1]).slice(0, 5);
-  const top = sortCards(catalog.cards.filter((c) => price(c.id) != null), 'price-desc').slice(0, 10);
+  const top = sortCards(catalog.cards.filter((c) => inCardLang(c) && price(c.id) != null), 'price-desc').slice(0, 10);
   const updated = priceFile.updatedAt ? fmt.date.format(parseDay(priceFile.updatedAt)) : '—';
   const empty = `<p class="note" style="padding:12px">${L.noHistory}</p>`;
   view.innerHTML = `<div class="stack">
@@ -800,7 +823,7 @@ function openCard(id, keepNav) {
   const cm = cmUrl(c);
   const q = qty(id);
   const stats = [c.cost != null ? `${L.cost} ${c.cost}` : '', c.power != null ? `${L.power} ${c.power}` : '', c.ram != null ? `${L.ram} ${c.ram}` : ''].filter(Boolean).join(' · ');
-  const enOnly = lang === 'fr' && c.languages && !c.languages.includes('fr');
+  const enOnly = cardLang === 'fr' && c.languages && !c.languages.includes('fr');
   const sealedItem = isSealed(c);
   sheetPanel.innerHTML = `${sheetTop(navList.length > 1)}
     <div class="stack detail">
@@ -810,7 +833,7 @@ function openCard(id, keepNav) {
           <h2 id="sheetTitle">${esc(cardName(c))}</h2>
           ${sealedItem
             ? `<div class="sub">${esc(L.catOne[c.category] ?? '')}${itemCode(c) ? `<br><b class="print">${esc(itemCode(c))}</b>${s ? ` · ${esc(setName(s))}` : ''}` : ''}</div>`
-            : `<div class="sub">${esc(s ? setName(s) : c.set)}<br><span class="num"><b class="print">${esc(printCode(c.set))}</b> · ${esc(c.number)}/${setTotal(s ?? {})}</span></div>`}
+            : `<div class="sub">${esc(s ? setName(s) : c.set)}<br><span class="num"><b class="print">${esc(printCode(c.set))}</b> · ${esc(c.number)}/${s?.total ?? cardsBySet.get(c.set)?.length ?? 0}</span></div>`}
           ${c.rarity ? `<span class="rarity" ${rarityStyle(c.rarity)}>${esc(rarityLabel(c.rarity))}${c.type ? ` · ${esc(typeLabel(c.type))}` : ''}${c.color ? ` · ${esc(colorLabel(c.color))}` : ''}</span>` : ''}
           ${stats ? `<span class="sub num">${stats}</span>` : ''}
           ${enOnly ? `<span class="sub">${L.enOnly}</span>` : ''}
@@ -863,7 +886,8 @@ function openSettings() {
   sheetPanel.innerHTML = `${sheetTop()}<div class="stack">
     <h2 id="sheetTitle" style="margin:0;font:700 22px var(--font-display)">${L.settings}</h2>
     ${cloud.enabled ? `<button class="btn-ghost acct-row" data-action="account">${I.person}<span>${cloud.user ? esc(L.signedAs(cloud.user.email ?? cloud.user.name ?? '')) : L.account}</span></button>` : ''}
-    <div class="panel"><h3>${L.language}</h3>${seg('lang', lang, [['fr', 'Français'], ['en', 'English']])}</div>
+    <div class="panel" id="langPanel"><h3>${I.globe}${L.language}</h3>${seg('lang', lang, UI_LANGS)}<p class="note" style="margin:0">${L.langHint}</p></div>
+    <div class="panel"><h3>${L.cardLanguage}</h3>${seg('cardLang', cardLang, [['fr', 'FR · Français'], ['en', 'EN · English']])}<p class="note" style="margin:0">${L.cardLangHint}</p></div>
     <div class="panel"><h3>${L.petSetting}</h3>${seg('pet', user.prefs.pet === 'off' ? 'off' : 'on', [['on', L.yes], ['off', L.no]])}<p class="note" style="margin:0">${L.petHint}</p></div>
     <p class="note">${L.storage(Object.keys(user.owned).length, wish.size)}</p>
     <div class="menu">
@@ -1770,8 +1794,17 @@ function renderChrome() {
     if (a.dataset.tab === 'search') a.setAttribute('aria-label', L.searchCard);
   }
 }
+function setCardLang(next) {
+  cardLang = next === 'en' ? 'en' : 'fr';
+  user.prefs.cardLang = cardLang; save();
+  const wasSettings = !sheet.hidden && !openId && sheetMode !== 'account';
+  const card = openId;
+  currentRender();
+  if (card) openCard(card); else if (wasSettings) openSettings();
+  toast(L.cardLangToast(cardLang));
+}
 function setLang(next) {
-  lang = next === 'en' ? 'en' : 'fr';
+  lang = UI_LANGS.some(([k]) => k === next) ? next : 'fr';
   L = TEXT[lang];
   user.prefs.lang = lang; save();
   setFormats(); renderChrome(); renderSupportSide();
@@ -1809,6 +1842,7 @@ document.addEventListener('click', async (e) => {
   else if (d.own) toggleOwn(d.own);
   else if (d.wish) toggleWish(d.wish);
   else if (d.seg === 'lang') setLang(d.value);
+  else if (d.seg === 'cardLang') setCardLang(d.value);
   else if (d.seg === 'pet') { user.prefs.pet = d.value; if (d.value === 'on') { petDismissed = false; try { sessionStorage.removeItem('nightdex:petHidden'); } catch { /* */ } } save(); petSync(); openSettings(); }
   else if (d.seg) { user.prefs[d.seg] = d.value; save(); currentRender(); }
   else if (d.pref) { user.prefs[d.pref] = d.value || null; if (d.pref === 'own' && !d.value) user.prefs.own = 'all'; save(); currentRender(); }
@@ -1821,7 +1855,8 @@ document.addEventListener('click', async (e) => {
     save(); refreshCard(id); openCard(id);
   } else if (d.close !== undefined) closeCard();
   else if (d.action === 'home-mode') { user.prefs.homeMode = user.prefs.homeMode === 'grid' ? 'list' : 'grid'; save(); currentRender(); }
-  else if (d.action === 'lang') setLang(lang === 'fr' ? 'en' : 'fr');
+  else if (d.action === 'cardlang') setCardLang(cardLang === 'fr' ? 'en' : 'fr');
+  else if (d.action === 'language') { openSettings(); requestAnimationFrame(() => document.getElementById('langPanel')?.scrollIntoView({ block: 'center' })); }
   else if (d.action === 'cycle-sort') {
     const i = SORTS.indexOf(user.prefs.sort);
     user.prefs.sort = SORTS[(i + 1) % SORTS.length]; save(); currentRender();

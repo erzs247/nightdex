@@ -739,3 +739,9 @@ button:disabled { opacity: .5; cursor: default; }
 .scan-actions .cta { padding: 12px 8px; font-size: 14px; }
 .scan-actions .btn-ghost { padding: 10px 8px; }
 @media (max-width: 380px) { .scan-actions { grid-template-columns: 1fr 1fr; } }
+
+/* langue de l'appli / langue des cartes */
+#langPanel h3 { justify-content: flex-start; align-items: center; }
+#langPanel h3 svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; color: var(--cyan); }
+.lang-note { text-align: center; }
+.lang-note .link-btn { font-size: inherit; padding: 0 0 0 4px; }
