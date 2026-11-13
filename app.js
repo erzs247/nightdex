@@ -67,6 +67,7 @@ const TEXT = {
       fAll: 'Sa collection', fTrade: 'Il l\'a, pas moi', fGive: 'Il la cherche, je l\'ai', fWish: 'Ses souhaits', emptyFilter: 'Rien dans ce filtre pour l\'instant.',
       tagMine: 'Je l\'ai', tagWant: 'Dans mes souhaits',
     },
+    inst: { title: 'Installe NightDex', pitch: 'Comme une vraie appli : icône sur ton écran, plein écran sans navigateur, et ça marche hors connexion.', btn: 'Installer', ios: 'Sur iPhone : touche Partager (le carré avec la flèche), puis « Sur l\'écran d\'accueil ».', done: 'NightDex est installée ! Ouvre-la depuis ton écran d\'accueil.' },
     adm: { title: 'Administration', role: 'rôle admin', idPh: 'ID NightDex du donateur', activate: 'Activer', remove: 'Retirer', listTitle: 'Soutiens actifs', none: 'Aucun soutien pour l\'instant.', on: 'Soutien activé', off: 'Soutien retiré', badId: 'ID invalide : copie-le depuis « Mon compte » du donateur.', denied: 'Refusé : les règles Firestore ne reconnaissent pas encore ce compte comme admin (publie les nouvelles règles).' },
     support: 'Soutenir NightDex', supportHint: 'NightDex est gratuit et fait par un fan. Un don aide à le faire vivre et débloque des bonus (photo de profil, cadre doré).',
     supporter: 'Soutien', supporterThanks: 'Merci pour ton soutien ! Tes bonus sont actifs.',
@@ -153,6 +154,7 @@ const TEXT = {
       fAll: 'Their collection', fTrade: 'They have, I don\'t', fGive: 'They want, I have', fWish: 'Their wishlist', emptyFilter: 'Nothing in this filter yet.',
       tagMine: 'I have it', tagWant: 'On my wishlist',
     },
+    inst: { title: 'Install NightDex', pitch: 'Like a real app: an icon on your screen, full screen without a browser, and it works offline.', btn: 'Install', ios: 'On iPhone: tap Share (the square with the arrow), then “Add to Home Screen”.', done: 'NightDex is installed! Open it from your home screen.' },
     adm: { title: 'Administration', role: 'admin role', idPh: 'Donor\'s NightDex ID', activate: 'Activate', remove: 'Remove', listTitle: 'Active supporters', none: 'No supporters yet.', on: 'Supporter activated', off: 'Supporter removed', badId: 'Invalid ID: copy it from the donor\'s “My account”.', denied: 'Refused: the Firestore rules do not recognise this account as admin yet (publish the new rules).' },
     support: 'Support NightDex', supportHint: 'NightDex is free and fan-made. A donation keeps it alive and unlocks extras (profile picture, gold frame).',
     supporter: 'Supporter', supporterThanks: 'Thanks for your support! Your extras are active.',
@@ -508,6 +510,7 @@ function renderHome() {
       ${mode === 'grid' ? `<div class="set-tiles">${list.map(progressTile).join('')}</div>` : `<div class="set-list">${list.map(progressRow).join('')}</div>`}
     </details>`).join('');
   view.innerHTML = `<div class="stack">
+    ${installBanner()}
     ${homeTabs('home')}
     <input class="search" id="setSearch" type="search" placeholder="${L.searchSet}" value="${esc(homeQuery)}" autocomplete="off">
     ${body || `<div class="empty"><strong>${L.noSet}</strong></div>`}
@@ -850,6 +853,7 @@ function openSettings() {
       <textarea id="exportBox" class="search" rows="4" hidden readonly></textarea>
     </div>
     <p class="note">${L.dataLine(catalog.cards.length, catalog.sets.length, priceFile.updatedAt ? fmt.date.format(parseDay(priceFile.updatedAt)) : '—')}</p>
+    ${canInstall() ? `<div class="panel"><h3>${L.inst.title}</h3><p class="note" style="margin:0">${installEvt ? L.inst.pitch : L.inst.ios}</p>${installEvt ? `<button class="cta" data-action="install">${L.inst.btn}</button>` : ''}</div>` : ''}
     ${supportUrl() ? `<div class="support-row">${supportLink()}<span class="note">${L.supportHint}</span></div>` : ''}
     <p class="note">${L.disclaimer}</p>
     <button class="btn-ghost" data-action="close">${L.close}</button>
@@ -1530,6 +1534,32 @@ document.addEventListener('click', (e) => {
   else if (a.dataset.fr === 'remove') { if (fr.confirmRemove !== uid) { fr.confirmRemove = uid; renderFriends(); } else removeFriend(uid); }
 });
 
+// ---------- Installation comme une vraie appli (plein écran, icône, hors ligne) ----------
+let installEvt = null;
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const canInstall = () => !isStandalone() && (!!installEvt || isIOS());
+const installDismissed = () => { try { return localStorage.getItem('nightdex:installDismissed') === '1'; } catch { return false; } };
+addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; if (currentRender === renderHome) currentRender(); });
+addEventListener('appinstalled', () => { installEvt = null; document.getElementById('installBanner')?.remove(); toast(L.inst.done); });
+function installBanner() {
+  if (!canInstall() || installDismissed()) return '';
+  return `<div class="install-banner" id="installBanner">
+    <img src="icons/icon-192.png" alt="" width="44" height="44">
+    <div class="install-text"><strong>${L.inst.title}</strong><span>${installEvt ? L.inst.pitch : L.inst.ios}</span></div>
+    ${installEvt ? `<button class="cta install-go" data-action="install">${L.inst.btn}</button>` : ''}
+    <button class="icon-btn install-x" data-action="install-dismiss" aria-label="${L.close}">${I.x}</button>
+  </div>`;
+}
+async function doInstall() {
+  if (!installEvt) { toast(L.inst.ios); return; }
+  installEvt.prompt();
+  try { const r = await installEvt.userChoice; if (r.outcome === 'accepted') toast(L.inst.done); } catch { /* fermé */ }
+  installEvt = null;
+  document.getElementById('installBanner')?.remove();
+  if (sheetMode === null && !sheet.hidden) openSettings();
+}
+
 // ---------- Barre d'onglets et langue ----------
 function renderSupportSide() {
   const nav = document.querySelector('.tabbar');
@@ -1605,6 +1635,8 @@ document.addEventListener('click', async (e) => {
   else if (d.action === 'settings') openSettings();
   else if (d.action === 'account') openAccount();
   else if (d.action === 'prev') navStep(-1);
+  else if (d.action === 'install') doInstall();
+  else if (d.action === 'install-dismiss') { try { localStorage.setItem('nightdex:installDismissed', '1'); } catch { /* */ } document.getElementById('installBanner')?.remove(); }
   else if (d.action === 'copy-id') {
     const id = cloud.user?.uid ?? '';
     try { await navigator.clipboard.writeText(id); toast(L.copiedId); }

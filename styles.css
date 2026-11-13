@@ -684,3 +684,17 @@ button:disabled { opacity: .5; cursor: default; }
 
 .admin-panel { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
 .admin-panel .id-row b { font-size: 13px; }
+
+/* Installation de l'appli */
+.install-banner {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr) auto auto; align-items: center; gap: 12px;
+  padding: 12px 10px 12px 14px; border-radius: 16px; background: var(--surface); border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+}
+.install-banner img { border-radius: 10px; }
+.install-text { display: grid; gap: 2px; min-width: 0; }
+.install-text strong { font: 600 16px var(--font-display); }
+.install-text span { font-size: 13px; color: var(--muted); }
+.install-go { width: auto; padding: 10px 16px; font-size: 14px; }
+.install-x { width: 34px; height: 34px; }
+.install-x svg { width: 18px; height: 18px; }
+@media (max-width: 380px) { .install-banner { grid-template-columns: 40px minmax(0, 1fr) auto; } .install-go { grid-column: 1 / -1; width: 100%; } }

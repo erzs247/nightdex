@@ -1,4 +1,5 @@
 {
+  "id": "./",
   "name": "NightDex – Collection Cyberpunk TCG",
   "short_name": "NightDex",
   "lang": "fr",
@@ -8,8 +9,26 @@
   "background_color": "#0b0d14",
   "theme_color": "#0b0d14",
   "icons": [
-    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" },
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "description": "Suivi de collection Cyberpunk TCG : cartes, scellé, prix Cardmarket, amis et Capri.",
+  "categories": [
+    "entertainment",
+    "utilities"
   ]
 }
