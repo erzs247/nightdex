@@ -29,7 +29,7 @@ const TEXT = {
     owned: (a, b) => `${a}/${b} possédées`, myValue: 'Ma valeur', pricesSoon: 'Prix Cardmarket à venir',
     sorts: { num: 'Numéro', 'price-desc': 'Prix décroissant', 'price-asc': 'Prix croissant', name: 'Nom' },
     ownF: { all: 'Toutes', owned: 'Possédées', missing: 'Manquantes' }, allRarities: 'Toutes raretés',
-    noCards: 'Aucune carte', noCardsHint: 'Modifiez les filtres pour en voir davantage.',
+    noCards: 'Aucune carte', noCardsHint: 'Modifiez les filtres pour en voir davantage.', searchInSet: 'Rechercher dans la série (nom, numéro…)',
     setNote: (sort, n, full) => `Tri : ${sort} · ${n} ${plural(n, 'carte affichée', 'cartes affichées')}${full ? ` · série complète ≈ ${full}` : ''}`,
     addedCol: 'Ajoutée à la collection', removedCol: 'Retirée de la collection', addedWish: 'Ajoutée aux souhaits', removedWish: 'Retirée des souhaits',
     favOn: 'Série ajoutée aux favoris', favOff: 'Série retirée des favoris', sortToast: (s) => `Tri : ${s}`,
@@ -120,7 +120,7 @@ const TEXT = {
     owned: (a, b) => `${a}/${b} owned`, myValue: 'My value', pricesSoon: 'Cardmarket prices coming soon',
     sorts: { num: 'Number', 'price-desc': 'Price high to low', 'price-asc': 'Price low to high', name: 'Name' },
     ownF: { all: 'All', owned: 'Owned', missing: 'Missing' }, allRarities: 'All rarities',
-    noCards: 'No cards', noCardsHint: 'Change the filters to see more.',
+    noCards: 'No cards', noCardsHint: 'Change the filters to see more.', searchInSet: 'Search this set (name, number…)',
     setNote: (sort, n, full) => `Sort: ${sort} · ${n} ${plural(n, 'card', 'cards')} shown${full ? ` · full set ≈ ${full}` : ''}`,
     addedCol: 'Added to collection', removedCol: 'Removed from collection', addedWish: 'Added to wishlist', removedWish: 'Removed from wishlist',
     favOn: 'Set added to favourites', favOff: 'Set removed from favourites', sortToast: (s) => `Sort: ${s}`,
@@ -556,11 +556,20 @@ function cardsBlock(list, mode) {
   return `<div class="cards">${list.map(cardTile).join('')}</div>`;
 }
 
+// recherche dans une série : nom FR/EN, numéro, rareté (sans accents ni majuscules)
+let setQuery = '', setQueryCode = '';
+const fold = (t) => String(t ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+function matchQuery(c, q) {
+  if (!q) return true;
+  const hay = fold([c.name, c.nameEn, c.number, rarityLabel(c.rarity), typeLabel(c.type)].join(' '));
+  return fold(q).split(/\s+/).filter(Boolean).every((w) => hay.includes(w));
+}
 function renderSet(code) {
   const s = setOf(code);
   if (!s) { location.hash = '#home'; return; }
+  if (setQueryCode !== code) { setQueryCode = code; setQuery = ''; }
   const all = cardsBySet.get(code) ?? [];
-  const list = sortCards(filterCards(all), user.prefs.sort);
+  const list = sortCards(filterCards(all).filter((c) => matchQuery(c, setQuery)), user.prefs.sort);
   const value = all.reduce((a, c) => a + qty(c.id) * (price(c.id) ?? 0), 0);
   const full = all.reduce((a, c) => a + (price(c.id) ?? 0), 0);
   const isFiltered = user.prefs.own !== 'all' || user.prefs.rarity;
@@ -572,6 +581,7 @@ function renderSet(code) {
   view.innerHTML = `<div class="stack">
     ${seg('setMode', user.prefs.setMode, [['cards', L.cards], ['list', L.list], ['grid', L.grid]])}
     ${showFilters ? filtersPanel(all) : ''}
+    <input class="search" id="setCardSearch" type="search" placeholder="${L.searchInSet}" value="${esc(setQuery)}" autocomplete="off" enterkeyhint="search">
     <div class="toolbar num">
       <span>${L.owned(ownedIn(code), setTotal(s))}</span><span class="grow"></span>
       ${hasPrices() ? `<span>${L.myValue} : <b style="color:var(--fg)">${eur(value)}</b></span>` : `<span>${L.pricesSoon}</span>`}
@@ -1875,7 +1885,7 @@ document.addEventListener('change', async (e) => {
   } catch { toast(L.badFile); }
 });
 document.addEventListener('input', (e) => {
-  const map = { setSearch: [(v) => { homeQuery = v; }, renderHome], cardSearch: [(v) => { searchQuery = v; }, renderSearch] };
+  const map = { setSearch: [(v) => { homeQuery = v; }, renderHome], cardSearch: [(v) => { searchQuery = v; }, renderSearch], setCardSearch: [(v) => { setQuery = v; }, () => currentRender()] };
   const m = map[e.target.id];
   if (!m) return;
   m[0](e.target.value);
