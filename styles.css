@@ -627,3 +627,28 @@ button:disabled { opacity: .5; cursor: default; }
 @media (prefers-reduced-motion: reduce) { .pet .pet-img, .pet::before { animation: none !important; } }
 
 .cdetail { display: block; margin-top: 6px; font: 11px/1.35 ui-monospace, "SFMono-Regular", Menlo, monospace; color: var(--muted); white-space: normal; word-break: break-word; }
+
+/* ---------- Soutien et photo de profil ---------- */
+.acct-btn .acct-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; display: block; }
+.acct-btn.is-supporter .acct-avatar { box-shadow: 0 0 0 2px #f5c542, 0 0 10px -1px #f5c542; }
+.profile-panel { gap: 10px; }
+.profile-row { display: flex; align-items: center; gap: 12px; }
+.profile-avatar { width: 56px; height: 56px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); overflow: hidden; color: var(--muted); }
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-avatar svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.profile-panel.is-supporter .profile-avatar { box-shadow: 0 0 0 3px #f5c542, 0 0 16px -2px #f5c542; }
+.profile-text { display: grid; gap: 2px; min-width: 0; }
+.supporter-badge { font-size: 12px; font-weight: 700; color: #1a1400; background: #f5c542; border-radius: 99px; padding: 2px 8px; margin-left: 6px; }
+.profile-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.profile-actions .btn-ghost { flex: 1; text-align: center; cursor: pointer; }
+.id-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.id-row code { font-size: 12px; background: var(--surface-2); padding: 4px 8px; border-radius: 6px; user-select: all; word-break: break-all; }
+.support-link, .support-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; color: var(--hot); text-decoration: none; font-weight: 600; }
+.support-link svg, .support-btn svg, .support-side svg { width: 16px; height: 16px; fill: currentColor; stroke: none; }
+.support-row { display: grid; gap: 4px; padding-top: 4px; border-top: 1px solid var(--line); }
+.support-row .support-link { justify-content: flex-start; padding: 8px 0 0; }
+.tabbar .support-side { display: none; }
+:root[data-device="pc"] .tabbar .support-side {
+  display: flex; margin-top: auto; padding: 10px 14px; font-size: 13px; color: var(--muted); background: none;
+}
+:root[data-device="pc"] .tabbar .support-side:hover { color: var(--hot); background: var(--surface); }

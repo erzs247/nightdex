@@ -52,6 +52,10 @@ const TEXT = {
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue', langToast: 'Langue : français',
     prev: 'Carte précédente', next: 'Carte suivante',
+    support: 'Soutenir NightDex', supportHint: 'NightDex est gratuit et fait par un fan. Un don aide à le faire vivre et débloque des bonus (photo de profil, cadre doré).',
+    supporter: 'Soutien', supporterThanks: 'Merci pour ton soutien ! Tes bonus sont actifs.',
+    myId: 'Ton ID NightDex', myIdHint: 'Indique-le dans le message de ton don pour recevoir tes bonus.', copy: 'Copier', copiedId: 'ID copié',
+    avatar: 'Photo de profil', avatarChange: 'Changer la photo', avatarAdd: 'Ajouter une photo', avatarRemove: 'Retirer', avatarLocked: 'Réservé aux soutiens de NightDex.', avatarSaved: 'Photo enregistrée', avatarRemoved: 'Photo retirée', avatarErr: 'Impossible d\'enregistrer la photo. Réessaie.', avatarDenied: 'Photo réservée aux soutiens : ton statut n\'est pas encore actif.',
     petSetting: 'Capri se balade dans l\'appli', yes: 'Oui', no: 'Non', petHint: 'Touche-la pour qu\'elle réagisse, deux fois pour discuter, ou fais-la glisser sur une carte.',
     capriSpoil: (on) => `Spoilers S2 : ${on ? 'oui' : 'non'}`, capriReset: 'Effacer', capriSend: 'Envoyer', capriStop: 'Stop', capriPh: 'Écris à Capri…', capriTyping: 'connexion aux engrammes', capriListen: 'Écouter',
     capriHello: '*grésillement* … Ah, la liaison tient. Salut, choom. Moi c\'est Capri : plusieurs esprits recousus en une seule, sans corps, juste une puce et beaucoup de curiosité. Tu veux savoir quoi ?',
@@ -117,6 +121,10 @@ const TEXT = {
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'Language', langToast: 'Language: English',
     prev: 'Previous card', next: 'Next card',
+    support: 'Support NightDex', supportHint: 'NightDex is free and fan-made. A donation keeps it alive and unlocks extras (profile picture, gold frame).',
+    supporter: 'Supporter', supporterThanks: 'Thanks for your support! Your extras are active.',
+    myId: 'Your NightDex ID', myIdHint: 'Add it to your donation message to receive your extras.', copy: 'Copy', copiedId: 'ID copied',
+    avatar: 'Profile picture', avatarChange: 'Change picture', avatarAdd: 'Add a picture', avatarRemove: 'Remove', avatarLocked: 'For NightDex supporters only.', avatarSaved: 'Picture saved', avatarRemoved: 'Picture removed', avatarErr: 'Could not save the picture. Try again.', avatarDenied: 'Pictures are for supporters: your status is not active yet.',
     petSetting: 'Capri walks around the app', yes: 'On', no: 'Off', petHint: 'Tap her to react, tap twice to chat, or drag her onto a card.',
     capriSpoil: (on) => `S2 spoilers: ${on ? 'on' : 'off'}`, capriReset: 'Clear', capriSend: 'Send', capriStop: 'Stop', capriPh: 'Write to Capri…', capriTyping: 'linking engrams', capriListen: 'Listen',
     capriHello: '*static* … Ah, the link holds. Hey, choom. I\'m Capri: a bunch of minds stitched into one, no body, just a chip and a lot of curiosity. What do you want to know?',
@@ -155,6 +163,7 @@ const I = {
   gear: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
   x: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',
   speaker: '<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  heartSmall: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
   person: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
   heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
   own: '<svg viewBox="0 0 24 24"><rect x="6" y="3.5" width="12" height="17" rx="2"/><path d="m9.5 12 2 2 3.5-4"/></svg>',
@@ -235,6 +244,7 @@ async function loadData() {
   const get = (p) => embedded(p) ?? fetch(p, { cache: 'no-cache' }).then((r) => { if (!r.ok) throw new Error(p); return r.json(); });
   let sealedFile;
   [catalog, priceFile, config, sealedFile] = await Promise.all([get('data/catalog.json'), get('data/prices.json'), get('data/config.json').catch(() => config), get('data/sealed.json').catch(() => ({ items: [] }))]);
+  renderSupportSide();
   sealed = sealedFile.items ?? [];
   for (const it of sealed) cardsById.set(it.id, it);
   for (const c of catalog.cards) {
@@ -806,6 +816,7 @@ function openSettings() {
       <textarea id="exportBox" class="search" rows="4" hidden readonly></textarea>
     </div>
     <p class="note">${L.dataLine(catalog.cards.length, catalog.sets.length, priceFile.updatedAt ? fmt.date.format(parseDay(priceFile.updatedAt)) : '—')}</p>
+    ${supportUrl() ? `<div class="support-row">${supportLink()}<span class="note">${L.supportHint}</span></div>` : ''}
     <p class="note">${L.disclaimer}</p>
     <button class="btn-ghost" data-action="close">${L.close}</button>
   </div>`;
@@ -882,9 +893,11 @@ function onCloudUser(u) {
   cloud.unsub?.(); cloud.unsub = null;
   cloud.user = u ? { uid: u.uid, email: u.email, name: u.displayName } : null;
   cloud.confirmDelete = false;
+  cloud.supporter = false; cloud.avatar = null;
   if (!u) { cloud.status = 'off'; refreshAccount(); return; }
   cloud.status = 'syncing'; refreshAccount();
   const { fsM } = cloud.api;
+  loadProfile(u.uid);
   let first = true;
   cloud.unsub = fsM.onSnapshot(cloudRef(), async (snap) => {
     if (snap.metadata.hasPendingWrites) return;
@@ -909,7 +922,45 @@ function onCloudUser(u) {
   }, (e) => { cloud.status = 'error'; cloud.error = e.code ?? ''; refreshAccount(); });
 }
 
-const accountBtn = () => (cloud.enabled ? `<button class="icon-btn acct-btn ${cloud.user ? `signed on-${cloud.status}` : ''}" data-action="account" aria-label="${L.account}">${I.person}</button>` : '');
+const accountBtn = () => (cloud.enabled ? `<button class="icon-btn acct-btn ${cloud.user ? `signed on-${cloud.status}` : ''} ${cloud.supporter ? 'is-supporter' : ''}" data-action="account" aria-label="${L.account}">${cloud.user && cloud.avatar ? `<img class="acct-avatar" src="${esc(cloud.avatar)}" alt="">` : I.person}</button>` : '');
+
+// ---------- Soutien : statut (activé par le propriétaire dans la console Firebase) et photo de profil ----------
+// supporters/<uid> { active: true } : lisible par le compte, modifiable seulement depuis la console (règles Firestore).
+// profiles/<uid> { avatar } : petite image (160 px) réservée aux soutiens actifs.
+const supportUrl = () => config.support?.url || '';
+async function loadProfile(uid) {
+  const { fsM, db } = cloud.api;
+  try { const s = await fsM.getDoc(fsM.doc(db, 'supporters', uid)); if (cloud.user?.uid === uid) cloud.supporter = s.exists() && s.data().active === true; } catch { /* pas de statut */ }
+  try { const p = await fsM.getDoc(fsM.doc(db, 'profiles', uid)); if (cloud.user?.uid === uid) cloud.avatar = p.exists() ? p.data().avatar ?? null : null; } catch { /* pas de photo */ }
+  refreshAccount();
+}
+function resizeAvatar(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const size = 160, c = document.createElement('canvas');
+      c.width = size; c.height = size;
+      const side = Math.min(img.naturalWidth, img.naturalHeight);
+      c.getContext('2d').drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, size, size);
+      URL.revokeObjectURL(img.src);
+      let url = c.toDataURL('image/webp', 0.82);
+      if (!url.startsWith('data:image/webp')) url = c.toDataURL('image/jpeg', 0.82);
+      resolve(url);
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+}
+async function saveAvatar(file) {
+  const { fsM, db } = cloud.api;
+  try {
+    const url = await resizeAvatar(file);
+    await fsM.setDoc(fsM.doc(db, 'profiles', cloud.user.uid), { avatar: url, updatedAt: fsM.serverTimestamp() });
+    cloud.avatar = url; toast(L.avatarSaved);
+  } catch (e) { toast(e?.code === 'permission-denied' ? L.avatarDenied : L.avatarErr); }
+  refreshAccount();
+}
+const supportLink = (cls = 'support-link') => (supportUrl() ? `<a class="${cls}" href="${esc(supportUrl())}" target="_blank" rel="noopener">${I.heartSmall}<span>${L.support}</span></a>` : '');
 function refreshAccount() {
   if (cloud.enabled) for (const b of document.querySelectorAll('.acct-btn')) b.outerHTML = accountBtn();
   if (cloud.enabled && !topbar.querySelector('.acct-btn') && topbar.querySelector('[data-action="settings"]')) currentRender();
@@ -930,6 +981,22 @@ function openAccount(keep) {
         <strong>${esc(L.signedAs(u.email ?? u.name ?? ''))}</strong>
         ${status}
         <span class="note">${L.syncInfo(Object.values(user.owned).filter((q) => q > 0).length, wish.size)}</span>
+      </div>
+      <div class="panel profile-panel ${cloud.supporter ? 'is-supporter' : ''}">
+        <div class="profile-row">
+          <span class="profile-avatar">${cloud.avatar ? `<img src="${esc(cloud.avatar)}" alt="">` : I.person}</span>
+          <div class="profile-text">
+            <strong>${L.avatar}${cloud.supporter ? ` <span class="supporter-badge">♥ ${L.supporter}</span>` : ''}</strong>
+            <span class="note">${cloud.supporter ? L.supporterThanks : L.avatarLocked}</span>
+          </div>
+        </div>
+        ${cloud.supporter ? `<div class="profile-actions">
+          <label class="btn-ghost" for="avatarFile">${cloud.avatar ? L.avatarChange : L.avatarAdd}</label>
+          <input id="avatarFile" type="file" accept="image/*" hidden>
+          ${cloud.avatar ? `<button class="btn-ghost" data-action="avatar-remove">${L.avatarRemove}</button>` : ''}
+        </div>` : supportLink('btn-ghost support-btn')}
+        <div class="id-row"><span class="note">${L.myId} :</span><code id="myId">${esc(u.uid)}</code><button class="chip" data-action="copy-id">${L.copy}</button></div>
+        ${cloud.supporter ? '' : `<span class="note">${L.myIdHint}</span>`}
       </div>
       <button class="btn-ghost" data-action="signout">${L.signOut}</button>
       <div class="panel danger-zone">
@@ -1206,6 +1273,11 @@ document.addEventListener('click', (e) => {
 });
 
 // ---------- Barre d'onglets et langue ----------
+function renderSupportSide() {
+  const nav = document.querySelector('.tabbar');
+  nav.querySelector('.support-side')?.remove();
+  if (supportUrl()) nav.insertAdjacentHTML('beforeend', supportLink('support-side pc-only'));
+}
 function renderChrome() {
   document.documentElement.lang = lang;
   const labels = { capri: 'Capri', home: L.home, sealed: L.sealed, collection: L.collection, search: L.search, values: L.market, wishlist: L.wishlist };
@@ -1219,7 +1291,7 @@ function setLang(next) {
   lang = next === 'en' ? 'en' : 'fr';
   L = TEXT[lang];
   user.prefs.lang = lang; save();
-  setFormats(); renderChrome();
+  setFormats(); renderChrome(); renderSupportSide();
   const wasSettings = !sheet.hidden && !openId;
   const card = openId;
   currentRender();
@@ -1275,6 +1347,14 @@ document.addEventListener('click', async (e) => {
   else if (d.action === 'settings') openSettings();
   else if (d.action === 'account') openAccount();
   else if (d.action === 'prev') navStep(-1);
+  else if (d.action === 'copy-id') {
+    const id = cloud.user?.uid ?? '';
+    try { await navigator.clipboard.writeText(id); toast(L.copiedId); }
+    catch { const el = document.getElementById('myId'); if (el) { const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); } }
+  } else if (d.action === 'avatar-remove') {
+    try { await cloud.api.fsM.deleteDoc(cloud.api.fsM.doc(cloud.api.db, 'profiles', cloud.user.uid)); cloud.avatar = null; toast(L.avatarRemoved); } catch { toast(L.avatarErr); }
+    refreshAccount();
+  }
   else if (d.action === 'next') navStep(1);
   else if (d.action === 'google') signInGoogle();
   else if (d.action === 'forgot') {
@@ -1288,6 +1368,7 @@ document.addEventListener('click', async (e) => {
       const cu = cloud.api.auth.currentUser;
       cloud.unsub?.(); cloud.unsub = null;
       await cloud.api.fsM.deleteDoc(cloudRef());
+      await cloud.api.fsM.deleteDoc(cloud.api.fsM.doc(cloud.api.db, 'profiles', cu.uid)).catch(() => {});
       await cloud.api.authM.deleteUser(cu);
       user.syncedUid = null; save();
     }, L.deleted);
@@ -1300,6 +1381,9 @@ document.addEventListener('click', async (e) => {
     box.hidden = false; box.value = data;
     try { await navigator.clipboard.writeText(data); toast(L.copied); } catch { box.select(); toast(L.selectCopy); }
   }
+});
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'avatarFile' && e.target.files?.[0] && cloud.user) saveAvatar(e.target.files[0]);
 });
 document.addEventListener('change', async (e) => {
   if (e.target.id !== 'importFile') return;

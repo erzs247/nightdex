@@ -1,8 +1,9 @@
 rules_version = '2';
-// Règles de sécurité Firestore pour NightDex :
-// chaque compte ne peut lire, écrire et supprimer que SA collection (users/<son identifiant>).
+// Règles de sécurité Firestore pour NightDex
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // collection de chaque compte : lue et écrite uniquement par son propriétaire
     match /users/{uid} {
       allow read, delete: if request.auth != null && request.auth.uid == uid;
       allow create, update: if request.auth != null && request.auth.uid == uid
@@ -10,6 +11,23 @@ service cloud.firestore {
         && request.resource.data.owned is map
         && request.resource.data.wish is list
         && request.resource.data.fav is list;
+    }
+
+    // statut de soutien : le compte peut le lire, personne ne peut l'écrire depuis l'appli
+    // (c'est le propriétaire de NightDex qui l'active dans la console Firebase)
+    match /supporters/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // photo de profil : réservée aux soutiens actifs, petite image uniquement
+    match /profiles/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && get(/databases/$(database)/documents/supporters/$(uid)).data.active == true
+        && request.resource.data.keys().hasOnly(['avatar', 'updatedAt'])
+        && request.resource.data.avatar is string
+        && request.resource.data.avatar.size() < 80000;
     }
   }
 }
