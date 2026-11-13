@@ -4,5 +4,10 @@
   "projectId": "nightdex",
   "storageBucket": "nightdex.firebasestorage.app",
   "messagingSenderId": "407770745054",
-  "appId": "1:407770745054:web:fcf71a899a832da1465a4f"
+  "appId": "1:407770745054:web:fcf71a899a832da1465a4f",
+  "capriModels": [
+    "gemini-3.5-flash-lite",
+    "gemini-3-flash-preview",
+    "gemini-3.8-flash"
+  ]
 }

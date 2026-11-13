@@ -992,7 +992,8 @@ function toast(msg) {
 // Gemini est appelé via Firebase AI Logic (« Gemini Developer API », sans frais sur l'offre Spark) :
 // aucune clé dans le code, Firebase s'en charge. Réservé aux comptes connectés pour protéger le quota gratuit.
 const CAPRI_KEY = 'nightdex:capri';
-const CAPRI_MODELS_DEFAULT = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-flash-latest'];
+// modèles testés le 13/11/2026 : les 2.x ne sont plus ouverts aux nouveaux projets ; liste modifiable dans data/firebase.json (capriModels)
+const CAPRI_MODELS_DEFAULT = ['gemini-3.5-flash-lite', 'gemini-3-flash-preview', 'gemini-3.8-flash'];
 const CAPRI_TIMEOUT = 25000; // abandon si aucune réponse n'arrive dans ce délai
 const capri = { spoilers: false, turns: [], busy: false, stop: false, aiM: null, ai: null, modelIdx: 0 };
 try { const s = JSON.parse(localStorage.getItem(CAPRI_KEY)); if (s && Array.isArray(s.turns)) Object.assign(capri, { spoilers: !!s.spoilers, turns: s.turns.slice(-40) }); } catch { /* stockage indisponible */ }
@@ -1064,7 +1065,7 @@ async function capriAsk(onText) {
     try {
       const model = aiM.getGenerativeModel(ai, {
         model: name, systemInstruction: capriInstruction(),
-        generationConfig: { maxOutputTokens: 500, temperature: 0.9 },
+        generationConfig: { maxOutputTokens: 900, temperature: 0.9 },   // marge pour les modèles qui réfléchissent avant de répondre
       });
       const res = await model.startChat({ history }).sendMessageStream(last.content, { signal: ctl.signal, timeout: CAPRI_TIMEOUT + 5000 });
       let text = '';
