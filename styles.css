@@ -625,3 +625,5 @@ button:disabled { opacity: .5; cursor: default; }
 .pet-bubble.to-right::after { left: 18px; }
 
 @media (prefers-reduced-motion: reduce) { .pet .pet-img, .pet::before { animation: none !important; } }
+
+.cdetail { display: block; margin-top: 6px; font: 11px/1.35 ui-monospace, "SFMono-Regular", Menlo, monospace; color: var(--muted); white-space: normal; word-break: break-word; }
