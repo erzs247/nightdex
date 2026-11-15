@@ -803,3 +803,12 @@ button:disabled { opacity: .5; cursor: default; }
 .detail button.btn-ghost[data-action="g-add-card"] { display: flex; align-items: center; justify-content: center; gap: 8px; }
 .btn-ghost.danger { color: var(--down, #ff5d73); }
 .gform .cta[disabled] { opacity: .45; }
+
+/* prix d'achat d'une carte */
+.paid-line { display: grid; grid-template-columns: auto 110px 1fr; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font-size: 14px; }
+.paid-line label { font-weight: 600; }
+.paid-line input { width: 100%; min-width: 0; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--line); background: #05060a; color: var(--fg); font-size: 16px; }
+.paid-diff { text-align: right; color: var(--muted); }
+.paid-diff .muted { font-size: 12px; }
+.paid-diff b.up, .paid-sum b.up { color: var(--up, #3ad07a); } .paid-diff b.down, .paid-sum b.down { color: var(--down, #ff5d73); }
+@media (max-width: 380px) { .paid-line { grid-template-columns: auto 1fr; } .paid-diff { grid-column: 1 / -1; text-align: left; } }

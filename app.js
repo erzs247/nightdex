@@ -69,6 +69,8 @@ const TEXT = {
       ebay: 'Voir les ventes réussies sur eBay', pc: 'Cote gradée sur PriceCharting', seeCard: 'Voir la fiche de la carte',
       rulesNeeded: 'Cartes gradées gardées sur ce téléphone : mets à jour les règles Firestore pour les synchroniser.',
     },
+    paidLabel: 'Prix d\'achat / carte', paidHint: 'Différence avec la cote', paidVs: 'Différence :', boughtFor: (v) => `achetées ${v}`,
+    paidSum: (n, v) => `Prix d'achat noté pour ${n} carte${n > 1 ? 's' : ''} : ${v}`,
     otherCopies: (n, l) => `+ ${n} exemplaire${n > 1 ? 's' : ''} en ${l} (bouton FR | EN pour y passer)`, colLang: (l) => `Collection ${l.toUpperCase()}`,
     cardLanguage: 'Langue des cartes', cardLangHint: 'Le bouton FR | EN de l\'accueil fait la même chose : séries, noms et images dans cette langue.',
     cardLangToast: (l) => (l === 'fr' ? 'Cartes : séries françaises' : 'Cartes : séries anglaises'),
@@ -184,6 +186,8 @@ const TEXT = {
       ebay: 'See sold listings on eBay', pc: 'Graded prices on PriceCharting', seeCard: 'See the card page',
       rulesNeeded: 'Graded cards kept on this phone: update the Firestore rules to sync them.',
     },
+    paidLabel: 'Bought at / card', paidHint: 'Difference with the price', paidVs: 'Difference:', boughtFor: (v) => `bought for ${v}`,
+    paidSum: (n, v) => `Purchase price logged for ${n} card${n > 1 ? 's' : ''}: ${v}`,
     otherCopies: (n, l) => `+ ${n} cop${n > 1 ? 'ies' : 'y'} in ${l} (switch with FR | EN)`, colLang: (l) => `${l.toUpperCase()} collection`,
     cardLanguage: 'Card language', cardLangHint: 'The FR | EN button on the home screen does the same: sets, names and images in that language.',
     cardLangToast: (l) => (l === 'fr' ? 'Cards: French sets' : 'Cards: English sets'),
@@ -679,6 +683,9 @@ function renderCollection() {
   const total = owned.reduce((a, c) => a + qty(c.id), 0);
   const value = [...owned, ...ownedSealed].reduce((a, c) => a + qty(c.id) * (price(c.id) ?? 0), 0);
   const sealedQty = ownedSealed.reduce((a, s) => a + qty(s.id), 0);
+  const withPaid = [...owned, ...ownedSealed].filter((c) => paidOf(c.id) != null);
+  const paidTot = withPaid.reduce((a, c) => a + qty(c.id) * paidOf(c.id), 0);
+  const diffTot = withPaid.reduce((a, c) => a + (paidDiff(c.id)?.diff ?? 0), 0);
   const sets = [...catalog.sets].sort((a, b) => (a.order ?? 999) - (b.order ?? 999)).filter((s) => ownedAll(s.code) > 0);
   const shown = colSet === '__sealed' ? [] : sortCards(owned.filter((c) => !colSet || c.set === colSet), 'price-desc');
   const sealedShown = !colSet || colSet === '__sealed' ? ownedSealed : [];
@@ -689,6 +696,7 @@ function renderCollection() {
       <div class="stat"><small>${L.kUnique}</small><b class="num">${owned.length}</b></div>
       <div class="stat"><small>${L.kValue}</small><b class="num">${eur(value)}</b></div>
     </div>
+    ${withPaid.length ? `<p class="note num paid-sum">${L.paidSum(withPaid.length, eur(paidTot))} · ${diffHtml({ diff: diffTot, pct: paidTot ? diffTot / paidTot : null })}</p>` : ''}
     <div class="chips"><button class="chip" data-colset="" aria-pressed="${!colSet}">${L.all}</button>${ownedSealed.length ? `<button class="chip" data-colset="__sealed" aria-pressed="${colSet === '__sealed'}">${L.sealed} · ${sealedQty}</button>` : ''}${sets.map((s) => `<button class="chip" data-colset="${esc(s.code)}" aria-pressed="${colSet === s.code}">${esc(s.print ?? s.code)} · ${ownedAll(s.code)}</button>`).join('')}</div>
     ${shown.length ? `${seg('setMode', user.prefs.setMode, [['cards', L.cards], ['list', L.list], ['grid', L.grid]])}${cardsBlock(shown, user.prefs.setMode)}` : ''}
     ${sealedShown.length ? `<h2 class="section-title">${L.sealed} · ${L.sealedCount(sealedQty)}</h2><div class="sealed-grid">${sealedShown.map(sealedTile).join('')}</div>` : ''}
@@ -904,6 +912,11 @@ function openCard(id, keepNav) {
           </div>
         </div>
       </div>
+      ${q > 0 ? `<div class="paid-line">
+        <label for="cardPaid">${L.paidLabel}</label>
+        <input id="cardPaid" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0,00" value="${paidOf(id) ?? ''}" data-paid-id="${esc(id)}">
+        <span class="paid-diff num" id="paidDiff">${paidOf(id) != null ? (p.trend != null ? `${L.paidVs} ${diffHtml(paidDiff(id))}` : L.noPrice) : `<span class="muted">${L.paidHint}</span>`}</span>
+      </div>` : ''}
       ${p.trend != null ? `<div class="stats">
         <div class="stat"><small>${L.from}</small><b class="num">${eur(p.low)}</b></div>
         <div class="stat"><small>${L.avg7}</small><b class="num">${eur(p.avg7)}</b></div>
@@ -918,7 +931,7 @@ function openCard(id, keepNav) {
       <a class="cta" href="${esc(cm.url)}" target="_blank" rel="noopener">${cm.exact ? L.cmView : L.cmSearch} ${I.ext}</a>
       ${sealedItem ? '' : `<button class="btn-ghost" data-action="g-add-card" data-id="${esc(id)}">${I.slab}<span>${L.gr.addThis}${user.graded.some((e) => e.id === id) ? ` · ${L.gr.youHave(user.graded.filter((e) => e.id === id).length)}` : ''}</span></button>`}
       ${c.official ? `<a class="btn-ghost" style="text-align:center;text-decoration:none" href="${esc(c.official)}" target="_blank" rel="noopener">${L.official}</a>` : ''}
-      ${q > 0 && p.trend ? `<p class="note num" style="text-align:center">${L.worth(q, eur(q * p.trend))}</p>` : ''}
+      ${q > 0 && p.trend ? `<p class="note num" style="text-align:center">${L.worth(q, eur(q * p.trend))}${paidOf(id) != null ? ` · ${L.boughtFor(eur(q * paidOf(id)))}` : ''}</p>` : ''}
       ${c.artist ? `<p class="note" style="text-align:center">${esc(L.art(c.artist))}</p>` : ''}
     </div>`;
   sheet.hidden = false;
@@ -1962,7 +1975,7 @@ document.addEventListener('click', async (e) => {
   }
   else if (d.action === 'close') closeCard();
   else if (d.action === 'export') {
-    const data = JSON.stringify({ app: 'NightDex', version: 2, exportedAt: new Date().toISOString(), owned: user.owned, wish: [...wish], fav: [...fav], graded: user.graded, gsales: user.gsales });
+    const data = JSON.stringify({ app: 'NightDex', version: 2, exportedAt: new Date().toISOString(), owned: user.owned, wish: [...wish], fav: [...fav], graded: user.graded, gsales: user.gsales, paid: user.paid });
     const box = document.getElementById('exportBox');
     box.hidden = false; box.value = data;
     try { await navigator.clipboard.writeText(data); toast(L.copied); } catch { box.select(); toast(L.selectCopy); }
@@ -1980,10 +1993,23 @@ document.addEventListener('change', async (e) => {
     if (!data.owned) throw new Error();
     user.owned = migrateOwned({ ...data.owned }); wish.clear(); (data.wish ?? []).forEach((x) => wish.add(x));
     fav.clear(); (data.fav ?? []).forEach((x) => fav.add(x));
-    if (Array.isArray(data.graded)) { user.graded = data.graded; user.gsales = data.gsales ?? {}; gSave(); }
+    if (Array.isArray(data.graded)) { user.graded = data.graded; user.gsales = data.gsales ?? {}; }
+    if (data.paid && typeof data.paid === 'object') user.paid = data.paid;
+    gSave();
     save(); closeCard(); currentRender(); toast(L.imported);
   } catch { toast(L.badFile); }
 });
+function paidInput(el, commit) {
+  const id = el.dataset.paidId;
+  const v = el.value.trim() === '' ? null : Math.round(Number(el.value) * 100) / 100;
+  if (v != null && !(v >= 0)) return;
+  if (v == null) delete user.paid[okey(id)]; else user.paid[okey(id)] = v;
+  const box = document.getElementById('paidDiff');
+  if (box) box.innerHTML = v != null ? (price(id) != null ? `${L.paidVs} ${diffHtml(paidDiff(id))}` : L.noPrice) : `<span class="muted">${L.paidHint}</span>`;
+  if (commit) { gSave(); if (currentRender === renderCollection) currentRender(); }
+}
+document.addEventListener('input', (e) => { if (e.target.id === 'cardPaid') paidInput(e.target, false); });
+document.addEventListener('change', (e) => { if (e.target.id === 'cardPaid') paidInput(e.target, true); });
 document.addEventListener('input', (e) => {
   const map = { setSearch: [(v) => { homeQuery = v; }, renderHome], cardSearch: [(v) => { searchQuery = v; }, renderSearch], setCardSearch: [(v) => { setQuery = v; }, () => currentRender()] };
   const m = map[e.target.id];
@@ -2023,6 +2049,16 @@ const gradeLabel = (co, gr) => grader(co).specials?.find(([k]) => k === gr)?.[1]
 const gradeNum = (gr) => parseFloat(gr) || 0;
 if (!Array.isArray(user.graded)) user.graded = [];
 if (!user.gsales || typeof user.gsales !== 'object') user.gsales = {};
+// prix d'achat unitaire des cartes et du scellé, par langue : paid[clé de collection] = prix
+if (!user.paid || typeof user.paid !== 'object') user.paid = {};
+const paidOf = (id) => user.paid[okey(id)] ?? null;
+// différence avec la tendance Cardmarket pour tous les exemplaires (null si pas de prix d'achat ou pas de cote)
+function paidDiff(id) {
+  const pp = paidOf(id), t = price(id), q = qty(id);
+  if (pp == null || t == null || !q) return null;
+  return { diff: (t - pp) * q, pct: pp ? (t - pp) / pp : null, q };
+}
+const diffHtml = (r) => (r ? `<b class="${r.diff >= 0 ? 'up' : 'down'}">${r.diff >= 0 ? '+' : '−'}${eur(Math.abs(r.diff))}${r.pct != null ? ` (${pct(r.pct)})` : ''}</b>` : '');
 const gkey = (e) => `${e.id}|${e.l}|${e.co}|${e.gr}`;
 const gSales = (e) => (user.gsales[gkey(e)] ?? []).slice().sort((a, b) => (a[0] < b[0] ? -1 : 1));
 // valeur estimée : médiane des 3 dernières ventes relevées
@@ -2031,7 +2067,7 @@ function gValue(e, sales = gSales(e)) {
   const last = sales.slice(-3).map(([, p]) => p).sort((a, b) => a - b);
   return last[Math.floor(last.length / 2)];
 }
-const gSig = () => JSON.stringify([user.graded, Object.entries(user.gsales).sort()]);
+const gSig = () => JSON.stringify([user.graded, Object.entries(user.gsales).sort(), Object.entries(user.paid).sort()]);
 let gLastSig = gSig();
 function gSave() {
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* stockage indisponible */ }
@@ -2126,13 +2162,13 @@ function gMerge(a, b) {
     const seen = new Set((sales[k] ?? []).map((s) => s.join('|')));
     sales[k] = [...(sales[k] ?? []), ...list.filter((s) => !seen.has(s.join('|')))];
   }
-  return { items: [...items.values()], sales };
+  return { items: [...items.values()], sales, paid: { ...(a?.paid ?? {}), ...(b?.paid ?? {}) } };
 }
 // Firestore n'accepte pas les tableaux de tableaux : ventes envoyées sous forme { d, p }
-const gToCloud = () => ({ items: user.graded, sales: Object.fromEntries(Object.entries(user.gsales).map(([k, l]) => [k, l.map(([d, p]) => ({ d, p }))])) });
-const gFromCloud = (d) => ({ items: d?.items ?? [], sales: Object.fromEntries(Object.entries(d?.sales ?? {}).map(([k, l]) => [k, l.map((s) => [s.d, s.p])])) });
+const gToCloud = () => ({ items: user.graded, paid: user.paid, sales: Object.fromEntries(Object.entries(user.gsales).map(([k, l]) => [k, l.map(([d, p]) => ({ d, p }))])) });
+const gFromCloud = (d) => ({ items: d?.items ?? [], paid: d?.paid ?? {}, sales: Object.fromEntries(Object.entries(d?.sales ?? {}).map(([k, l]) => [k, l.map((s) => [s.d, s.p])])) });
 function gApply(d) {
-  user.graded = d.items; user.gsales = d.sales;
+  user.graded = d.items; user.gsales = d.sales; user.paid = d.paid ?? {};
   gLastSig = gSig();
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* */ }
   if (currentRender === renderGraded && sheet.hidden) renderGraded();
@@ -2160,7 +2196,7 @@ function gOnUser(u) {
   gCloud.unsub = cloud.api.fsM.onSnapshot(gRef(u.uid), async (snap) => {
     if (snap.metadata.hasPendingWrites) return;
     const remote = snap.exists() ? gFromCloud(snap.data()) : null;
-    const local = { items: user.graded, sales: user.gsales };
+    const local = { items: user.graded, sales: user.gsales, paid: user.paid };
     if (first) {
       first = false;
       const next = !remote ? local : (user.gSyncedUid !== u.uid || user.gPending) ? gMerge(remote, local) : remote;

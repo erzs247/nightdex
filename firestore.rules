@@ -20,12 +20,12 @@ service cloud.firestore {
         && request.resource.data.fav is list;
     }
 
-    // cartes gradées (slabs) et ventes relevées : écrites par le propriétaire, lues par lui et ses amis
+    // cartes gradées (slabs), ventes relevées et prix d'achat des cartes : écrites par le propriétaire, lues par lui et ses amis
     match /graded/{uid} {
       allow read: if isMe(uid) || isFriendOf(uid);
       allow delete: if isMe(uid);
       allow create, update: if isMe(uid)
-        && request.resource.data.keys().hasOnly(['items', 'sales', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['items', 'sales', 'paid', 'updatedAt'])
         && request.resource.data.items is list
         && request.resource.data.items.size() <= 2000
         && request.resource.data.sales is map;
