@@ -51,6 +51,24 @@ const TEXT = {
     chartWait: 'Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.', chartNone: 'Pas de prix Cardmarket pour cette carte pour l\'instant.',
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue de l\'appli', langToast: 'Appli en français',
+    gr: {
+      tab: 'Gradées', tabCards: 'Cartes', add: 'Ajouter une gradée', edit: 'Modifier le slab', addThis: 'Ajouter une version gradée', youHave: (n) => `${n} gradée${n > 1 ? 's' : ''}`,
+      empty: 'Aucune carte gradée pour l\'instant', emptyHint: 'Ajoute tes slabs PSA, Beckett, CGC, PCA, Collect Aura… avec leur note, leur numéro de certificat et une photo.',
+      kSlabs: 'Slabs', kPaid: 'Payé', kValue: 'Valeur estimée', noSale: 'Pas de vente',
+      valueNote: 'Valeur estimée = médiane des 3 dernières ventes réussies que tu as relevées pour la même carte, langue, société et note.',
+      card: 'Carte', findCard: 'Nom ou numéro de la carte (ex. MS01 008)', change: 'Changer', company: 'Société de gradation', other: 'Autre',
+      grade: 'Note', cert: 'N° de certificat', certPh: 'Sur l\'étiquette du slab', certShort: 'Certificat', verify: 'vérifier',
+      purchase: 'Achat', paid: 'Prix payé (€)', date: 'Date', photo: 'Photo du slab', optional: 'facultatif',
+      photoAdd: 'Prendre ou choisir une photo', photoChange: 'Changer la photo', photoDel: 'Retirer la photo', photoErr: 'Impossible de lire cette photo.',
+      photoHint: 'Elle remplace le slab dessiné. Gardée sur ton téléphone et dans ton compte si tu es connecté.',
+      save: 'Enregistrer', del: 'Supprimer ce slab', delSure: 'Appuie encore pour supprimer', added: 'Slab ajouté', saved: 'Slab modifié', deleted: 'Slab supprimé',
+      estimate: 'Valeur estimée', paidOn: (p, d) => `Payé ${p}${d ? ` le ${d}` : ''}`,
+      curve: 'Ventes réussies', salesCount: (n) => `${n} vente${n > 1 ? 's' : ''} relevée${n > 1 ? 's' : ''}`, salePrice: 'Prix de vente (€)', addSale: 'Vente', delSale: 'Supprimer cette vente', saleAdded: 'Vente ajoutée à la courbe',
+      chartWait: 'Ajoute au moins deux ventes réussies pour tracer la courbe.',
+      ebayNote: 'eBay ne laisse pas les applis lire automatiquement les ventes réussies (réservé à ses partenaires agréés). Ouvre-les avec le bouton ci-dessous, puis note les prix ici : la courbe et la valeur se mettent à jour.',
+      ebay: 'Voir les ventes réussies sur eBay', pc: 'Cote gradée sur PriceCharting', seeCard: 'Voir la fiche de la carte',
+      rulesNeeded: 'Cartes gradées gardées sur ce téléphone : mets à jour les règles Firestore pour les synchroniser.',
+    },
     otherCopies: (n, l) => `+ ${n} exemplaire${n > 1 ? 's' : ''} en ${l} (bouton FR | EN pour y passer)`, colLang: (l) => `Collection ${l.toUpperCase()}`,
     cardLanguage: 'Langue des cartes', cardLangHint: 'Le bouton FR | EN de l\'accueil fait la même chose : séries, noms et images dans cette langue.',
     cardLangToast: (l) => (l === 'fr' ? 'Cartes : séries françaises' : 'Cartes : séries anglaises'),
@@ -148,6 +166,24 @@ const TEXT = {
     chartWait: 'Not enough history to draw a curve yet. Prices are recorded every day.', chartNone: 'No Cardmarket price for this card yet.',
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'App language', langToast: 'App in English',
+    gr: {
+      tab: 'Graded', tabCards: 'Cards', add: 'Add a graded card', edit: 'Edit slab', addThis: 'Add a graded copy', youHave: (n) => `${n} graded`,
+      empty: 'No graded cards yet', emptyHint: 'Add your PSA, Beckett, CGC, PCA, Collect Aura… slabs with their grade, cert number and a photo.',
+      kSlabs: 'Slabs', kPaid: 'Paid', kValue: 'Estimated value', noSale: 'No sale',
+      valueNote: 'Estimated value = median of the last 3 sold prices you logged for the same card, language, company and grade.',
+      card: 'Card', findCard: 'Card name or number (e.g. MS01 008)', change: 'Change', company: 'Grading company', other: 'Other',
+      grade: 'Grade', cert: 'Cert number', certPh: 'On the slab label', certShort: 'Cert', verify: 'verify',
+      purchase: 'Purchase', paid: 'Price paid (€)', date: 'Date', photo: 'Slab photo', optional: 'optional',
+      photoAdd: 'Take or choose a photo', photoChange: 'Change photo', photoDel: 'Remove photo', photoErr: 'Could not read this photo.',
+      photoHint: 'It replaces the drawn slab. Kept on your phone and in your account when signed in.',
+      save: 'Save', del: 'Delete this slab', delSure: 'Tap again to delete', added: 'Slab added', saved: 'Slab updated', deleted: 'Slab deleted',
+      estimate: 'Estimated value', paidOn: (p, d) => `Paid ${p}${d ? ` on ${d}` : ''}`,
+      curve: 'Sold prices', salesCount: (n) => `${n} sale${n > 1 ? 's' : ''} logged`, salePrice: 'Sold price (€)', addSale: 'Sale', delSale: 'Delete this sale', saleAdded: 'Sale added to the curve',
+      chartWait: 'Add at least two sold prices to draw the curve.',
+      ebayNote: 'eBay does not let apps read sold listings automatically (reserved for approved partners). Open them with the button below, then log the prices here: the curve and value update.',
+      ebay: 'See sold listings on eBay', pc: 'Graded prices on PriceCharting', seeCard: 'See the card page',
+      rulesNeeded: 'Graded cards kept on this phone: update the Firestore rules to sync them.',
+    },
     otherCopies: (n, l) => `+ ${n} cop${n > 1 ? 'ies' : 'y'} in ${l} (switch with FR | EN)`, colLang: (l) => `${l.toUpperCase()} collection`,
     cardLanguage: 'Card language', cardLangHint: 'The FR | EN button on the home screen does the same: sets, names and images in that language.',
     cardLangToast: (l) => (l === 'fr' ? 'Cards: French sets' : 'Cards: English sets'),
@@ -222,6 +258,7 @@ const I = {
   heartSmall: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
   camera: '<svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.8"/></svg>',
   bolt: '<svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+  slab: '<svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M5 7.5h14"/><rect x="8" y="10" width="8" height="9" rx="1"/></svg>',
   globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>',
   person: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
   heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
@@ -636,7 +673,7 @@ function renderCollection() {
   const owned = catalog.cards.filter((c) => qty(c.id) > 0);
   const ownedSealed = sealed.filter((s) => qty(s.id) > 0);
   if (!owned.length && !ownedSealed.length) {
-    view.innerHTML = `<div class="empty"><strong>${L.emptyCol}</strong>${L.emptyColHint}<a class="btn-ghost" href="#home" style="text-decoration:none">${L.browseSets}</a></div>`;
+    view.innerHTML = `<div class="stack">${colTabs('collection')}<div class="empty"><strong>${L.emptyCol}</strong>${L.emptyColHint}<a class="btn-ghost" href="#home" style="text-decoration:none">${L.browseSets}</a></div></div>`;
     return;
   }
   const total = owned.reduce((a, c) => a + qty(c.id), 0);
@@ -646,6 +683,7 @@ function renderCollection() {
   const shown = colSet === '__sealed' ? [] : sortCards(owned.filter((c) => !colSet || c.set === colSet), 'price-desc');
   const sealedShown = !colSet || colSet === '__sealed' ? ownedSealed : [];
   view.innerHTML = `<div class="stack">
+    ${colTabs('collection')}
     <div class="kpis">
       <div class="stat"><small>${L.kCards}</small><b class="num">${total}</b></div>
       <div class="stat"><small>${L.kUnique}</small><b class="num">${owned.length}</b></div>
@@ -878,6 +916,7 @@ function openCard(id, keepNav) {
         ${p.seeded && (p.history?.length ?? 0) > 1 ? `<p class="note">${L.seeded}</p>` : ''}
       </section>
       <a class="cta" href="${esc(cm.url)}" target="_blank" rel="noopener">${cm.exact ? L.cmView : L.cmSearch} ${I.ext}</a>
+      ${sealedItem ? '' : `<button class="btn-ghost" data-action="g-add-card" data-id="${esc(id)}">${I.slab}<span>${L.gr.addThis}${user.graded.some((e) => e.id === id) ? ` · ${L.gr.youHave(user.graded.filter((e) => e.id === id).length)}` : ''}</span></button>`}
       ${c.official ? `<a class="btn-ghost" style="text-align:center;text-decoration:none" href="${esc(c.official)}" target="_blank" rel="noopener">${L.official}</a>` : ''}
       ${q > 0 && p.trend ? `<p class="note num" style="text-align:center">${L.worth(q, eur(q * p.trend))}</p>` : ''}
       ${c.artist ? `<p class="note" style="text-align:center">${esc(L.art(c.artist))}</p>` : ''}
@@ -891,7 +930,7 @@ function openCard(id, keepNav) {
   if (!keepNav || isPC()) petEvent('open', c);
 }
 function closeCard() {
-  sheet.hidden = true; openId = null; sheetMode = null;
+  sheet.hidden = true; openId = null; sheetMode = null; gForm = null; gOpen = null;
   petEvent('close');
   document.body.style.overflow = '';
   lastFocus?.focus?.({ preventScroll: true });
@@ -993,6 +1032,7 @@ function onCloudUser(u) {
   cloud.user = u ? { uid: u.uid, email: u.email, name: u.displayName } : null;
   cloud.confirmDelete = false;
   cloud.supporter = false; cloud.avatar = null;
+  gOnUser(u);
   if (!u) { cloud.status = 'off'; friendsStop(); renderChromeBadges(); refreshAccount(); if (currentRender === renderFriends || currentRender === renderFriendCurrent) currentRender(); return; }
   cloud.status = 'syncing'; refreshAccount();
   const { fsM } = cloud.api;
@@ -1540,7 +1580,9 @@ async function renderFriend(uid) {
       const [snap, name] = await Promise.all([fsx().getDoc(dref('users', uid)), friendName(uid)]);
       let avatar = null;
       try { const p = await fsx().getDoc(dref('profiles', uid)); avatar = p.exists() ? p.data().avatar : null; } catch { /* pas de photo */ }
-      fr.view = { uid, pseudo: name.pseudo, avatar, owned: migrateOwned({ ...(snap.exists() ? snap.data().owned ?? {} : {}) }), wish: snap.exists() ? snap.data().wish ?? [] : [] };
+      let gd = { items: [], sales: {} };
+      try { const gs = await fsx().getDoc(dref('graded', uid)); if (gs.exists()) gd = gFromCloud(gs.data()); } catch { /* pas de slabs ou règles pas à jour */ }
+      fr.view = { uid, graded: gd.items, gsales: gd.sales, pseudo: name.pseudo, avatar, owned: migrateOwned({ ...(snap.exists() ? snap.data().owned ?? {} : {}) }), wish: snap.exists() ? snap.data().wish ?? [] : [] };
     } catch (e) {
       view.innerHTML = `<div class="empty"><strong>${L.fr.cantSee}</strong>${L.fr.cantSeeHint}<a class="btn-ghost" href="#friends" style="text-decoration:none">${L.back}</a></div>`;
       return;
@@ -1568,8 +1610,10 @@ async function renderFriend(uid) {
       <div class="stat"><small>${L.kValue}</small><b class="num">${eur(value)}</b></div>
     </div>
     <div class="chips">${[['all', L.fr.fAll], ['trade', L.fr.fTrade], ['give', L.fr.fGive], ['wish', L.fr.fWish]].map(([k, l]) => `<button class="chip" data-frf="${k}" aria-pressed="${fr.filter === k}">${l} · ${lists[k].length}</button>`).join('')}</div>
+    ${v.graded?.length && fr.filter === 'all' ? `<h2 class="section-title">${L.gr.tab} · ${v.graded.length}</h2><div class="slabs">${v.graded.filter((e) => cardsById.has(e.id)).map((e) => slabTile(e, { friend: uid })).join('')}</div><h2 class="section-title">${L.gr.tabCards}</h2>` : ''}
     ${shown.length ? `<div class="cards">${shown.map((c) => friendTile(c, v)).join('')}</div>` : `<div class="empty"><strong>${L.noCards}</strong>${L.fr.emptyFilter}</div>`}
   </div>`;
+  gHydrate(view);
 }
 let renderFriendCurrent = null;
 function friendTile(c, v) {
@@ -1907,6 +1951,8 @@ document.addEventListener('click', async (e) => {
       const cu = cloud.api.auth.currentUser;
       cloud.unsub?.(); cloud.unsub = null;
       await cloud.api.fsM.deleteDoc(cloudRef());
+      for (const e of user.graded) await cloud.api.fsM.deleteDoc(gPhotoRef(cu.uid, e.g)).catch(() => {});
+      await cloud.api.fsM.deleteDoc(gRef(cu.uid)).catch(() => {});
       await cloud.api.fsM.deleteDoc(cloud.api.fsM.doc(cloud.api.db, 'profiles', cu.uid)).catch(() => {});
       await friendsCleanup(cu.uid);
       await cloud.api.authM.deleteUser(cu);
@@ -1916,7 +1962,7 @@ document.addEventListener('click', async (e) => {
   }
   else if (d.action === 'close') closeCard();
   else if (d.action === 'export') {
-    const data = JSON.stringify({ app: 'NightDex', version: 2, exportedAt: new Date().toISOString(), owned: user.owned, wish: [...wish], fav: [...fav] });
+    const data = JSON.stringify({ app: 'NightDex', version: 2, exportedAt: new Date().toISOString(), owned: user.owned, wish: [...wish], fav: [...fav], graded: user.graded, gsales: user.gsales });
     const box = document.getElementById('exportBox');
     box.hidden = false; box.value = data;
     try { await navigator.clipboard.writeText(data); toast(L.copied); } catch { box.select(); toast(L.selectCopy); }
@@ -1934,6 +1980,7 @@ document.addEventListener('change', async (e) => {
     if (!data.owned) throw new Error();
     user.owned = migrateOwned({ ...data.owned }); wish.clear(); (data.wish ?? []).forEach((x) => wish.add(x));
     fav.clear(); (data.fav ?? []).forEach((x) => fav.add(x));
+    if (Array.isArray(data.graded)) { user.graded = data.graded; user.gsales = data.gsales ?? {}; gSave(); }
     save(); closeCard(); currentRender(); toast(L.imported);
   } catch { toast(L.badFile); }
 });
@@ -1953,6 +2000,417 @@ document.addEventListener('keydown', (e) => {
 });
 sheet.addEventListener('click', (e) => { if (e.target.matches('.sheet-backdrop')) closeCard(); });
 
+// ---------- Cartes gradées (slabs) ----------
+// Chaque slab : { g, id, l (fr|en), co (société), gr (note), cert, paid, at (date d'achat), ph (photo ?) }.
+// Ventes réussies relevées par l'utilisateur, partagées par carte + langue + société + note : gsales[clé] = [[date, prix], …].
+// Synchronisé dans un document à part (graded/<uid>) pour ne jamais gêner la synchro de la collection ;
+// photos sur l'appareil (IndexedDB) et dans gphotos/<uid>/items/<g> quand on est connecté.
+const GRADERS = [
+  { k: 'PSA', name: 'PSA', color: '#c8102e', cert: (n) => `https://www.psacard.com/cert/${encodeURIComponent(n)}` },
+  { k: 'BGS', name: 'Beckett (BGS)', color: '#1f3c88', specials: [['10BL', '10 Black Label']] },
+  { k: 'CGC', name: 'CGC Cards', color: '#0e2a47', cert: (n) => `https://www.cgccards.com/certlookup/${encodeURIComponent(n)}/`, specials: [['10P', '10 Pristine']] },
+  { k: 'PCA', name: 'PCA', color: '#1b5fa8' },
+  { k: 'CA', name: 'Collect Aura', color: '#6a2fb0' },
+  { k: 'SGC', name: 'SGC', color: '#1a1a1a' },
+  { k: 'TAG', name: 'TAG', color: '#2b2b2b' },
+  { k: 'ACE', name: 'Ace Grading', color: '#0f6b4f' },
+  { k: 'X', name: '', color: '#555b66' },
+];
+const GRADES = ['10', '9.5', '9', '8.5', '8', '7.5', '7', '6.5', '6', '5.5', '5', '4.5', '4', '3.5', '3', '2.5', '2', '1.5', '1'];
+const grader = (k) => GRADERS.find((x) => x.k === k) ?? GRADERS[GRADERS.length - 1];
+const graderName = (k) => grader(k).name || L.gr.other;
+const gradeLabel = (co, gr) => grader(co).specials?.find(([k]) => k === gr)?.[1] ?? gr;
+const gradeNum = (gr) => parseFloat(gr) || 0;
+if (!Array.isArray(user.graded)) user.graded = [];
+if (!user.gsales || typeof user.gsales !== 'object') user.gsales = {};
+const gkey = (e) => `${e.id}|${e.l}|${e.co}|${e.gr}`;
+const gSales = (e) => (user.gsales[gkey(e)] ?? []).slice().sort((a, b) => (a[0] < b[0] ? -1 : 1));
+// valeur estimée : médiane des 3 dernières ventes relevées
+function gValue(e, sales = gSales(e)) {
+  if (!sales.length) return null;
+  const last = sales.slice(-3).map(([, p]) => p).sort((a, b) => a - b);
+  return last[Math.floor(last.length / 2)];
+}
+const gSig = () => JSON.stringify([user.graded, Object.entries(user.gsales).sort()]);
+let gLastSig = gSig();
+function gSave() {
+  try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* stockage indisponible */ }
+  const sig = gSig();
+  if (sig !== gLastSig) { gLastSig = sig; gCloudChanged(); }
+}
+// recherche eBay des ventes réussies (ouverte dans le navigateur de l'utilisateur) et PriceCharting
+function gEbayUrl(e) {
+  const c = cardsById.get(e.id);
+  const q = ['cyberpunk', c?.nameEn ?? c?.name ?? '', c?.number ?? '', grader(e.co).name ? e.co : '', gradeNum(e.gr) || ''].filter(Boolean).join(' ');
+  return `https://www.ebay.fr/sch/i.html?_nkw=${encodeURIComponent(q)}&LH_Sold=1&LH_Complete=1&_sop=13`;
+}
+const gPcUrl = (e) => { const c = cardsById.get(e.id); return `https://www.pricecharting.com/search-products?type=prices&q=${encodeURIComponent(`cyberpunk ${c?.nameEn ?? c?.name ?? ''}`)}`; };
+
+// --- photos : IndexedDB sur l'appareil + copie dans le compte ---
+const gPhotoMem = new Map();
+let gDbP = null;
+function gDb() {
+  gDbP ??= new Promise((res, rej) => {
+    const r = indexedDB.open('nightdex-photos', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('p');
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+  return gDbP;
+}
+async function gIdb(mode, fn) {
+  const db = await gDb();
+  return new Promise((res, rej) => { const t = db.transaction('p', mode); const q = fn(t.objectStore('p')); t.oncomplete = () => res(q?.result); t.onerror = () => rej(t.error); });
+}
+const gPhotoRef = (uid, g) => cloud.api.fsM.doc(cloud.api.db, 'gphotos', uid, 'items', g);
+async function gPhotoGet(g, uid = cloud.user?.uid) {
+  const mk = `${uid ?? 'me'}:${g}`;
+  if (gPhotoMem.has(mk)) return gPhotoMem.get(mk);
+  let url = null;
+  const mine = !uid || uid === cloud.user?.uid;
+  if (mine) url = await gIdb('readonly', (s) => s.get(g)).catch(() => null);
+  if (!url && uid && cloud.api) {
+    try { const snap = await cloud.api.fsM.getDoc(gPhotoRef(uid, g)); url = snap.exists() ? snap.data().img : null; } catch { /* pas de photo */ }
+    if (url && mine) gIdb('readwrite', (s) => s.put(url, g)).catch(() => {});
+  }
+  gPhotoMem.set(mk, url);
+  return url;
+}
+async function gPhotoPut(g, url) {
+  gPhotoMem.set(`${cloud.user?.uid ?? 'me'}:${g}`, url); gPhotoMem.set(`me:${g}`, url);
+  await gIdb('readwrite', (s) => s.put(url, g)).catch(() => {});
+  if (cloud.user) {
+    try { await cloud.api.fsM.setDoc(gPhotoRef(cloud.user.uid, g), { img: url }); }
+    catch (e) { if (e?.code === 'permission-denied') toast(L.gr.rulesNeeded); }
+  }
+}
+async function gPhotoDel(g) {
+  for (const k of [...gPhotoMem.keys()]) if (k.endsWith(`:${g}`)) gPhotoMem.delete(k);
+  await gIdb('readwrite', (s) => s.delete(g)).catch(() => {});
+  if (cloud.user) cloud.api.fsM.deleteDoc(gPhotoRef(cloud.user.uid, g)).catch(() => {});
+}
+// remplit les <img data-gphoto> une fois la photo trouvée
+function gHydrate(root = document) {
+  for (const img of root.querySelectorAll('img[data-gphoto]')) {
+    const g = img.dataset.gphoto, uid = img.dataset.guid || undefined;
+    img.removeAttribute('data-gphoto');
+    gPhotoGet(g, uid).then((url) => { if (url) { img.src = url; img.closest('.slab')?.classList.add('has-photo'); } });
+  }
+}
+// photo du slab : réduite (700 px de haut max) pour rester légère
+function gResize(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 700 / img.naturalHeight, 520 / img.naturalWidth);
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(img.src);
+      let url = c.toDataURL('image/webp', 0.8);
+      if (!url.startsWith('data:image/webp')) url = c.toDataURL('image/jpeg', 0.8);
+      resolve(url);
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// --- synchro du compte : document graded/<uid> ---
+const gRef = (uid = cloud.user.uid) => cloud.api.fsM.doc(cloud.api.db, 'graded', uid);
+const gCloud = { unsub: null, timer: 0, dirty: false, denied: false };
+function gMerge(a, b) {
+  const items = new Map();
+  for (const e of [...(a?.items ?? []), ...(b?.items ?? [])]) items.set(e.g, { ...items.get(e.g), ...e });
+  const sales = {};
+  for (const src of [a?.sales ?? {}, b?.sales ?? {}]) for (const [k, list] of Object.entries(src)) {
+    const seen = new Set((sales[k] ?? []).map((s) => s.join('|')));
+    sales[k] = [...(sales[k] ?? []), ...list.filter((s) => !seen.has(s.join('|')))];
+  }
+  return { items: [...items.values()], sales };
+}
+// Firestore n'accepte pas les tableaux de tableaux : ventes envoyées sous forme { d, p }
+const gToCloud = () => ({ items: user.graded, sales: Object.fromEntries(Object.entries(user.gsales).map(([k, l]) => [k, l.map(([d, p]) => ({ d, p }))])) });
+const gFromCloud = (d) => ({ items: d?.items ?? [], sales: Object.fromEntries(Object.entries(d?.sales ?? {}).map(([k, l]) => [k, l.map((s) => [s.d, s.p])])) });
+function gApply(d) {
+  user.graded = d.items; user.gsales = d.sales;
+  gLastSig = gSig();
+  try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* */ }
+  if (currentRender === renderGraded && sheet.hidden) renderGraded();
+}
+async function gPush() {
+  if (!cloud.user) return;
+  clearTimeout(gCloud.timer);
+  try { await cloud.api.fsM.setDoc(gRef(), { ...gToCloud(), updatedAt: cloud.api.fsM.serverTimestamp() }); gCloud.dirty = false; user.gPending = false; gSave(); gCloud.denied = false; }
+  catch (e) { if (e?.code === 'permission-denied' && !gCloud.denied) { gCloud.denied = true; toast(L.gr.rulesNeeded); } }
+}
+function gCloudChanged() {
+  if (!cloud.enabled) return;
+  user.gPending = true;
+  try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* */ }
+  if (!cloud.user) return;
+  gCloud.dirty = true;
+  clearTimeout(gCloud.timer);
+  gCloud.timer = setTimeout(gPush, 1200);
+}
+function gOnUser(u) {
+  gCloud.unsub?.(); gCloud.unsub = null;
+  gPhotoMem.clear();
+  if (!u) return;
+  let first = true;
+  gCloud.unsub = cloud.api.fsM.onSnapshot(gRef(u.uid), async (snap) => {
+    if (snap.metadata.hasPendingWrites) return;
+    const remote = snap.exists() ? gFromCloud(snap.data()) : null;
+    const local = { items: user.graded, sales: user.gsales };
+    if (first) {
+      first = false;
+      const next = !remote ? local : (user.gSyncedUid !== u.uid || user.gPending) ? gMerge(remote, local) : remote;
+      user.gSyncedUid = u.uid;
+      gApply(next);
+      if (!remote || JSON.stringify(gMerge(next, {})) !== JSON.stringify(gMerge(remote, {}))) await gPush();
+      else { user.gPending = false; gSave(); }
+      // photos prises avant la connexion : envoyées dans le compte
+      for (const e of user.graded) if (e.ph) gIdb('readonly', (s) => s.get(e.g)).then((url) => { if (url) cloud.api.fsM.setDoc(gPhotoRef(u.uid, e.g), { img: url }).catch(() => {}); }).catch(() => {});
+      return;
+    }
+    if (gCloud.dirty || !remote) return;
+    gApply(remote);
+  }, (e) => { if (e?.code === 'permission-denied' && !gCloud.denied) { gCloud.denied = true; toast(L.gr.rulesNeeded); } });
+}
+
+// --- affichage ---
+const colTabs = (active) => `<div class="seg" role="tablist">${[['collection', L.gr.tabCards], ['graded', L.gr.tab]].map(([k, l]) => `<button data-nav="${k}" aria-pressed="${active === k}">${l}</button>`).join('')}</div>`;
+// slab dessiné : étiquette de la société + carte ; remplacé par la photo du vrai slab si l'utilisateur en a mis une
+function slabTile(e, opts = {}) {
+  const c = cardsById.get(e.id);
+  if (!c) return '';
+  const G = grader(e.co);
+  const v = opts.friend ? null : gValue(e);
+  const s = setOf(c.set);
+  const name = e.l === 'en' ? c.nameEn ?? c.name : c.name;
+  const art = e.l === 'en' && c.imageEn ? c.imageEn : c.image;
+  const inner = `<span class="slab-label"><b class="slab-co">${esc(G.name ? e.co : L.gr.other)}</b><span class="slab-txt">${esc(name)}<small>${esc(s?.print ?? c.set)} · ${esc(c.number)} · ${e.l.toUpperCase()}</small></span><strong class="slab-grade num">${esc(gradeNum(e.gr) ? String(gradeNum(e.gr)) : e.gr)}${grader(e.co).specials?.some(([k]) => k === e.gr) ? '<i>★</i>' : ''}</strong></span>
+      <span class="slab-win"><img src="${esc(art || placeholderArt(c))}" alt="" loading="lazy" decoding="async" data-ph="${esc(placeholderArt(c))}"></span>
+      ${e.ph ? `<img class="slab-photo" alt="" data-gphoto="${esc(e.g)}" ${opts.friend ? `data-guid="${esc(opts.friend)}"` : ''}>` : ''}`;
+  if (opts.big) return `<div class="slab big" style="--gc:${G.color}">${inner}</div>`;
+  return `<div class="slab-cell">
+    <button class="slab" data-gopen="${esc(e.g)}" ${opts.friend ? `data-gfriend="${esc(opts.friend)}"` : ''} style="--gc:${G.color}" aria-label="${esc(`${name} · ${graderName(e.co)} ${gradeLabel(e.co, e.gr)}`)}">${inner}</button>
+    ${opts.friend ? '' : `<span class="slab-price num">${v != null ? eur(v) : `<span class="muted">${L.gr.noSale}</span>`}</span>`}
+  </div>`;
+}
+let gFilter = '';
+function renderGraded() {
+  setTopbar(`<h1>${L.myCollection}</h1><button class="chip" data-action="g-add">+ ${L.gr.add}</button>`);
+  const list = user.graded.filter((e) => cardsById.has(e.id));
+  const cos = [...new Set(list.map((e) => e.co))];
+  if (gFilter && !cos.includes(gFilter)) gFilter = '';
+  const shown = list.filter((e) => !gFilter || e.co === gFilter)
+    .sort((a, b) => (gValue(b) ?? b.paid ?? 0) - (gValue(a) ?? a.paid ?? 0));
+  const paid = list.reduce((a, e) => a + (Number(e.paid) || 0), 0);
+  const est = list.reduce((a, e) => a + (gValue(e) ?? 0), 0);
+  view.innerHTML = `<div class="stack">
+    ${colTabs('graded')}
+    ${!list.length ? `<div class="empty"><strong>${L.gr.empty}</strong>${L.gr.emptyHint}<button class="cta" data-action="g-add">+ ${L.gr.add}</button></div>` : `
+    <div class="kpis">
+      <div class="stat"><small>${L.gr.kSlabs}</small><b class="num">${list.length}</b></div>
+      <div class="stat"><small>${L.gr.kPaid}</small><b class="num">${eur(paid)}</b></div>
+      <div class="stat"><small>${L.gr.kValue}</small><b class="num">${eur(est)}</b></div>
+    </div>
+    ${cos.length > 1 ? `<div class="chips"><button class="chip" data-gco-filter="" aria-pressed="${!gFilter}">${L.all}</button>${cos.map((k) => `<button class="chip" data-gco-filter="${esc(k)}" aria-pressed="${gFilter === k}">${esc(graderName(k))} · ${list.filter((e) => e.co === k).length}</button>`).join('')}</div>` : ''}
+    <div class="slabs">${shown.map((e) => slabTile(e)).join('')}</div>
+    <p class="note">${L.gr.valueNote}</p>`}
+  </div>`;
+  gHydrate(view);
+}
+
+// --- formulaire d'ajout / modification ---
+let gForm = null;
+function openGForm(init = {}) {
+  const old = init.g ? user.graded.find((e) => e.g === init.g) : null;
+  gForm = old ? { ...old, photo: undefined, q: '' } : { g: '', id: init.id ?? '', l: init.l ?? cardLang, co: 'PSA', gr: '10', cert: '', paid: '', at: new Date().toISOString().slice(0, 10), q: '' };
+  renderGForm();
+}
+function gFormRead() {
+  if (!gForm) return;
+  const v = (id) => document.getElementById(id)?.value;
+  if (v('gGrade') != null) gForm.gr = v('gGrade');
+  if (v('gCert') != null) gForm.cert = v('gCert').trim();
+  if (v('gPaid') != null) gForm.paid = v('gPaid');
+  if (v('gAt') != null) gForm.at = v('gAt');
+  if (v('gQuery') != null) gForm.q = v('gQuery');
+}
+function gPickList(q) {
+  const f = fold(q.trim());
+  if (f.length < 2) return [];
+  return catalog.cards.filter((c) => fold([c.name, c.nameEn, `${printCode(c.set)} ${c.number}`, `${c.set} ${c.number}`].join(' ')).includes(f)).slice(0, 30);
+}
+function renderGForm(focus) {
+  openId = null; sheetMode = 'gform';
+  const f = gForm;
+  const c = cardsById.get(f.id);
+  const G = grader(f.co);
+  const grades = [...(G.specials ?? []), ...GRADES.map((g) => [g, g])];
+  if (!grades.some(([k]) => k === f.gr)) f.gr = '10';
+  const langs = c?.languages ?? ['fr', 'en'];
+  if (c && !langs.includes(f.l)) f.l = langs[0];
+  const picks = c ? [] : gPickList(f.q);
+  sheetPanel.innerHTML = `${sheetTop()}<div class="stack gform">
+    <h2 id="sheetTitle" style="margin:0;font:700 22px var(--font-display)">${f.g ? L.gr.edit : L.gr.add}</h2>
+    <div class="panel"><h3>${L.gr.card}</h3>
+      ${c ? `<div class="gpick-on">${compactTile(c)}<div><b>${esc(f.l === 'en' ? c.nameEn ?? c.name : c.name)}</b><br><span class="note num">${esc(printCode(c.set))} · ${esc(c.number)}</span></div>${f.g ? '' : `<button class="link-btn" data-action="g-unpick">${L.gr.change}</button>`}</div>`
+        : `<input class="search" id="gQuery" type="search" placeholder="${L.gr.findCard}" value="${esc(f.q)}" autocomplete="off">
+           <div class="gpicks">${picks.map((p) => `<button class="gpick" data-gpick="${esc(p.id)}"><span class="title-code">${esc(printCode(p.set))}</span>${esc(cardName(p))} <span class="note num">${esc(p.number)}</span></button>`).join('') || (fold(f.q).length >= 2 ? `<p class="note">${L.noResult}</p>` : '')}</div>`}
+      ${c ? `<div class="seg">${langs.map((k) => `<button type="button" data-glang="${k}" aria-pressed="${f.l === k}">${k.toUpperCase()}</button>`).join('')}</div>` : ''}
+    </div>
+    <div class="panel"><h3>${L.gr.company}</h3>
+      <div class="chips wrap">${GRADERS.map((x) => `<button class="chip" data-gco="${x.k}" aria-pressed="${f.co === x.k}">${esc(x.name || L.gr.other)}</button>`).join('')}</div>
+      <label class="field"><span>${L.gr.grade}</span><select id="gGrade">${grades.map(([k, l]) => `<option value="${esc(k)}" ${k === f.gr ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label>
+      <label class="field"><span>${L.gr.cert}</span><input id="gCert" inputmode="numeric" autocomplete="off" value="${esc(f.cert)}" placeholder="${L.gr.certPh}"></label>
+    </div>
+    <div class="panel"><h3>${L.gr.purchase}</h3>
+      <div class="field-row">
+        <label class="field"><span>${L.gr.paid}</span><input id="gPaid" type="number" inputmode="decimal" min="0" step="0.01" value="${esc(f.paid)}" placeholder="0,00"></label>
+        <label class="field"><span>${L.gr.date}</span><input id="gAt" type="date" value="${esc(f.at)}"></label>
+      </div>
+    </div>
+    <div class="panel"><h3>${L.gr.photo} <small>${L.gr.optional}</small></h3>
+      <div class="gphoto-row">${f.photo ? `<img class="gphoto-prev" src="${esc(f.photo)}" alt="">` : f.ph ? `<img class="gphoto-prev" alt="" data-gphoto="${esc(f.g)}">` : ''}
+        <label class="btn-ghost" for="gPhotoFile">${I.camera}<span>${f.photo || f.ph ? L.gr.photoChange : L.gr.photoAdd}</span></label>
+        ${f.photo || f.ph ? `<button class="link-btn" data-action="g-photo-del">${L.gr.photoDel}</button>` : ''}</div>
+      <input id="gPhotoFile" type="file" accept="image/*" hidden>
+      <p class="note" style="margin:0">${L.gr.photoHint}</p>
+    </div>
+    <button class="cta" data-action="g-save" ${c ? '' : 'disabled'}>${L.gr.save}</button>
+    ${f.g ? `<button class="btn-ghost danger" data-action="g-del">${f.confirmDel ? L.gr.delSure : L.gr.del}</button>` : ''}
+  </div>`;
+  sheet.hidden = false; document.body.style.overflow = 'hidden';
+  gHydrate(sheetPanel);
+  if (focus) { const el = document.getElementById(focus); el?.focus(); if (el?.setSelectionRange && el.type !== 'number') el.setSelectionRange(el.value.length, el.value.length); }
+}
+async function gSaveForm() {
+  gFormRead();
+  const f = gForm;
+  if (!cardsById.has(f.id)) return;
+  const isNew = !f.g;
+  const e = { g: f.g || `g${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, id: f.id, l: f.l, co: f.co, gr: f.gr, cert: f.cert || '', paid: f.paid === '' ? null : Math.round(Number(f.paid) * 100) / 100, at: f.at || '', ph: !!(f.photo || (f.ph && f.photo !== null)) };
+  if (f.photo) await gPhotoPut(e.g, f.photo);
+  else if (f.photo === null && f.g) await gPhotoDel(e.g);
+  user.graded = isNew ? [...user.graded, e] : user.graded.map((x) => (x.g === e.g ? e : x));
+  gSave();
+  toast(isNew ? L.gr.added : L.gr.saved);
+  gForm = null;
+  if (currentRender === renderGraded) renderGraded();
+  openSlab(e.g);
+}
+
+// --- fiche d'un slab : grande image, valeur, ventes réussies et courbe ---
+let gOpen = null;
+async function openSlab(g, friendUid) {
+  const fv = friendUid ? fr.view?.graded : null;
+  const e = (fv ?? user.graded).find((x) => x.g === g);
+  if (!e) return;
+  openId = null; sheetMode = 'gview'; gOpen = { g, friend: friendUid ?? null };
+  const c = cardsById.get(e.id);
+  const G = grader(e.co);
+  const sales = friendUid ? (fr.view?.gsales?.[gkey(e)] ?? []).slice().sort((a, b) => (a[0] < b[0] ? -1 : 1)) : gSales(e);
+  const v = gValue(e, sales);
+  const name = e.l === 'en' ? c.nameEn ?? c.name : c.name;
+  const gain = v != null && e.paid ? v - e.paid : null;
+  const certUrl = e.cert && G.cert ? G.cert(e.cert) : '';
+  sheetPanel.innerHTML = `${sheetTop()}<div class="stack detail gview">
+    <div class="gview-top">
+      <div class="gview-img">${slabTile(e, { friend: friendUid ?? undefined, big: true })}</div>
+      <div class="detail-info">
+        <h2 id="sheetTitle">${esc(name)}</h2>
+        <div class="sub">${esc(setName(setOf(c.set) ?? {}) || c.set)}<br><span class="num"><b class="print">${esc(printCode(c.set))}</b> · ${esc(c.number)} · ${e.l.toUpperCase()}</span></div>
+        <span class="rarity" style="--rc:${G.color}">${esc(graderName(e.co))} · ${esc(gradeLabel(e.co, e.gr))}</span>
+        ${e.cert ? `<span class="sub num">${L.gr.certShort} ${esc(e.cert)}${certUrl ? ` · <a href="${esc(certUrl)}" target="_blank" rel="noopener">${L.gr.verify}</a>` : ''}</span>` : ''}
+        <div class="big-price num"><small>${L.gr.estimate}</small>${v != null ? eur(v) : `<span style="font-size:18px;color:var(--muted)">${L.gr.noSale}</span>`}</div>
+        ${!friendUid && e.paid != null ? `<span class="sub num">${L.gr.paidOn(eur(e.paid), e.at ? fmt.date.format(parseDay(e.at)) : '')}${gain != null ? ` · <b class="${gain >= 0 ? 'up' : 'down'}">${gain >= 0 ? '+' : ''}${eur(gain)}</b>` : ''}</span>` : ''}
+      </div>
+    </div>
+    <section class="panel">
+      <h3>${L.gr.curve} <small>${L.gr.salesCount(sales.length)}</small></h3>
+      <div class="chart" id="gChart"></div>
+      ${friendUid ? '' : `<form class="gsale-form" id="gSaleForm">
+        <input id="gSaleDate" type="date" value="${new Date().toISOString().slice(0, 10)}" aria-label="${L.gr.date}">
+        <input id="gSalePrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="${L.gr.salePrice}" aria-label="${L.gr.salePrice}">
+        <button class="chip" type="submit">+ ${L.gr.addSale}</button>
+      </form>`}
+      ${sales.length ? `<div class="gsales">${sales.slice().reverse().map(([d, p]) => `<div class="gsale num"><span>${fmt.date.format(parseDay(d))}</span><b>${eur(p)}</b>${friendUid ? '' : `<button class="mini-x" data-gsale-del="${esc(`${d}|${p}`)}" aria-label="${L.gr.delSale}">${I.x}</button>`}</div>`).join('')}</div>` : ''}
+      <p class="note" style="margin:0">${L.gr.ebayNote}</p>
+    </section>
+    <a class="cta" href="${esc(gEbayUrl(e))}" target="_blank" rel="noopener">${L.gr.ebay} ${I.ext}</a>
+    <a class="btn-ghost" style="text-align:center;text-decoration:none" href="${esc(gPcUrl(e))}" target="_blank" rel="noopener">${L.gr.pc}</a>
+    <button class="btn-ghost" data-open-card="${esc(e.id)}">${L.gr.seeCard}</button>
+    ${friendUid ? '' : `<button class="btn-ghost" data-action="g-edit">${L.gr.edit}</button>`}
+  </div>`;
+  sheet.hidden = false; document.body.style.overflow = 'hidden';
+  gHydrate(sheetPanel);
+  drawChart(document.getElementById('gChart'), sales.length === 1 ? [sales[0], [new Date().toISOString().slice(0, 10), sales[0][1]]] : sales, true);
+  if (sales.length < 2) document.querySelector('#gChart .chart-empty')?.replaceChildren(L.gr.chartWait);
+}
+
+// --- actions ---
+document.addEventListener('click', async (ev) => {
+  const t = ev.target.closest('[data-gopen],[data-gco],[data-gco-filter],[data-glang],[data-gpick],[data-gsale-del],[data-open-card],[data-action^="g-"]');
+  if (!t) return;
+  const d = t.dataset;
+  if (d.gopen) { ev.preventDefault(); openSlab(d.gopen, d.gfriend); return; }
+  if (d.gcoFilter !== undefined) { gFilter = d.gcoFilter; renderGraded(); return; }
+  if (d.openCard) { const id = d.openCard; closeCard(); openCard(id); return; }
+  if (d.gsaleDel && gOpen) {
+    const e = user.graded.find((x) => x.g === gOpen.g); if (!e) return;
+    const k = gkey(e);
+    user.gsales[k] = (user.gsales[k] ?? []).filter(([dd, p]) => `${dd}|${p}` !== d.gsaleDel);
+    if (!user.gsales[k].length) delete user.gsales[k];
+    gSave(); openSlab(e.g); if (currentRender === renderGraded) renderGraded();
+    return;
+  }
+  if (!gForm && d.action !== 'g-add' && d.action !== 'g-edit' && d.action !== 'g-add-card') return;
+  if (d.gco) { gFormRead(); gForm.co = d.gco; renderGForm(); }
+  else if (d.glang) { gFormRead(); gForm.l = d.glang; renderGForm(); }
+  else if (d.gpick) { gFormRead(); gForm.id = d.gpick; gForm.q = ''; renderGForm(); }
+  else if (d.action === 'g-unpick') { gFormRead(); gForm.id = ''; renderGForm('gQuery'); }
+  else if (d.action === 'g-add') openGForm();
+  else if (d.action === 'g-add-card') openGForm({ id: d.id, l: cardLang });
+  else if (d.action === 'g-edit' && gOpen) openGForm({ g: gOpen.g });
+  else if (d.action === 'g-photo-del') { gFormRead(); gForm.photo = null; gForm.ph = false; renderGForm(); }
+  else if (d.action === 'g-save') gSaveForm();
+  else if (d.action === 'g-del') {
+    gFormRead();
+    if (!gForm.confirmDel) { gForm.confirmDel = true; renderGForm(); return; }
+    const g = gForm.g;
+    user.graded = user.graded.filter((x) => x.g !== g);
+    gPhotoDel(g); gSave(); gForm = null; closeCard(); toast(L.gr.deleted);
+    if (currentRender === renderGraded) renderGraded();
+  }
+});
+document.addEventListener('input', (ev) => {
+  if (ev.target.id !== 'gQuery' || !gForm) return;
+  gForm.q = ev.target.value;
+  const box = sheetPanel.querySelector('.gpicks');
+  const picks = gPickList(gForm.q);
+  if (box) box.innerHTML = picks.map((p) => `<button class="gpick" data-gpick="${esc(p.id)}"><span class="title-code">${esc(printCode(p.set))}</span>${esc(cardName(p))} <span class="note num">${esc(p.number)}</span></button>`).join('') || (fold(gForm.q).length >= 2 ? `<p class="note">${L.noResult}</p>` : '');
+});
+document.addEventListener('change', async (ev) => {
+  if (ev.target.id !== 'gPhotoFile' || !gForm) return;
+  const file = ev.target.files?.[0]; if (!file) return;
+  gFormRead();
+  try { gForm.photo = await gResize(file); renderGForm(); } catch { toast(L.gr.photoErr); }
+});
+document.addEventListener('submit', (ev) => {
+  if (ev.target.id !== 'gSaleForm' || !gOpen) return;
+  ev.preventDefault();
+  const e = user.graded.find((x) => x.g === gOpen.g); if (!e) return;
+  const d = document.getElementById('gSaleDate').value || new Date().toISOString().slice(0, 10);
+  const p = Math.round(Number(document.getElementById('gSalePrice').value) * 100) / 100;
+  if (!(p > 0)) { document.getElementById('gSalePrice').focus(); return; }
+  const k = gkey(e);
+  user.gsales[k] = [...(user.gsales[k] ?? []).filter(([dd, pp]) => !(dd === d && pp === p)), [d, p]];
+  gSave(); openSlab(e.g); toast(L.gr.saleAdded);
+  if (currentRender === renderGraded) renderGraded();
+});
+
 // ---------- Navigation ----------
 let currentTab = 'home';
 function markTabs() {
@@ -1968,6 +2426,7 @@ function route() {
   let tab = h;
   if (h.startsWith('set-')) { tab = 'home'; currentRender = () => renderSet(h.slice(4)); }
   else if (h === 'collection') currentRender = renderCollection;
+  else if (h === 'graded') { tab = 'collection'; currentRender = renderGraded; }
   else if (h === 'wishlist') currentRender = renderWishlist;
   else if (h === 'search') currentRender = renderSearch;
   else if (h === 'values') currentRender = renderValues;

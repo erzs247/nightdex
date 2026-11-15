@@ -20,6 +20,26 @@ service cloud.firestore {
         && request.resource.data.fav is list;
     }
 
+    // cartes gradées (slabs) et ventes relevées : écrites par le propriétaire, lues par lui et ses amis
+    match /graded/{uid} {
+      allow read: if isMe(uid) || isFriendOf(uid);
+      allow delete: if isMe(uid);
+      allow create, update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['items', 'sales', 'updatedAt'])
+        && request.resource.data.items is list
+        && request.resource.data.items.size() <= 2000
+        && request.resource.data.sales is map;
+    }
+    // photos des slabs (une par document, image réduite)
+    match /gphotos/{uid}/items/{g} {
+      allow read: if isMe(uid) || isFriendOf(uid);
+      allow delete: if isMe(uid);
+      allow create, update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['img'])
+        && request.resource.data.img is string
+        && request.resource.data.img.size() < 400000;
+    }
+
     // statut de soutien : lisible par le compte ; activé ou retiré uniquement par un administrateur (ou la console)
     match /supporters/{uid} {
       allow read: if isMe(uid) || isAdmin();
