@@ -15,9 +15,10 @@
       "cost": null,
       "power": null,
       "ram": 2,
+      "artist": "Flaviano Armentaro",
       "languages": ["en"],
-      "image": "images/EXT/jackie-v-chooms-to-the-end.webp",
-      "imageEn": "images/EXT/jackie-v-chooms-to-the-end.webp",
+      "image": "images/EXT/jackie-v-chooms.webp",
+      "imageEn": "images/EXT/jackie-v-chooms.webp",
       "origin": { "fr": "Exclusivité employés CD PROJEKT RED — non vendue en boutique", "en": "CD PROJEKT RED employee exclusive — never sold in stores" },
       "ebay": "Jackie & V Chooms to the End",
       "price": { "value": 4500, "date": "2026-11-16", "source": "eBay" }
