@@ -867,3 +867,17 @@ button:disabled { opacity: .5; cursor: default; }
 .pool-card .pool-add:disabled { font-size: 11px; font-weight: 700; background: #05060ad9; color: #ff8494; height: auto; padding: 4px 6px; left: 4px; }
 .pool-card.blocked .card-img img { filter: grayscale(.7) brightness(.6); }
 .pool-n { position: absolute; left: 4px; top: 4px; padding: 2px 7px; border-radius: 99px; background: var(--accent); color: var(--accent-ink); font-weight: 800; font-size: 13px; }
+
+/* ---------- Zoom plein écran ---------- */
+.card-img.zoomable { position: relative; display: block; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.zoom-hint { position: absolute; right: 6px; bottom: 6px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: #05060acc; color: #fff; pointer-events: none; }
+.zoom-hint svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.gview-img[data-zoom] { cursor: zoom-in; }
+.zoom-view { position: fixed; inset: 0; z-index: 1000; background: #000e; display: grid; place-items: center; touch-action: none; overflow: hidden; user-select: none; -webkit-user-select: none; }
+.zoom-view[hidden] { display: none; }
+.zoom-view img { max-width: min(94vw, 720px); max-height: 88vh; width: auto; height: auto; border-radius: 14px; box-shadow: 0 10px 50px #000; transform-origin: center; will-change: transform; cursor: zoom-in; }
+.zoom-view.zoomed img { cursor: grab; border-radius: 4px; }
+.zoom-close { position: absolute; top: max(12px, env(safe-area-inset-top)); right: 12px; background: #1d2337; color: #fff; }
+.zoom-close svg { stroke: currentColor; fill: none; stroke-width: 2; }
+.zoom-tip { position: absolute; bottom: max(16px, env(safe-area-inset-bottom)); left: 0; right: 0; text-align: center; color: #fffb; font-size: 13px; margin: 0; pointer-events: none; transition: opacity .2s; }
+.zoom-view.zoomed .zoom-tip { opacity: 0; }

@@ -96,6 +96,7 @@ const TEXT = {
     },
     paidLabel: 'Prix d\'achat / carte', paidHint: 'Différence avec la cote', paidVs: 'Différence :', boughtFor: (v) => `achetées ${v}`,
     paidSum: (n, v) => `Prix d'achat noté pour ${n} carte${n > 1 ? 's' : ''} : ${v}`,
+    zoom: 'Agrandir la carte', zoomHint: 'Pince ou double-touche pour zoomer',
     otherCopies: (n, l) => `+ ${n} exemplaire${n > 1 ? 's' : ''} en ${l} (bouton FR | EN pour y passer)`, colLang: (l) => `Collection ${l.toUpperCase()}`,
     cardLanguage: 'Langue des cartes', cardLangHint: 'Le bouton FR | EN de l\'accueil fait la même chose : séries, noms et images dans cette langue.',
     cardLangToast: (l) => (l === 'fr' ? 'Cartes : séries françaises' : 'Cartes : séries anglaises'),
@@ -238,6 +239,7 @@ const TEXT = {
     },
     paidLabel: 'Bought at / card', paidHint: 'Difference with the price', paidVs: 'Difference:', boughtFor: (v) => `bought for ${v}`,
     paidSum: (n, v) => `Purchase price logged for ${n} card${n > 1 ? 's' : ''}: ${v}`,
+    zoom: 'Enlarge card', zoomHint: 'Pinch or double-tap to zoom',
     otherCopies: (n, l) => `+ ${n} cop${n > 1 ? 'ies' : 'y'} in ${l} (switch with FR | EN)`, colLang: (l) => `${l.toUpperCase()} collection`,
     cardLanguage: 'Card language', cardLangHint: 'The FR | EN button on the home screen does the same: sets, names and images in that language.',
     cardLangToast: (l) => (l === 'fr' ? 'Cards: French sets' : 'Cards: English sets'),
@@ -313,6 +315,7 @@ const I = {
   camera: '<svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.8"/></svg>',
   bolt: '<svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
   slab: '<svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M5 7.5h14"/><rect x="8" y="10" width="8" height="9" rx="1"/></svg>',
+  zoom: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5M10.5 7.5v6M7.5 10.5h6"/></svg>',
   globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>',
   person: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
   heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
@@ -963,7 +966,7 @@ function openCard(id, keepNav) {
   sheetPanel.innerHTML = `${sheetTop(navList.length > 1)}
     <div class="stack detail">
       <div class="detail-top ${sealedItem ? 'is-sealed' : ''}" ${rarityStyle(c.rarity)}>
-        <div class="card-img">${cardImg(c, true)}${c.pack ? `<span class="pack-badge num">×${c.pack}</span>` : ''}</div>
+        <button class="card-img zoomable" data-zoom ${c.hd ? `data-hd="${esc(c.hd)}"` : ''} aria-label="${L.zoom}">${cardImg(c, true)}${c.pack ? `<span class="pack-badge num">×${c.pack}</span>` : ''}<span class="zoom-hint">${I.zoom}</span></button>
         <div class="detail-info">
           <h2 id="sheetTitle">${esc(cardName(c))}</h2>
           ${sealedItem
@@ -2101,7 +2104,7 @@ document.addEventListener('input', (e) => {
 });
 document.addEventListener('keydown', (e) => {
   if (sheet.hidden) return;
-  if (e.key === 'Escape') closeCard();
+  if (e.key === 'Escape') { if (zoomEl && !zoomEl.hidden) { zoomClose(); return; } closeCard(); }
   else if (openId && (e.key === 'ArrowRight' || e.key === 'ArrowLeft') && !e.target.closest('input, textarea')) { e.preventDefault(); navStep(e.key === 'ArrowRight' ? 1 : -1); }
 });
 sheet.addEventListener('click', (e) => { if (e.target.matches('.sheet-backdrop')) closeCard(); });
@@ -2434,7 +2437,7 @@ async function openSlab(g, friendUid) {
   const certUrl = e.cert && G.cert ? G.cert(e.cert) : '';
   sheetPanel.innerHTML = `${sheetTop()}<div class="stack detail gview">
     <div class="gview-top">
-      <div class="gview-img">${slabTile(e, { friend: friendUid ?? undefined, big: true })}</div>
+      <div class="gview-img" data-zoom role="button" tabindex="0" aria-label="${L.zoom}">${slabTile(e, { friend: friendUid ?? undefined, big: true })}</div>
       <div class="detail-info">
         <h2 id="sheetTitle">${esc(name)}</h2>
         <div class="sub">${esc(setName(setOf(c.set) ?? {}) || c.set)}<br><span class="num"><b class="print">${esc(printCode(c.set))}</b> · ${esc(c.number)} · ${e.l.toUpperCase()}</span></div>
@@ -2822,6 +2825,97 @@ function dOnUser(u) {
     dApply(remote);
   }, (e) => { if (e?.code === 'permission-denied' && !dCloud.denied) { dCloud.denied = true; toast(L.dk.rulesNeeded); } });
 }
+
+
+// ---------- Zoom plein écran sur une carte : pincer, double-toucher, molette (PC), glisser pour se déplacer ----------
+let zoomEl = null;
+const zs = { k: 1, x: 0, y: 0, pts: new Map(), start: null, lastTap: 0, moved: false };
+function zoomApply(anim) {
+  const img = zoomEl.querySelector('img');
+  img.style.transition = anim ? 'transform .2s ease' : 'none';
+  img.style.transform = `translate(${zs.x}px, ${zs.y}px) scale(${zs.k})`;
+  zoomEl.classList.toggle('zoomed', zs.k > 1.01);
+}
+function zoomClamp() {
+  const img = zoomEl.querySelector('img');
+  const w = img.offsetWidth * zs.k, h = img.offsetHeight * zs.k;
+  const mx = Math.max(0, (w - innerWidth) / 2 + 20), my = Math.max(0, (h - innerHeight) / 2 + 20);
+  zs.k = Math.min(5, Math.max(1, zs.k));
+  zs.x = Math.min(mx, Math.max(-mx, zs.x)); zs.y = Math.min(my, Math.max(-my, zs.y));
+  if (zs.k === 1) { zs.x = 0; zs.y = 0; }
+}
+// zoom autour d'un point de l'écran (cx, cy)
+function zoomAt(k, cx, cy) {
+  const ox = cx - innerWidth / 2, oy = cy - innerHeight / 2;
+  const r = k / zs.k;
+  zs.x = ox - (ox - zs.x) * r; zs.y = oy - (oy - zs.y) * r; zs.k = k;
+}
+function zoomOpen(src, alt) {
+  if (!zoomEl) {
+    zoomEl = document.createElement('div');
+    zoomEl.className = 'zoom-view'; zoomEl.hidden = true;
+    zoomEl.setAttribute('role', 'dialog'); zoomEl.setAttribute('aria-modal', 'true');
+    zoomEl.innerHTML = `<img alt="" draggable="false"><button class="icon-btn zoom-close" aria-label="${L.close}">${I.x}</button><p class="zoom-tip"></p>`;
+    document.body.append(zoomEl);
+    zoomEl.querySelector('.zoom-close').addEventListener('click', zoomClose);
+    zoomEl.addEventListener('pointerdown', zoomDown);
+    zoomEl.addEventListener('pointermove', zoomMove);
+    for (const t of ['pointerup', 'pointercancel', 'pointerleave']) zoomEl.addEventListener(t, zoomUp);
+    zoomEl.addEventListener('wheel', (e) => { e.preventDefault(); zoomAt(zs.k * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.clientX, e.clientY); zoomClamp(); zoomApply(); }, { passive: false });
+  }
+  const img = zoomEl.querySelector('img');
+  img.src = src; img.alt = alt ?? '';
+  zoomEl.querySelector('.zoom-tip').textContent = L.zoomHint;
+  zoomEl.querySelector('.zoom-close').setAttribute('aria-label', L.close);
+  Object.assign(zs, { k: 1, x: 0, y: 0, start: null }); zs.pts.clear();
+  zoomEl.hidden = false; zoomApply();
+  zoomEl.querySelector('.zoom-close').focus({ preventScroll: true });
+}
+function zoomClose() { if (zoomEl) zoomEl.hidden = true; }
+function zoomDown(e) {
+  if (e.target.closest('.zoom-close')) return;
+  zoomEl.setPointerCapture?.(e.pointerId);
+  zs.pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  zs.moved = false;
+  zs.start = { k: zs.k, x: zs.x, y: zs.y, pts: new Map([...zs.pts].map(([id, p]) => [id, { ...p }])) };
+}
+function zoomMove(e) {
+  if (!zs.pts.has(e.pointerId) || !zs.start) return;
+  zs.pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  const now = [...zs.pts.values()], was = [...zs.start.pts.values()];
+  if (now.length >= 2 && was.length >= 2) {
+    const d = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+    const c0 = { x: (was[0].x + was[1].x) / 2, y: (was[0].y + was[1].y) / 2 }, c1 = { x: (now[0].x + now[1].x) / 2, y: (now[0].y + now[1].y) / 2 };
+    Object.assign(zs, { k: zs.start.k, x: zs.start.x, y: zs.start.y });
+    zoomAt(zs.start.k * (d(now[0], now[1]) / (d(was[0], was[1]) || 1)), c0.x, c0.y);
+    zs.x += c1.x - c0.x; zs.y += c1.y - c0.y;
+  } else if (now.length === 1 && was.length >= 1) {
+    const dx = now[0].x - was[0].x, dy = now[0].y - was[0].y;
+    if (Math.abs(dx) + Math.abs(dy) > 6) zs.moved = true;
+    if (zs.k > 1) { zs.x = zs.start.x + dx; zs.y = zs.start.y + dy; }
+  }
+  zs.moved = zs.moved || now.length > 1;
+  zoomClamp(); zoomApply();
+}
+function zoomUp(e) {
+  if (!zs.pts.has(e.pointerId)) return;
+  const single = zs.pts.size === 1;
+  zs.pts.delete(e.pointerId);
+  zs.start = zs.pts.size ? { k: zs.k, x: zs.x, y: zs.y, pts: new Map([...zs.pts].map(([id, p]) => [id, { ...p }])) } : null;
+  if (!single || zs.moved || e.type !== 'pointerup') return;
+  // toucher simple : double-toucher = zoom / dézoom ; toucher hors de la carte sans zoom = fermer
+  const t = Date.now();
+  if (t - zs.lastTap < 300) { if (zs.k > 1.01) Object.assign(zs, { k: 1, x: 0, y: 0 }); else zoomAt(2.5, e.clientX, e.clientY); zoomClamp(); zoomApply(true); zs.lastTap = 0; return; }
+  zs.lastTap = t;
+  if (zs.k <= 1.01 && e.target === zoomEl) setTimeout(() => { if (zs.lastTap === t) zoomClose(); }, 300);
+}
+document.addEventListener('click', (e) => {
+  const z = e.target.closest('[data-zoom]');
+  if (!z) return;
+  const img = z.querySelector('img.slab-photo[src]') ?? z.querySelector('img');
+  if (z.dataset.hd) zoomOpen(z.dataset.hd, img?.alt);
+  else if (img?.src) zoomOpen(img.src, img.alt);
+});
 
 // ---------- Navigation ----------
 let currentTab = 'home';
