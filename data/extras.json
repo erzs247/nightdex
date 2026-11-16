@@ -1,0 +1,26 @@
+{
+  "_aide": "Cartes hors séries (exclusivités, cartes du personnel…). Ajoutées à la main. price = estimation saisie à la main (pas sur Cardmarket), ebay = recherche eBay.",
+  "items": [
+    {
+      "id": "EXT-CDPR-001",
+      "kind": "extra",
+      "category": "staff",
+      "set": "EXT",
+      "number": "N000",
+      "name": "Jackie & V — Chooms to the End",
+      "nameEn": "Jackie & V — Chooms to the End",
+      "rarity": "Exclusive",
+      "type": "Legend",
+      "color": "Yellow",
+      "cost": null,
+      "power": null,
+      "ram": 2,
+      "languages": ["en"],
+      "image": "images/EXT/jackie-v-chooms-to-the-end.webp",
+      "imageEn": "images/EXT/jackie-v-chooms-to-the-end.webp",
+      "origin": { "fr": "Exclusivité employés CD PROJEKT RED — non vendue en boutique", "en": "CD PROJEKT RED employee exclusive — never sold in stores" },
+      "ebay": "Jackie & V Chooms to the End",
+      "price": { "value": 4500, "date": "2026-11-16", "source": "eBay" }
+    }
+  ]
+}

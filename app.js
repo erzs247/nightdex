@@ -51,6 +51,12 @@ const TEXT = {
     chartWait: 'Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.', chartNone: 'Pas de prix Cardmarket pour cette carte pour l\'instant.',
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue de l\'appli', langToast: 'Appli en français',
+    ex: {
+      tab: 'Extra', cats: { staff: 'Cartes du personnel', other: 'Hors séries' }, catHint: { staff: 'Offertes aux employés, jamais vendues en boutique.' },
+      note: 'Ces cartes ne sont pas sur Cardmarket : leur prix est une estimation d\'après les annonces eBay, mise à jour à la main.',
+      priceNote: (v, d, s) => `Prix estimé ${v} d'après ${s} (${d}) — pas de cote Cardmarket.`,
+      estimate: 'Prix estimé (eBay)', ebayLive: 'Voir les annonces sur eBay', ebaySold: 'Voir les ventes réussies sur eBay',
+    },
     dk: {
       title: 'Decks', new: 'Nouveau deck', untitled: 'Deck sans nom', defaultName: (n) => `Mon deck ${n}`, namePh: 'Nom du deck', cancel: 'Annuler',
       empty: 'Aucun deck pour l\'instant', emptyHint: 'Crée tes decks avec les règles officielles : 3 Légendes, 40 à 50 cartes, la RAM vérifiée automatiquement.',
@@ -148,7 +154,7 @@ const TEXT = {
     export: 'Exporter ma collection (copier)', import: 'Importer un fichier de sauvegarde', dataLine: (n, m, d) => `Données : ${n} cartes, ${m} séries · prix Cardmarket du ${d}.`, close: 'Fermer',
     copied: 'Sauvegarde copiée', selectCopy: 'Sélectionnez le texte pour le copier', imported: 'Collection importée', badFile: 'Fichier invalide : choisissez un export NightDex',
     loadError: 'Impossible de charger les cartes', loadErrorHint: 'Vérifiez que les fichiers data/catalog.json et data/prices.json existent, puis rechargez la page.',
-    rarity: { Common: 'Commune', Uncommon: 'Peu commune', Rare: 'Rare', Epic: 'Épique', 'Nova Rare': 'Nova Rare', 'Iconic Legend': 'Légende iconique', 'Iconic Other': 'Iconique', Secret: 'Secrète', 'Iconic Secret': 'Secrète iconique' },
+    rarity: { Common: 'Commune', Uncommon: 'Peu commune', Rare: 'Rare', Epic: 'Épique', 'Nova Rare': 'Nova Rare', 'Iconic Legend': 'Légende iconique', 'Iconic Other': 'Iconique', Secret: 'Secrète', 'Iconic Secret': 'Secrète iconique', Exclusive: 'Exclusive' },
     type: { Unit: 'Unité', Program: 'Programme', Legend: 'Légende', Gear: 'Équipement' },
     color: { Red: 'Rouge', Blue: 'Bleu', Green: 'Vert', Yellow: 'Jaune' },
   },
@@ -187,6 +193,12 @@ const TEXT = {
     chartWait: 'Not enough history to draw a curve yet. Prices are recorded every day.', chartNone: 'No Cardmarket price for this card yet.',
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'App language', langToast: 'App in English',
+    ex: {
+      tab: 'Extra', cats: { staff: 'Staff cards', other: 'Off-set cards' }, catHint: { staff: 'Given to employees, never sold in stores.' },
+      note: 'These cards are not on Cardmarket: their price is an estimate from eBay listings, updated by hand.',
+      priceNote: (v, d, s) => `Estimated ${v} from ${s} (${d}) — no Cardmarket price.`,
+      estimate: 'Estimated price (eBay)', ebayLive: 'See listings on eBay', ebaySold: 'See sold listings on eBay',
+    },
     dk: {
       title: 'Decks', new: 'New deck', untitled: 'Untitled deck', defaultName: (n) => `My deck ${n}`, namePh: 'Deck name', cancel: 'Cancel',
       empty: 'No decks yet', emptyHint: 'Build decks with the official rules: 3 Legends, 40 to 50 cards, RAM checked automatically.',
@@ -313,7 +325,7 @@ const I = {
 
 // ---------- Raretés & couleurs (clés anglaises dans les données) ----------
 const RARITIES = ['Common', 'Uncommon', 'Rare', 'Epic', 'Nova Rare', 'Iconic Legend', 'Iconic Other', 'Secret', 'Iconic Secret'];
-const RARITY_HEX = { Common: '#8e96b2', Uncommon: '#6fd38a', Rare: '#5b8cff', Epic: '#b36bff', 'Nova Rare': '#3ad8df', 'Iconic Legend': '#ff9f2e', 'Iconic Other': '#ff5fa2', Secret: '#f5e50b', 'Iconic Secret': '#ffd84a' };
+const RARITY_HEX = { Common: '#8e96b2', Uncommon: '#6fd38a', Rare: '#5b8cff', Epic: '#b36bff', 'Nova Rare': '#3ad8df', 'Iconic Legend': '#ff9f2e', 'Iconic Other': '#ff5fa2', Secret: '#f5e50b', 'Iconic Secret': '#ffd84a', Exclusive: '#ffd84a' };
 const rarityStyle = (r) => (RARITY_HEX[r] ? `style="--rc: var(--r-${r.toLowerCase().replace(/[^a-z]+/g, '-')})"` : '');
 const FACTION = { Yellow: '#f5e50b', Red: '#ff4d5e', Blue: '#3f7bff', Green: '#2fd88a' };
 
@@ -387,8 +399,14 @@ async function loadData() {
   // version autonome : données intégrées dans la page (<script type="application/json" id="data/…">)
   const embedded = (p) => { const el = document.getElementById(p); return el ? Promise.resolve(JSON.parse(el.textContent)) : null; };
   const get = (p) => embedded(p) ?? fetch(p, { cache: 'no-cache' }).then((r) => { if (!r.ok) throw new Error(p); return r.json(); });
-  let sealedFile;
-  [catalog, priceFile, config, sealedFile] = await Promise.all([get('data/catalog.json'), get('data/prices.json'), get('data/config.json').catch(() => config), get('data/sealed.json').catch(() => ({ items: [] }))]);
+  let sealedFile, extraFile;
+  [catalog, priceFile, config, sealedFile, extraFile] = await Promise.all([get('data/catalog.json'), get('data/prices.json'), get('data/config.json').catch(() => config), get('data/sealed.json').catch(() => ({ items: [] })), get('data/extras.json').catch(() => ({ items: [] }))]);
+  // cartes hors séries : prix estimé saisi à la main (pas de cote Cardmarket)
+  extras = extraFile.items ?? [];
+  for (const c of extras) {
+    cardsById.set(c.id, c);
+    if (c.price?.value != null && !priceFile.prices[c.id]) priceFile.prices[c.id] = { trend: c.price.value, history: [[c.price.date, c.price.value]], manual: true };
+  }
   renderSupportSide();
   sealed = sealedFile.items ?? [];
   for (const it of sealed) cardsById.set(it.id, it);
@@ -406,10 +424,15 @@ const P = (id) => priceFile.prices[id];
 const hasPrices = () => Object.keys(priceFile.prices ?? {}).length > 0;
 const price = (id) => P(id)?.trend ?? null;
 // collection séparée par langue : clé « id » = exemplaires FR, « id@en » = exemplaires EN (le scellé n'a qu'une clé)
-const okey = (id, l = cardLang) => (l === 'en' && !id.includes('@') && !isSealed(cardsById.get(id) ?? {}) ? `${id}@en` : id);
+const okey = (id, l = cardLang) => {
+  const c = cardsById.get(id);
+  if (id.includes('@') || isSealed(c ?? {})) return id;
+  const eff = c?.languages?.length && !c.languages.includes(l) ? c.languages[0] : l;
+  return eff === 'en' ? `${id}@en` : id;
+};
 const ownedOf = (map, id, l = cardLang) => map?.[okey(id, l)] ?? 0;
 const qty = (id, l = cardLang) => ownedOf(user.owned, id, l);
-const qtyAll = (id) => (isSealed(cardsById.get(id) ?? {}) ? qty(id) : qty(id, 'fr') + qty(id, 'en'));
+const qtyAll = (id) => (okey(id, 'fr') === okey(id, 'en') ? qty(id) : qty(id, 'fr') + qty(id, 'en'));
 // anciennes données (une seule quantité par carte) : les cartes qui n'existent qu'en anglais passent en « @en », le reste reste en FR
 function migrateOwned(map) {
   if (!map) return map;
@@ -426,8 +449,10 @@ const ownedIn = (code) => setCards(code).filter((c) => qty(c.id) > 0).length;
 const ownedAll = (code) => (cardsBySet.get(code) ?? []).filter((c) => qty(c.id) > 0).length;
 const printCode = (code) => setOf(code)?.print ?? code;
 const isSealed = (c) => c.kind === 'sealed';
+const isExtra = (c) => c?.kind === 'extra';
+let extras = [];
 const itemCode = (c) => (isSealed(c) ? c.print ?? (c.set ? printCode(c.set) : '') : printCode(c.set));
-const allItems = () => [...catalog.cards, ...sealed];
+const allItems = () => [...catalog.cards, ...extras, ...sealed];
 
 function valueAt(hist, day) {
   let v = null;
@@ -608,7 +633,7 @@ function homeTopbar(withMode) {
   const mode = user.prefs.homeMode;
   setTopbar(`<h1>${L.home}</h1>${withMode ? `<button class="icon-btn" data-action="home-mode" aria-label="${L.toggleView}">${mode === 'grid' ? I.listIcon : I.gridIcon}</button>` : ''}${langBtn()}${globeBtn()}<a class="icon-btn capri-btn" href="#capri" aria-label="Capri"><img src="images/capri/avatar.webp" alt=""></a>${accountBtn()}<button class="icon-btn" data-action="settings" aria-label="${L.settings}">${I.gear}</button>`);
 }
-const homeTabs = (active) => `<div class="seg" role="tablist">${[['home', L.setsTab], ['sealed', L.sealed]].map(([h, l]) => `<button data-nav="${h}" aria-pressed="${active === h}">${l}</button>`).join('')}</div>`;
+const homeTabs = (active) => `<div class="seg" role="tablist">${[['home', L.setsTab], ['sealed', L.sealed], ...(extras.length ? [['extra', L.ex.tab]] : [])].map(([h, l]) => `<button data-nav="${h}" aria-pressed="${active === h}">${l}</button>`).join('')}</div>`;
 function renderSealed() {
   homeTopbar(false);
   const updated = priceFile.updatedAt ? fmt.date.format(parseDay(priceFile.updatedAt)) : '';
@@ -617,6 +642,16 @@ function renderSealed() {
     ${homeTabs('sealed')}
     ${cats.map((cat) => { const list = sealed.filter((s) => s.category === cat).sort((a, b) => a.order - b.order); return list.length ? `<h2 class="section-title">${L.cats[cat]}</h2><div class="sealed-grid">${list.map(sealedTile).join('')}</div>` : ''; }).join('')}
     <p class="note">${L.sealedNote(updated)}</p>
+  </div>`;
+}
+function renderExtra() {
+  homeTopbar(false);
+  const cats = [...new Set(extras.map((c) => c.category ?? 'other'))];
+  view.innerHTML = `<div class="stack">
+    ${homeTabs('extra')}
+    ${cats.map((cat) => `<h2 class="section-title">${esc(L.ex.cats[cat] ?? L.ex.cats.other)}</h2><p class="note" style="margin:-6px 0 0">${esc(L.ex.catHint[cat] ?? '')}</p>
+      <div class="cards">${extras.filter((c) => (c.category ?? 'other') === cat).map(cardTile).join('')}</div>`).join('')}
+    <p class="note">${L.ex.note}</p>
   </div>`;
 }
 function renderHome() {
@@ -712,7 +747,7 @@ function renderSet(code) {
 let colSet = '';
 function renderCollection() {
   setTopbar(`<h1>${L.myCollection}</h1>${langBtn()}${cloud.enabled ? `<a class="chip friends-chip" href="#friends">${L.fr.title}<span class="fbadge" data-friends-badge ${fr.requests.length ? '' : 'hidden'}>${fr.requests.length || ''}</span></a>` : ''}`);
-  const owned = catalog.cards.filter((c) => qty(c.id) > 0);
+  const owned = [...catalog.cards, ...extras].filter((c) => qty(c.id) > 0);
   const ownedSealed = sealed.filter((s) => qty(s.id) > 0);
   if (!owned.length && !ownedSealed.length) {
     view.innerHTML = `<div class="stack">${colTabs('collection')}<div class="empty"><strong>${L.emptyCol}</strong>${L.emptyColHint}<a class="btn-ghost" href="#home" style="text-decoration:none">${L.browseSets}</a></div></div>`;
@@ -933,12 +968,13 @@ function openCard(id, keepNav) {
           <h2 id="sheetTitle">${esc(cardName(c))}</h2>
           ${sealedItem
             ? `<div class="sub">${esc(L.catOne[c.category] ?? '')}${itemCode(c) ? `<br><b class="print">${esc(itemCode(c))}</b>${s ? ` · ${esc(setName(s))}` : ''}` : ''}</div>`
+            : isExtra(c) ? `<div class="sub">${esc(L.ex.cats[c.category] ?? L.ex.cats.other)}<br><span class="num"><b class="print">EXTRA</b> · ${esc(c.number ?? '')}</span></div>`
             : `<div class="sub">${esc(s ? setName(s) : c.set)}<br><span class="num"><b class="print">${esc(printCode(c.set))}</b> · ${esc(c.number)}/${s?.total ?? cardsBySet.get(c.set)?.length ?? 0}</span></div>`}
           ${c.rarity ? `<span class="rarity" ${rarityStyle(c.rarity)}>${esc(rarityLabel(c.rarity))}${c.type ? ` · ${esc(typeLabel(c.type))}` : ''}${c.color ? ` · ${esc(colorLabel(c.color))}` : ''}</span>` : ''}
           ${stats ? `<span class="sub num">${stats}</span>` : ''}
           ${enOnly ? `<span class="sub">${L.enOnly}</span>` : ''}
-          ${!sealedItem && qty(id, cardLang === 'fr' ? 'en' : 'fr') ? `<span class="sub other-copies">${L.otherCopies(qty(id, cardLang === 'fr' ? 'en' : 'fr'), cardLang === 'fr' ? 'EN' : 'FR')}</span>` : ''}
-          <div class="big-price num"><small>${L.trend}${p.foil ? ` · <span class="foil">${L.foil}</span>` : ''}</small>${p.trend != null ? eur(p.trend) : `<span style="font-size:18px;color:var(--muted)">${L.noPrice}</span>`}</div>
+          ${!sealedItem && okey(id, 'fr') !== okey(id, 'en') && qty(id, cardLang === 'fr' ? 'en' : 'fr') ? `<span class="sub other-copies">${L.otherCopies(qty(id, cardLang === 'fr' ? 'en' : 'fr'), cardLang === 'fr' ? 'EN' : 'FR')}</span>` : ''}
+          <div class="big-price num"><small>${isExtra(c) ? L.ex.estimate : L.trend}${p.foil ? ` · <span class="foil">${L.foil}</span>` : ''}</small>${p.trend != null ? eur(p.trend) : `<span style="font-size:18px;color:var(--muted)">${L.noPrice}</span>`}</div>
           ${ch != null ? `<span class="delta num ${ch >= 0 ? 'up' : 'down'}">${pct(ch)} ${L.over30}</span>` : ''}
           <div class="detail-actions">
             <div class="stepper" role="group" aria-label="${L.copies}">
@@ -955,18 +991,22 @@ function openCard(id, keepNav) {
         <input id="cardPaid" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0,00" value="${paidOf(id) ?? ''}" data-paid-id="${esc(id)}">
         <span class="paid-diff num" id="paidDiff">${paidOf(id) != null ? (p.trend != null ? `${L.paidVs} ${diffHtml(paidDiff(id))}` : L.noPrice) : `<span class="muted">${L.paidHint}</span>`}</span>
       </div>` : ''}
-      ${p.trend != null ? `<div class="stats">
+      ${p.trend != null && !isExtra(c) ? `<div class="stats">
         <div class="stat"><small>${L.from}</small><b class="num">${eur(p.low)}</b></div>
         <div class="stat"><small>${L.avg7}</small><b class="num">${eur(p.avg7)}</b></div>
         <div class="stat"><small>${L.avg30}</small><b class="num">${eur(p.avg30)}</b></div>
       </div>` : ''}
-      <section class="panel">
+      <section class="panel" ${isExtra(c) ? 'hidden' : ''}>
         <h3>${L.curve} <small>Cardmarket${priceFile.updatedAt ? ` · ${fmt.date.format(parseDay(priceFile.updatedAt))}` : ''}</small></h3>
         <div class="ranges" id="cardRanges"></div>
         <div class="chart" id="cardChart"></div>
         ${p.seeded && (p.history?.length ?? 0) > 1 ? `<p class="note">${L.seeded}</p>` : ''}
       </section>
-      <a class="cta" href="${esc(cm.url)}" target="_blank" rel="noopener">${cm.exact ? L.cmView : L.cmSearch} ${I.ext}</a>
+      ${isExtra(c) ? `${c.origin ? `<p class="note extra-origin">★ ${esc(c.origin[lang] ?? c.origin.en)}</p>` : ''}
+      ${c.price ? `<p class="note num">${L.ex.priceNote(eur(c.price.value), fmt.date.format(parseDay(c.price.date)), c.price.source)}</p>` : ''}
+      <a class="cta" href="https://www.ebay.fr/sch/i.html?_nkw=${encodeURIComponent(`cyberpunk ${c.ebay ?? c.nameEn}`)}" target="_blank" rel="noopener">${L.ex.ebayLive} ${I.ext}</a>
+      <a class="btn-ghost" style="text-align:center;text-decoration:none" href="https://www.ebay.fr/sch/i.html?_nkw=${encodeURIComponent(`cyberpunk ${c.ebay ?? c.nameEn}`)}&LH_Sold=1&LH_Complete=1" target="_blank" rel="noopener">${L.ex.ebaySold}</a>`
+      : `<a class="cta" href="${esc(cm.url)}" target="_blank" rel="noopener">${cm.exact ? L.cmView : L.cmSearch} ${I.ext}</a>`}
       ${sealedItem ? '' : `<button class="btn-ghost" data-action="g-add-card" data-id="${esc(id)}">${I.slab}<span>${L.gr.addThis}${user.graded.some((e) => e.id === id) ? ` · ${L.gr.youHave(user.graded.filter((e) => e.id === id).length)}` : ''}</span></button>`}
       ${c.official ? `<a class="btn-ghost" style="text-align:center;text-decoration:none" href="${esc(c.official)}" target="_blank" rel="noopener">${L.official}</a>` : ''}
       ${q > 0 && p.trend ? `<p class="note num" style="text-align:center">${L.worth(q, eur(q * p.trend))}${paidOf(id) != null ? ` · ${L.boughtFor(eur(q * paidOf(id)))}` : ''}</p>` : ''}
@@ -2317,7 +2357,7 @@ function gFormRead() {
 function gPickList(q) {
   const f = fold(q.trim());
   if (f.length < 2) return [];
-  return catalog.cards.filter((c) => fold([c.name, c.nameEn, `${printCode(c.set)} ${c.number}`, `${c.set} ${c.number}`].join(' ')).includes(f)).slice(0, 30);
+  return [...catalog.cards, ...extras].filter((c) => fold([c.name, c.nameEn, `${printCode(c.set)} ${c.number}`, `${c.set} ${c.number}`].join(' ')).includes(f)).slice(0, 30);
 }
 function renderGForm(focus) {
   openId = null; sheetMode = 'gform';
@@ -2805,6 +2845,7 @@ function route() {
   else if (h === 'search') currentRender = renderSearch;
   else if (h === 'values') currentRender = renderValues;
   else if (h === 'sealed') { tab = 'sealed'; currentRender = renderSealed; }
+  else if (h === 'extra') { tab = 'home'; currentRender = renderExtra; }
   else if (h === 'capri') { currentRender = renderCapri; }
   else if (h === 'friends') { fr.view = null; fr.msg = ''; currentRender = renderFriends; }
   else if (h.startsWith('friend-')) { tab = 'friends'; const uid = h.slice(7); if (fr.view?.uid !== uid) fr.filter = 'all'; renderFriendCurrent = () => renderFriend(uid); currentRender = renderFriendCurrent; }
@@ -2881,7 +2922,7 @@ const PET_LINES = {
   },
 };
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
-const STRONG = new Set(['Nova Rare', 'Iconic Legend', 'Iconic Other', 'Secret', 'Iconic Secret']);
+const STRONG = new Set(['Nova Rare', 'Iconic Legend', 'Iconic Other', 'Secret', 'Iconic Secret', 'Exclusive']);
 function petCardLine(c) {
   const T = PET_LINES[lang];
   const fill = (s) => s.replace('{name}', cardName(c)).replace('{price}', eur(price(c.id)));
