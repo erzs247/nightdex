@@ -51,6 +51,25 @@ const TEXT = {
     chartWait: 'Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.', chartNone: 'Pas de prix Cardmarket pour cette carte pour l\'instant.',
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue de l\'appli', langToast: 'Appli en français',
+    dk: {
+      title: 'Decks', new: 'Nouveau deck', untitled: 'Deck sans nom', defaultName: (n) => `Mon deck ${n}`, namePh: 'Nom du deck', cancel: 'Annuler',
+      empty: 'Aucun deck pour l\'instant', emptyHint: 'Crée tes decks avec les règles officielles : 3 Légendes, 40 à 50 cartes, la RAM vérifiée automatiquement.',
+      cards: (n) => `${n} carte${n > 1 ? 's' : ''}`, legal: 'Deck valide', notLegal: 'Deck pas encore valide', toFix: 'à corriger',
+      missing: (n, v) => `Il te manque ${n} carte${n > 1 ? 's' : ''} (≈ ${v})`, complete: 'Tu as toutes les cartes de ce deck.',
+      cLegends: (n) => `Légendes : ${n}/3, toutes différentes`, sameLegend: 'Deux Légendes portent le même nom.',
+      cSize: (n) => `Deck : ${n} cartes (40 à 50, Légendes non comptées)`, needMore: (n) => `Encore ${n} carte${n > 1 ? 's' : ''} minimum.`, tooMany: (n) => `${n} carte${n > 1 ? 's' : ''} en trop.`,
+      cCopies: '3 exemplaires max par carte (toutes éditions)', cRam: 'RAM des cartes ≤ RAM de leur couleur', overRam: (n) => `${n} carte${n > 1 ? 's demandent' : ' demande'} trop de RAM.`,
+      ramLegend: 'RAM par couleur, apportée par tes Légendes', isLegend: 'Légende', ramShort: (r, c) => `RAM ${r} ${c}`, max3: 'Déjà 3', sideFull: 'Réserve pleine',
+      legends: 'Légendes', addLegend: 'Légende', removeLegend: 'Retirer cette Légende', pickLegend: 'Choisis une Légende', legSearch: 'Chercher une Légende',
+      main: 'Deck', side: 'Réserve', mainHint: 'Ajoute des cartes avec la liste ci-dessous.', sideHint: 'Réserve de tournoi : 7 cartes que tu peux échanger entre les parties.',
+      curve: 'Courbe de coût', addCards: 'Ajouter des cartes', searchPh: 'Nom ou numéro de carte', mine: 'Mes cartes', allColors: 'Toutes les couleurs',
+      own: (o, n) => `tu en as ${o}/${n}`, refine: (n) => `${n} cartes : affine la recherche pour voir les autres.`,
+      export: 'Copier la liste', copied: 'Liste du deck copiée', duplicate: 'Dupliquer ce deck', duplicated: 'Deck dupliqué',
+      del: 'Supprimer ce deck', delSure: 'Appuie encore pour supprimer', deleted: 'Deck supprimé',
+      rulesTitle: 'Règles de construction',
+      rules: ['Exactement <b>3 Légendes</b>, avec des noms différents.', '<b>40 à 50 cartes</b> dans le deck, sans compter les Légendes.', '<b>3 exemplaires maximum</b> d\'une même carte, toutes éditions confondues.', '<b>RAM</b> : chaque couleur part de 0 ; chaque Légende ajoute sa RAM à sa couleur. Une carte ne peut pas demander plus de RAM que la limite de sa couleur.', 'En tournoi : une <b>réserve de 7 cartes</b>.'],
+      rulesNeeded: 'Decks gardés sur ce téléphone : mets à jour les règles Firestore pour les synchroniser.',
+    },
     gr: {
       tab: 'Gradées', tabCards: 'Cartes', add: 'Ajouter une gradée', edit: 'Modifier le slab', addThis: 'Ajouter une version gradée', youHave: (n) => `${n} gradée${n > 1 ? 's' : ''}`,
       empty: 'Aucune carte gradée pour l\'instant', emptyHint: 'Ajoute tes slabs PSA, Beckett, CGC, PCA, Collect Aura… avec leur note, leur numéro de certificat et une photo.',
@@ -168,6 +187,25 @@ const TEXT = {
     chartWait: 'Not enough history to draw a curve yet. Prices are recorded every day.', chartNone: 'No Cardmarket price for this card yet.',
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'App language', langToast: 'App in English',
+    dk: {
+      title: 'Decks', new: 'New deck', untitled: 'Untitled deck', defaultName: (n) => `My deck ${n}`, namePh: 'Deck name', cancel: 'Cancel',
+      empty: 'No decks yet', emptyHint: 'Build decks with the official rules: 3 Legends, 40 to 50 cards, RAM checked automatically.',
+      cards: (n) => `${n} card${n > 1 ? 's' : ''}`, legal: 'Legal deck', notLegal: 'Deck not legal yet', toFix: 'to fix',
+      missing: (n, v) => `You are missing ${n} card${n > 1 ? 's' : ''} (≈ ${v})`, complete: 'You own every card in this deck.',
+      cLegends: (n) => `Legends: ${n}/3, all different`, sameLegend: 'Two Legends share the same name.',
+      cSize: (n) => `Deck: ${n} cards (40 to 50, Legends not counted)`, needMore: (n) => `At least ${n} more card${n > 1 ? 's' : ''}.`, tooMany: (n) => `${n} card${n > 1 ? 's' : ''} too many.`,
+      cCopies: 'Max 3 copies per card (all printings)', cRam: 'Card RAM ≤ RAM of its colour', overRam: (n) => `${n} card${n > 1 ? 's need' : ' needs'} too much RAM.`,
+      ramLegend: 'RAM per colour, from your Legends', isLegend: 'Legend', ramShort: (r, c) => `RAM ${r} ${c}`, max3: 'Already 3', sideFull: 'Sideboard full',
+      legends: 'Legends', addLegend: 'Legend', removeLegend: 'Remove this Legend', pickLegend: 'Choose a Legend', legSearch: 'Search a Legend',
+      main: 'Deck', side: 'Sideboard', mainHint: 'Add cards from the list below.', sideHint: 'Tournament sideboard: 7 cards you can swap between games.',
+      curve: 'Cost curve', addCards: 'Add cards', searchPh: 'Card name or number', mine: 'My cards', allColors: 'All colours',
+      own: (o, n) => `you own ${o}/${n}`, refine: (n) => `${n} cards: refine your search to see the rest.`,
+      export: 'Copy list', copied: 'Deck list copied', duplicate: 'Duplicate this deck', duplicated: 'Deck duplicated',
+      del: 'Delete this deck', delSure: 'Tap again to delete', deleted: 'Deck deleted',
+      rulesTitle: 'Deck-building rules',
+      rules: ['Exactly <b>3 Legends</b>, with different names.', '<b>40 to 50 cards</b> in the deck, Legends not counted.', '<b>Max 3 copies</b> of the same card, all printings combined.', '<b>RAM</b>: each colour starts at 0; each Legend adds its RAM to its colour. A card cannot need more RAM than its colour\'s limit.', 'In tournaments: a <b>7-card sideboard</b>.'],
+      rulesNeeded: 'Decks kept on this phone: update the Firestore rules to sync them.',
+    },
     gr: {
       tab: 'Graded', tabCards: 'Cards', add: 'Add a graded card', edit: 'Edit slab', addThis: 'Add a graded copy', youHave: (n) => `${n} graded`,
       empty: 'No graded cards yet', emptyHint: 'Add your PSA, Beckett, CGC, PCA, Collect Aura… slabs with their grade, cert number and a photo.',
@@ -1045,7 +1083,7 @@ function onCloudUser(u) {
   cloud.user = u ? { uid: u.uid, email: u.email, name: u.displayName } : null;
   cloud.confirmDelete = false;
   cloud.supporter = false; cloud.avatar = null;
-  gOnUser(u);
+  gOnUser(u); dOnUser(u);
   if (!u) { cloud.status = 'off'; friendsStop(); renderChromeBadges(); refreshAccount(); if (currentRender === renderFriends || currentRender === renderFriendCurrent) currentRender(); return; }
   cloud.status = 'syncing'; refreshAccount();
   const { fsM } = cloud.api;
@@ -1861,7 +1899,7 @@ function renderSupportSide() {
 }
 function renderChrome() {
   document.documentElement.lang = lang;
-  const labels = { friends: L.fr.title, capri: 'Capri', home: L.home, sealed: L.sealed, collection: L.collection, search: L.search, values: L.market, wishlist: L.wishlist };
+  const labels = { decks: L.dk.title, friends: L.fr.title, capri: 'Capri', home: L.home, sealed: L.sealed, collection: L.collection, search: L.search, values: L.market, wishlist: L.wishlist };
   for (const a of document.querySelectorAll('.tabbar a')) {
     const span = a.querySelector('span');
     if (span && labels[a.dataset.tab]) span.textContent = labels[a.dataset.tab];
@@ -1966,6 +2004,7 @@ document.addEventListener('click', async (e) => {
       await cloud.api.fsM.deleteDoc(cloudRef());
       for (const e of user.graded) await cloud.api.fsM.deleteDoc(gPhotoRef(cu.uid, e.g)).catch(() => {});
       await cloud.api.fsM.deleteDoc(gRef(cu.uid)).catch(() => {});
+      await cloud.api.fsM.deleteDoc(dRef(cu.uid)).catch(() => {});
       await cloud.api.fsM.deleteDoc(cloud.api.fsM.doc(cloud.api.db, 'profiles', cu.uid)).catch(() => {});
       await friendsCleanup(cu.uid);
       await cloud.api.authM.deleteUser(cu);
@@ -1975,7 +2014,7 @@ document.addEventListener('click', async (e) => {
   }
   else if (d.action === 'close') closeCard();
   else if (d.action === 'export') {
-    const data = JSON.stringify({ app: 'NightDex', version: 2, exportedAt: new Date().toISOString(), owned: user.owned, wish: [...wish], fav: [...fav], graded: user.graded, gsales: user.gsales, paid: user.paid });
+    const data = JSON.stringify({ app: 'NightDex', version: 2, exportedAt: new Date().toISOString(), owned: user.owned, wish: [...wish], fav: [...fav], graded: user.graded, gsales: user.gsales, paid: user.paid, decks: user.decks });
     const box = document.getElementById('exportBox');
     box.hidden = false; box.value = data;
     try { await navigator.clipboard.writeText(data); toast(L.copied); } catch { box.select(); toast(L.selectCopy); }
@@ -1995,6 +2034,7 @@ document.addEventListener('change', async (e) => {
     fav.clear(); (data.fav ?? []).forEach((x) => fav.add(x));
     if (Array.isArray(data.graded)) { user.graded = data.graded; user.gsales = data.gsales ?? {}; }
     if (data.paid && typeof data.paid === 'object') user.paid = data.paid;
+    if (Array.isArray(data.decks)) { user.decks = data.decks; dSave(); }
     gSave();
     save(); closeCard(); currentRender(); toast(L.imported);
   } catch { toast(L.badFile); }
@@ -2214,7 +2254,7 @@ function gOnUser(u) {
 }
 
 // --- affichage ---
-const colTabs = (active) => `<div class="seg" role="tablist">${[['collection', L.gr.tabCards], ['graded', L.gr.tab]].map(([k, l]) => `<button data-nav="${k}" aria-pressed="${active === k}">${l}</button>`).join('')}</div>`;
+const colTabs = (active) => `<div class="seg" role="tablist">${[['collection', L.gr.tabCards], ['graded', L.gr.tab], ['decks', L.dk.title]].map(([k, l]) => `<button data-nav="${k}" aria-pressed="${active === k}">${l}</button>`).join('')}</div>`;
 // slab dessiné : étiquette de la société + carte ; remplacé par la photo du vrai slab si l'utilisateur en a mis une
 function slabTile(e, opts = {}) {
   const c = cardsById.get(e.id);
@@ -2447,12 +2487,308 @@ document.addEventListener('submit', (ev) => {
   if (currentRender === renderGraded) renderGraded();
 });
 
+// ---------- Decks personnalisés (règles du format construit) ----------
+// 3 Légendes aux noms différents ; 40 à 50 cartes hors Légendes ; 3 exemplaires max d'une même carte (toutes éditions confondues) ;
+// RAM : chaque couleur part de 0 et chaque Légende ajoute sa RAM à sa couleur ; une carte ne peut pas demander plus de RAM
+// que la limite de sa couleur. Réserve (tournoi) : 7 cartes.
+const DECK = { min: 40, max: 50, copies: 3, legends: 3, side: 7 };
+const COLORS = ['Red', 'Blue', 'Yellow', 'Green'];
+const nameKey = (c) => c.nameEn ?? c.name;
+// une carte par nom (l'édition affichée : dans la langue des cartes, la série la plus ancienne)
+let printsByName = null;
+function deckPrints() {
+  if (printsByName) return printsByName;
+  printsByName = new Map();
+  const order = new Map(catalog.sets.map((s) => [s.code, s.order ?? 999]));
+  for (const c of catalog.cards) { const k = nameKey(c); if (!printsByName.has(k)) printsByName.set(k, []); printsByName.get(k).push(c); }
+  for (const list of printsByName.values()) list.sort((a, b) => (order.get(a.set) ?? 999) - (order.get(b.set) ?? 999) || String(a.number).localeCompare(String(b.number)));
+  return printsByName;
+}
+const canonOf = (c) => { const l = deckPrints().get(nameKey(c)) ?? [c]; return l.find(inCardLang) ?? l[0]; };
+const deckPool = () => [...deckPrints().values()].map((l) => l.find(inCardLang) ?? l[0]);
+const ownedByName = (c) => (deckPrints().get(nameKey(c)) ?? [c]).reduce((a, x) => a + qtyAll(x.id), 0);
+const cheapest = (c) => { const ps = (deckPrints().get(nameKey(c)) ?? [c]).map((x) => price(x.id)).filter((v) => v != null); return ps.length ? Math.min(...ps) : null; };
+
+if (!Array.isArray(user.decks)) user.decks = [];
+if (!Array.isArray(user.decksGone)) user.decksGone = [];
+const deckById = (d) => user.decks.find((x) => x.d === d);
+const dSig = () => JSON.stringify([user.decks, user.decksGone]);
+let dLastSig = dSig();
+function dSave() {
+  try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* */ }
+  const sig = dSig();
+  if (sig !== dLastSig) { dLastSig = sig; dCloudChanged(); }
+}
+const sumMap = (m) => Object.values(m ?? {}).reduce((a, n) => a + n, 0);
+
+function deckCheck(dk) {
+  const legs = dk.legends.map((id) => cardsById.get(id)).filter(Boolean);
+  const ram = Object.fromEntries(COLORS.map((k) => [k, 0]));
+  for (const l of legs) if (l.color in ram) ram[l.color] += l.ram ?? 0;
+  const count = sumMap(dk.main), sideCount = sumMap(dk.side);
+  const byName = new Map();
+  for (const m of [dk.main, dk.side]) for (const [id, n] of Object.entries(m)) { const c = cardsById.get(id); if (c) byName.set(nameKey(c), (byName.get(nameKey(c)) ?? 0) + n); }
+  const tooMany = [...byName].filter(([, n]) => n > DECK.copies).map(([k]) => k);
+  const overRam = Object.keys(dk.main).concat(Object.keys(dk.side)).map((id) => cardsById.get(id)).filter((c) => c && (c.ram ?? 0) > (ram[c.color] ?? 0));
+  const legNames = legs.map(nameKey);
+  const checks = [
+    { k: 'legends', ok: legs.length === DECK.legends && new Set(legNames).size === legs.length, label: L.dk.cLegends(legs.length), hint: new Set(legNames).size < legs.length ? L.dk.sameLegend : '' },
+    { k: 'size', ok: count >= DECK.min && count <= DECK.max, label: L.dk.cSize(count), hint: count < DECK.min ? L.dk.needMore(DECK.min - count) : count > DECK.max ? L.dk.tooMany(count - DECK.max) : '' },
+    { k: 'copies', ok: !tooMany.length, label: L.dk.cCopies, hint: tooMany.length ? tooMany.join(', ') : '' },
+    { k: 'ram', ok: !overRam.length, label: L.dk.cRam, hint: overRam.length ? L.dk.overRam(overRam.length) : '' },
+  ];
+  return { checks, valid: checks.every((c) => c.ok), ram, count, sideCount, overRam: new Set(overRam.map((c) => c.id)), tooMany: new Set(tooMany), byName };
+}
+const cardBlock = (c, ram, byName, mode) => {
+  if (c.type === 'Legend') return L.dk.isLegend;
+  if ((c.ram ?? 0) > (ram[c.color] ?? 0)) return L.dk.ramShort(c.ram, colorLabel(c.color));
+  if ((byName.get(nameKey(c)) ?? 0) >= DECK.copies) return L.dk.max3;
+  if (mode === 'side' && sumMap(deckUI.deck?.side) >= DECK.side) return L.dk.sideFull;
+  return '';
+};
+const colorDot = (c) => `<i class="cdot" style="--fc:${FACTION[c] ?? '#888'}" title="${esc(colorLabel(c))}"></i>`;
+
+// --- liste des decks ---
+function deckValue(dk) {
+  let v = 0, miss = 0, missCost = 0;
+  const need = new Map();
+  for (const m of [dk.main]) for (const [id, n] of Object.entries(m)) { const c = cardsById.get(id); if (c) need.set(nameKey(c), [(need.get(nameKey(c))?.[0] ?? 0) + n, c]); }
+  for (const id of dk.legends) { const c = cardsById.get(id); if (c) need.set(nameKey(c), [(need.get(nameKey(c))?.[0] ?? 0) + 1, c]); }
+  for (const [, [n, c]] of need) {
+    const p = cheapest(c) ?? 0; v += n * p;
+    const m = Math.max(0, n - ownedByName(c)); miss += m; missCost += m * p;
+  }
+  return { v, miss, missCost };
+}
+function renderDecks() {
+  setTopbar(`<h1>${L.dk.title}</h1><button class="chip" data-dact="new">+ ${L.dk.new}</button>`);
+  const list = [...user.decks].sort((a, b) => (b.upd ?? 0) - (a.upd ?? 0));
+  view.innerHTML = `<div class="stack">
+    ${colTabs('decks')}
+    ${list.length ? `<div class="deck-list">${list.map((dk) => {
+      const ck = deckCheck(dk), val = deckValue(dk);
+      const legs = dk.legends.map((id) => cardsById.get(id));
+      return `<a class="deck-tile" href="#deck-${esc(dk.d)}">
+        <span class="deck-legs">${[0, 1, 2].map((i) => (legs[i] ? `<img src="${esc(imageOf(legs[i]) || placeholderArt(legs[i]))}" alt="" loading="lazy">` : '<span class="leg-empty"></span>')).join('')}</span>
+        <span class="deck-meta"><b>${esc(dk.name || L.dk.untitled)}</b>
+          <span class="note num">${COLORS.filter((k) => ck.ram[k]).map(colorDot).join('')} ${L.dk.cards(ck.count)}${ck.sideCount ? ` + ${ck.sideCount}` : ''} · ${eur(val.v)}</span>
+          <span class="dbadge ${ck.valid ? 'ok' : 'ko'}">${ck.valid ? `✓ ${L.dk.legal}` : `${ck.checks.filter((c) => !c.ok).length} ${L.dk.toFix}`}</span>
+          ${val.miss ? `<span class="note num">${L.dk.missing(val.miss, eur(val.missCost))}</span>` : `<span class="note">${L.dk.complete}</span>`}</span>
+      </a>`;
+    }).join('')}</div>` : `<div class="empty"><strong>${L.dk.empty}</strong>${L.dk.emptyHint}<button class="cta" data-dact="new">+ ${L.dk.new}</button></div>`}
+    <details class="panel rules"><summary><h3>${L.dk.rulesTitle}</h3></summary><ul>${L.dk.rules.map((r) => `<li>${r}</li>`).join('')}</ul></details>
+  </div>`;
+}
+
+// --- construction d'un deck ---
+const deckUI = { deck: null, mode: 'main', q: '', type: '', color: '', owned: false, pick: null };
+function renderDeck(d) {
+  const dk = deckById(d);
+  if (!dk) { location.hash = '#decks'; return; }
+  if (deckUI.deck?.d !== d) { Object.assign(deckUI, { deck: dk, mode: 'main', q: '', type: '', color: '', owned: false, pick: deckUI.newDeck === d ? 0 : null, lq: '', confirmDel: false }); deckUI.newDeck = null; }
+  deckUI.deck = dk;
+  const ck = deckCheck(dk);
+  const legs = dk.legends.map((id) => cardsById.get(id));
+  setTopbar(`<a class="icon-btn" href="#decks" aria-label="${L.back}">${I.back}</a><h1 class="small">${esc(dk.name || L.dk.untitled)}</h1>
+    <button class="chip" data-dact="export">${L.dk.export}</button>`);
+  const list = dk[deckUI.mode];
+  const rows = Object.entries(list).map(([id, n]) => [cardsById.get(id), n]).filter(([c]) => c)
+    .sort(([a], [b]) => ['Unit', 'Program', 'Gear'].indexOf(a.type) - ['Unit', 'Program', 'Gear'].indexOf(b.type) || (a.cost ?? 0) - (b.cost ?? 0) || cardName(a).localeCompare(cardName(b)));
+  const groups = new Map();
+  for (const r of rows) { const t = r[0].type; if (!groups.has(t)) groups.set(t, []); groups.get(t).push(r); }
+  const curve = Array(8).fill(0);
+  for (const [id, n] of Object.entries(dk.main)) { const c = cardsById.get(id); if (c) curve[Math.min(7, c.cost ?? 0)] += n; }
+  const cmax = Math.max(1, ...curve);
+  const val = deckValue(dk);
+  view.innerHTML = `<div class="stack deck-build">
+    <input class="search" id="deckName" value="${esc(dk.name)}" placeholder="${L.dk.namePh}" maxlength="60" autocomplete="off">
+    <section class="panel deck-status ${ck.valid ? 'is-ok' : ''}">
+      <h3>${ck.valid ? `✓ ${L.dk.legal}` : L.dk.notLegal}<small class="num">${eur(val.v)}</small></h3>
+      <div class="checks">${ck.checks.map((c) => `<div class="check ${c.ok ? 'ok' : 'ko'}"><b>${c.ok ? '✓' : '✗'}</b><span>${c.label}${c.hint ? `<small>${esc(c.hint)}</small>` : ''}</span></div>`).join('')}</div>
+      <div class="ram-row">${COLORS.map((k) => `<span class="ram-pill ${ck.ram[k] ? '' : 'zero'}" style="--fc:${FACTION[k]}">${esc(colorLabel(k))} <b class="num">${ck.ram[k]}</b></span>`).join('')}<small>${L.dk.ramLegend}</small></div>
+      ${val.miss ? `<p class="note num" style="margin:0">${L.dk.missing(val.miss, eur(val.missCost))}</p>` : (ck.count ? `<p class="note" style="margin:0">${L.dk.complete}</p>` : '')}
+    </section>
+    <h2 class="section-title">${L.dk.legends}</h2>
+    <div class="leg-slots">${[0, 1, 2].map((i) => legs[i]
+      ? `<div class="leg-slot"><button class="card-img" data-open="${esc(legs[i].id)}" aria-label="${esc(cardName(legs[i]))}">${cardImg(legs[i])}</button><span class="leg-ram num" style="--fc:${FACTION[legs[i].color]}">${legs[i].ram ?? 0}</span><button class="leg-x" data-dleg-del="${i}" aria-label="${L.dk.removeLegend}">${I.x}</button></div>`
+      : `<button class="leg-slot empty ${deckUI.pick === i ? 'on' : ''}" data-dleg="${i}"><span>+</span>${L.dk.addLegend}</button>`).join('')}</div>
+    ${deckUI.pick != null ? legendPicker(dk) : ''}
+    <div class="seg">${[['main', `${L.dk.main} · ${ck.count}`], ['side', `${L.dk.side} · ${ck.sideCount}/${DECK.side}`]].map(([k, l]) => `<button data-dmode="${k}" aria-pressed="${deckUI.mode === k}">${l}</button>`).join('')}</div>
+    ${rows.length ? [...groups].map(([t, rs]) => `<h3 class="deck-group">${esc(typeLabel(t))} <small class="num">${rs.reduce((a, [, n]) => a + n, 0)}</small></h3>
+      <div class="rows">${rs.map(([c, n]) => deckRow(c, n, ck)).join('')}</div>`).join('') : `<p class="note">${deckUI.mode === 'side' ? L.dk.sideHint : L.dk.mainHint}</p>`}
+    ${deckUI.mode === 'main' && ck.count ? `<section class="panel"><h3>${L.dk.curve}</h3><div class="curve">${curve.map((n, i) => `<div class="cbar"><span class="num">${n || ''}</span><i style="height:${Math.round((n / cmax) * 100)}%"></i><b class="num">${i === 7 ? '7+' : i}</b></div>`).join('')}</div></section>` : ''}
+    <h2 class="section-title">${L.dk.addCards}</h2>
+    <input class="search" id="deckSearch" type="search" placeholder="${L.dk.searchPh}" value="${esc(deckUI.q)}" autocomplete="off">
+    <div class="chips">${[['', L.all], ['Unit', typeLabel('Unit')], ['Program', typeLabel('Program')], ['Gear', typeLabel('Gear')]].map(([k, l]) => `<button class="chip" data-dtype="${k}" aria-pressed="${deckUI.type === k}">${esc(l)}</button>`).join('')}
+      <button class="chip" data-downed aria-pressed="${deckUI.owned}">${L.dk.mine}</button></div>
+    <div class="chips">${[['', L.dk.allColors], ...COLORS.map((k) => [k, colorLabel(k)])].map(([k, l]) => `<button class="chip" data-dcolor="${k}" aria-pressed="${deckUI.color === k}">${k ? colorDot(k) : ''}${esc(l)}</button>`).join('')}</div>
+    <div id="deckResults">${deckResults(dk, ck)}</div>
+    <button class="btn-ghost" data-dact="dup">${L.dk.duplicate}</button>
+    <button class="btn-ghost danger" data-dact="del">${deckUI.confirmDel ? L.dk.delSure : L.dk.del}</button>
+  </div>`;
+}
+function deckRow(c, n, ck) {
+  const bad = ck.overRam.has(c.id) || ck.tooMany.has(nameKey(c));
+  const own = ownedByName(c);
+  return `<div class="row deck-row ${bad ? 'bad' : ''}">
+    <button class="thumb" data-open="${esc(c.id)}" aria-label="${esc(cardName(c))}">${cardImg(c)}</button>
+    <div class="rmain"><b>${esc(cardName(c))}</b><span class="note num">${colorDot(c.color)}${c.cost != null ? `${L.cost} ${c.cost} · ` : ''}RAM ${c.ram ?? 0}${own < n ? ` · <span class="down">${L.dk.own(own, n)}</span>` : ''}${ck.overRam.has(c.id) ? ` · <span class="down">${L.dk.ramShort(c.ram, colorLabel(c.color))}</span>` : ''}</span></div>
+    <div class="stepper small"><button data-dk="-1" data-id="${esc(c.id)}" aria-label="${L.removeCopy}">−</button><output class="num">${n}</output><button data-dk="1" data-id="${esc(c.id)}" aria-label="${L.addCopy}">+</button></div>
+  </div>`;
+}
+function deckResults(dk, ck = deckCheck(dk)) {
+  const f = fold(deckUI.q.trim());
+  const res = deckPool().filter((c) => c.type !== 'Legend' && (!deckUI.type || c.type === deckUI.type) && (!deckUI.color || c.color === deckUI.color)
+    && (!deckUI.owned || ownedByName(c) > 0) && (!f || fold([c.name, c.nameEn, `${printCode(c.set)} ${c.number}`].join(' ')).includes(f)))
+    .sort((a, b) => (cardBlock(a, ck.ram, ck.byName) ? 1 : 0) - (cardBlock(b, ck.ram, ck.byName) ? 1 : 0) || (a.cost ?? 0) - (b.cost ?? 0) || cardName(a).localeCompare(cardName(b)));
+  if (!res.length) return `<div class="empty"><strong>${L.noResult}</strong></div>`;
+  return `<div class="cards deck-pool">${res.slice(0, 90).map((c) => {
+    const why = cardBlock(c, ck.ram, ck.byName, deckUI.mode);
+    const n = dk[deckUI.mode][c.id] ?? 0;
+    return `<div class="card pool-card ${why ? 'blocked' : ''}">
+      <button class="card-img" data-open="${esc(c.id)}" aria-label="${esc(cardName(c))}">${cardImg(c)}</button>
+      ${n ? `<span class="pool-n num">×${n}</span>` : ''}
+      <button class="pool-add" data-dk="1" data-id="${esc(c.id)}" ${why ? 'disabled' : ''} aria-label="${L.addCopy}">${why ? esc(why) : '+'}</button>
+    </div>`;
+  }).join('')}</div>${res.length > 90 ? `<p class="note">${L.dk.refine(res.length)}</p>` : ''}`;
+}
+function legendPicker(dk) {
+  const taken = new Set(dk.legends.map((id) => cardsById.get(id)).filter(Boolean).map(nameKey));
+  const f = fold(deckUI.lq ?? '');
+  const legs = deckPool().filter((c) => c.type === 'Legend' && !taken.has(nameKey(c)) && (!f || fold([c.name, c.nameEn].join(' ')).includes(f)))
+    .sort((a, b) => COLORS.indexOf(a.color) - COLORS.indexOf(b.color) || cardName(a).localeCompare(cardName(b)));
+  return `<section class="panel leg-picker"><h3>${L.dk.pickLegend}<button class="link-btn" data-dleg-cancel>${L.dk.cancel}</button></h3>
+    <input class="search" id="legSearch" type="search" placeholder="${L.dk.legSearch}" value="${esc(deckUI.lq ?? '')}" autocomplete="off">
+    <div class="cards">${legs.map((c) => `<div class="card"><button class="card-img" data-dleg-pick="${esc(c.id)}" aria-label="${esc(cardName(c))}">${cardImg(c)}</button><span class="note num leg-cap">${colorDot(c.color)}${esc(cardName(c).split(' — ')[0])}</span></div>`).join('')}</div>
+  </section>`;
+}
+function deckTouch(dk) { dk.upd = Date.now(); dSave(); }
+function deckExport(dk) {
+  const line = (id, n) => { const c = cardsById.get(id); return c ? `${n} ${cardName(c)} (${printCode(c.set)} ${c.number})` : ''; };
+  const ck = deckCheck(dk);
+  return [dk.name || L.dk.untitled, '', `${L.dk.legends} (${dk.legends.filter(Boolean).length})`, ...dk.legends.filter(Boolean).map((id) => line(id, 1)),
+    '', `${L.dk.main} (${ck.count})`, ...Object.entries(dk.main).map(([id, n]) => line(id, n)),
+    ...(ck.sideCount ? ['', `${L.dk.side} (${ck.sideCount})`, ...Object.entries(dk.side).map(([id, n]) => line(id, n))] : [])].filter((x, i, a) => x !== '' || a[i - 1] !== '').join('\n');
+}
+
+document.addEventListener('click', async (ev) => {
+  const t = ev.target.closest('[data-dact],[data-dk],[data-dleg],[data-dleg-del],[data-dleg-pick],[data-dleg-cancel],[data-dmode],[data-dtype],[data-dcolor],[data-downed]');
+  if (!t) return;
+  const d = t.dataset;
+  if (d.dact === 'new') {
+    const dk = { d: `d${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`, name: L.dk.defaultName(user.decks.length + 1), legends: [null, null, null], main: {}, side: {}, upd: Date.now() };
+    user.decks.push(dk); dSave(); deckUI.newDeck = dk.d; location.hash = `#deck-${dk.d}`; return;
+  }
+  const dk = deckUI.deck;
+  if (!dk || !deckById(dk.d)) return;
+  const rerender = () => renderDeck(dk.d);
+  if (d.dk) {
+    const c = cardsById.get(d.id); if (!c) return;
+    const m = dk[deckUI.mode];
+    const ck = deckCheck(dk);
+    if (Number(d.dk) > 0 && cardBlock(c, ck.ram, ck.byName, deckUI.mode)) { toast(cardBlock(c, ck.ram, ck.byName, deckUI.mode)); return; }
+    const n = Math.max(0, (m[d.id] ?? 0) + Number(d.dk));
+    if (n) m[d.id] = n; else delete m[d.id];
+    deckTouch(dk); rerender();
+  } else if (d.dleg !== undefined) { deckUI.pick = Number(d.dleg); deckUI.lq = ''; rerender(); document.querySelector('.leg-picker')?.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
+  else if (d.dlegCancel !== undefined) { deckUI.pick = null; rerender(); }
+  else if (d.dlegPick) {
+    const slot = deckUI.pick ?? dk.legends.findIndex((x) => !x);
+    if (slot < 0) return;
+    dk.legends[slot] = d.dlegPick;
+    const next = dk.legends.findIndex((x) => !x);
+    deckUI.pick = next >= 0 ? next : null; deckUI.lq = '';
+    deckTouch(dk); rerender();
+  } else if (d.dlegDel !== undefined) { dk.legends[Number(d.dlegDel)] = null; deckTouch(dk); rerender(); }
+  else if (d.dmode) { deckUI.mode = d.dmode; rerender(); }
+  else if (d.dtype !== undefined) { deckUI.type = d.dtype; document.getElementById('deckResults').innerHTML = deckResults(dk); for (const b of document.querySelectorAll('[data-dtype]')) b.setAttribute('aria-pressed', b.dataset.dtype === d.dtype); }
+  else if (d.dcolor !== undefined) { deckUI.color = d.dcolor; document.getElementById('deckResults').innerHTML = deckResults(dk); for (const b of document.querySelectorAll('[data-dcolor]')) b.setAttribute('aria-pressed', b.dataset.dcolor === d.dcolor); }
+  else if (d.downed !== undefined) { deckUI.owned = !deckUI.owned; t.setAttribute('aria-pressed', deckUI.owned); document.getElementById('deckResults').innerHTML = deckResults(dk); }
+  else if (d.dact === 'export') {
+    const txt = deckExport(dk);
+    try { await navigator.clipboard.writeText(txt); toast(L.dk.copied); } catch { prompt(L.dk.export, txt); }
+  } else if (d.dact === 'dup') {
+    const copy = JSON.parse(JSON.stringify(dk));
+    copy.d = `d${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`; copy.name = `${dk.name} (2)`; copy.upd = Date.now();
+    user.decks.push(copy); dSave(); toast(L.dk.duplicated); location.hash = `#deck-${copy.d}`;
+  } else if (d.dact === 'del') {
+    if (!deckUI.confirmDel) { deckUI.confirmDel = true; rerender(); setTimeout(() => { deckUI.confirmDel = false; }, 4000); return; }
+    deckUI.confirmDel = false;
+    user.decks = user.decks.filter((x) => x.d !== dk.d); user.decksGone = [...new Set([...user.decksGone, dk.d])].slice(-200);
+    dSave(); toast(L.dk.deleted); location.hash = '#decks';
+  }
+});
+document.addEventListener('input', (ev) => {
+  const dk = deckUI.deck;
+  if (!dk) return;
+  if (ev.target.id === 'deckSearch') { deckUI.q = ev.target.value; document.getElementById('deckResults').innerHTML = deckResults(dk); }
+  else if (ev.target.id === 'deckName') { dk.name = ev.target.value.slice(0, 60); const h = topbar.querySelector('h1'); if (h) h.textContent = dk.name || L.dk.untitled; }
+  else if (ev.target.id === 'legSearch') {
+    deckUI.lq = ev.target.value;
+    const box = document.querySelector('.leg-picker'); if (!box) return;
+    const tmp = document.createElement('div'); tmp.innerHTML = legendPicker(dk);
+    box.querySelector('.cards').replaceWith(tmp.querySelector('.cards'));
+  }
+});
+document.addEventListener('change', (ev) => { if (ev.target.id === 'deckName' && deckUI.deck) deckTouch(deckUI.deck); });
+
+// --- synchro : document decks/<uid> ---
+const dRef = (uid = cloud.user.uid) => cloud.api.fsM.doc(cloud.api.db, 'decks', uid);
+const dCloud = { unsub: null, timer: 0, dirty: false, denied: false };
+function dMerge(a, b) {
+  const gone = new Set([...(a?.gone ?? []), ...(b?.gone ?? [])]);
+  const m = new Map();
+  for (const dk of [...(a?.list ?? []), ...(b?.list ?? [])]) if (!gone.has(dk.d) && (!m.has(dk.d) || (dk.upd ?? 0) >= (m.get(dk.d).upd ?? 0))) m.set(dk.d, dk);
+  return { list: [...m.values()], gone: [...gone].slice(-200) };
+}
+function dApply(x) {
+  user.decks = x.list; user.decksGone = x.gone ?? [];
+  dLastSig = dSig();
+  try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* */ }
+  if (currentRender === renderDecks) renderDecks();
+  else if (deckUI.deck && location.hash === `#deck-${deckUI.deck.d}` && !document.activeElement?.matches('input')) { deckUI.deck = deckById(deckUI.deck.d) ?? null; if (deckUI.deck) renderDeck(deckUI.deck.d); }
+}
+async function dPush() {
+  if (!cloud.user) return;
+  clearTimeout(dCloud.timer);
+  try { await cloud.api.fsM.setDoc(dRef(), { list: user.decks, gone: user.decksGone, updatedAt: cloud.api.fsM.serverTimestamp() }); dCloud.dirty = false; user.dPending = false; dCloud.denied = false; try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* */ } }
+  catch (e) { if (e?.code === 'permission-denied' && !dCloud.denied) { dCloud.denied = true; toast(L.dk.rulesNeeded); } }
+}
+function dCloudChanged() {
+  if (!cloud.enabled) return;
+  user.dPending = true;
+  if (!cloud.user) return;
+  dCloud.dirty = true;
+  clearTimeout(dCloud.timer);
+  dCloud.timer = setTimeout(dPush, 1500);
+}
+function dOnUser(u) {
+  dCloud.unsub?.(); dCloud.unsub = null;
+  if (!u) return;
+  let first = true;
+  dCloud.unsub = cloud.api.fsM.onSnapshot(dRef(u.uid), async (snap) => {
+    if (snap.metadata.hasPendingWrites) return;
+    const remote = snap.exists() ? { list: snap.data().list ?? [], gone: snap.data().gone ?? [] } : null;
+    const local = { list: user.decks, gone: user.decksGone };
+    if (first) {
+      first = false;
+      const next = !remote ? local : (user.dSyncedUid !== u.uid || user.dPending) ? dMerge(remote, local) : remote;
+      user.dSyncedUid = u.uid;
+      dApply(next);
+      if (!remote || JSON.stringify(next) !== JSON.stringify(remote)) await dPush();
+      return;
+    }
+    if (dCloud.dirty || !remote) return;
+    dApply(remote);
+  }, (e) => { if (e?.code === 'permission-denied' && !dCloud.denied) { dCloud.denied = true; toast(L.dk.rulesNeeded); } });
+}
+
 // ---------- Navigation ----------
 let currentTab = 'home';
 function markTabs() {
   const pc = isPC();
   for (const a of document.querySelectorAll('.tabbar a')) {
-    const on = a.dataset.tab === currentTab || (!pc && currentTab === 'sealed' && a.dataset.tab === 'home');
+    const on = a.dataset.tab === currentTab || (!pc && currentTab === 'sealed' && a.dataset.tab === 'home') || (!pc && currentTab === 'decks' && a.dataset.tab === 'collection');
     if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   }
 }
@@ -2463,6 +2799,8 @@ function route() {
   if (h.startsWith('set-')) { tab = 'home'; currentRender = () => renderSet(h.slice(4)); }
   else if (h === 'collection') currentRender = renderCollection;
   else if (h === 'graded') { tab = 'collection'; currentRender = renderGraded; }
+  else if (h === 'decks') { tab = 'decks'; currentRender = renderDecks; }
+  else if (h.startsWith('deck-')) { tab = 'decks'; const d = h.slice(5); currentRender = () => renderDeck(d); }
   else if (h === 'wishlist') currentRender = renderWishlist;
   else if (h === 'search') currentRender = renderSearch;
   else if (h === 'values') currentRender = renderValues;
