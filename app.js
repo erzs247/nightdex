@@ -636,7 +636,7 @@ function homeTopbar(withMode) {
   const mode = user.prefs.homeMode;
   setTopbar(`<h1>${L.home}</h1>${withMode ? `<button class="icon-btn" data-action="home-mode" aria-label="${L.toggleView}">${mode === 'grid' ? I.listIcon : I.gridIcon}</button>` : ''}${langBtn()}${globeBtn()}<a class="icon-btn capri-btn" href="#capri" aria-label="Capri"><img src="images/capri/avatar.webp" alt=""></a>${accountBtn()}<button class="icon-btn" data-action="settings" aria-label="${L.settings}">${I.gear}</button>`);
 }
-const homeTabs = (active) => `<div class="seg" role="tablist">${[['home', L.setsTab], ['sealed', L.sealed], ...(extras.length ? [['extra', L.ex.tab]] : [])].map(([h, l]) => `<button data-nav="${h}" aria-pressed="${active === h}">${l}</button>`).join('')}</div>`;
+const homeTabs = (active) => `<div class="seg" role="tablist">${[['home', L.setsTab], ['sealed', L.sealed], ...(extras.some(inCardLang) ? [['extra', L.ex.tab]] : [])].map(([h, l]) => `<button data-nav="${h}" aria-pressed="${active === h}">${l}</button>`).join('')}</div>`;
 function renderSealed() {
   homeTopbar(false);
   const updated = priceFile.updatedAt ? fmt.date.format(parseDay(priceFile.updatedAt)) : '';
@@ -649,11 +649,13 @@ function renderSealed() {
 }
 function renderExtra() {
   homeTopbar(false);
-  const cats = [...new Set(extras.map((c) => c.category ?? 'other'))];
+  const shown = extras.filter(inCardLang);
+  if (!shown.length) { location.hash = '#home'; return; }
+  const cats = [...new Set(shown.map((c) => c.category ?? 'other'))];
   view.innerHTML = `<div class="stack">
     ${homeTabs('extra')}
     ${cats.map((cat) => `<h2 class="section-title">${esc(L.ex.cats[cat] ?? L.ex.cats.other)}</h2><p class="note" style="margin:-6px 0 0">${esc(L.ex.catHint[cat] ?? '')}</p>
-      <div class="cards">${extras.filter((c) => (c.category ?? 'other') === cat).map(cardTile).join('')}</div>`).join('')}
+      <div class="cards">${shown.filter((c) => (c.category ?? 'other') === cat).map(cardTile).join('')}</div>`).join('')}
     <p class="note">${L.ex.note}</p>
   </div>`;
 }
