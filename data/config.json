@@ -88,7 +88,7 @@
   ],
   "cardBacks": {
     "_aide": "Images du dos des cartes pour la vue 3D (Légendes et autres cartes). Vide = dos neutre NightDex.",
-    "legend": "",
-    "normal": ""
+    "legend": "images/backs/legend.webp",
+    "normal": "images/backs/normal.webp"
   }
 }
