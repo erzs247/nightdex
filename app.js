@@ -53,7 +53,7 @@ const TEXT = {
     language: 'Langue de l\'appli', langToast: 'Appli en français',
     news: {
       title: 'Actualités', unread: (n) => `${n} non lu${n > 1 ? 's' : ''}`, new: 'Nouveau', read: 'Lire l\'article', empty: 'Pas encore d\'actualités.',
-      intro: 'Les dernières nouvelles du Cyberpunk TCG, depuis le blog officiel (articles en anglais). Mises à jour chaque jour.',
+      intro: 'Les dernières nouvelles du Cyberpunk TCG, depuis le blog officiel. Titres et résumés traduits en français ; les articles complets sont en anglais sur le site officiel. Mises à jour chaque jour.',
     },
     ex: {
       tab: 'Extra', cats: { staff: 'Cartes du personnel', other: 'Hors séries' }, catHint: { staff: 'Offertes aux employés, jamais vendues en boutique.' },
@@ -2952,7 +2952,37 @@ function newsBadge() {
   const lbl = n ? `${L.news.title} · ${L.news.unread(n)}` : L.news.title;
   for (const a of document.querySelectorAll('.news-btn')) a.setAttribute('aria-label', lbl);
 }
-function renderNews() {
+// titres et résumés en français : traduits à l'avance dans news.json ; les nouveaux articles pas encore traduits
+// le sont sur l'appareil par Gemini (même service que Capri), une seule fois, puis gardés en mémoire
+const NEWS_FR_KEY = 'nightdex:newsFr';
+let newsFr = (() => { try { return JSON.parse(localStorage.getItem(NEWS_FR_KEY) ?? '{}') ?? {}; } catch { return {}; } })();
+let newsFrBusy = false;
+const newsTitle = (n) => (lang === 'fr' ? n.titleFr ?? newsFr[n.id]?.t ?? n.title : n.title);
+const newsExcerpt = (n) => (lang === 'fr' ? n.excerptFr ?? newsFr[n.id]?.e ?? n.excerpt : n.excerpt);
+async function newsTranslate() {
+  if (lang !== 'fr' || newsFrBusy || !cloud.api?.app) return;
+  const todo = news.filter((n) => !n.titleFr && !newsFr[n.id]).slice(0, 12);
+  if (!todo.length) return;
+  newsFrBusy = true;
+  try {
+    if (!capri.aiM) { capri.aiM = await import(`${FIREBASE}/firebase-ai.js`); capri.ai = capri.aiM.getAI(cloud.api.app, { backend: new capri.aiM.GoogleAIBackend() }); }
+    const models = cloud.cfg?.capriModels?.length ? cloud.cfg.capriModels : CAPRI_MODELS_DEFAULT;
+    const prompt = `Traduis en français naturel ces titres et résumés d'articles sur le jeu de cartes Cyberpunk TCG. Garde tels quels les noms propres, noms de séries, de cartes et d'événements (Welcome to Night City, Night City Brawl, Edgerunner Open, Pre-release peut devenir « avant-première »). Réponds uniquement en JSON : [{"id":"…","t":"titre","e":"résumé"}].\n${JSON.stringify(todo.map((n) => ({ id: n.id, t: n.title, e: n.excerpt })))}`;
+    for (const name of models) {
+      try {
+        const model = capri.aiM.getGenerativeModel(capri.ai, { model: name, generationConfig: { responseMimeType: 'application/json', temperature: 0.2, maxOutputTokens: 4000 } });
+        const res = await model.generateContent(prompt);
+        const out = JSON.parse(res.response.text());
+        for (const x of Array.isArray(out) ? out : []) if (x?.id && x.t && todo.some((n) => n.id === x.id)) newsFr[x.id] = { t: String(x.t).slice(0, 300), e: String(x.e ?? '').slice(0, 800) };
+        try { localStorage.setItem(NEWS_FR_KEY, JSON.stringify(newsFr)); } catch { /* */ }
+        break;
+      } catch { /* modèle suivant */ }
+    }
+  } catch { /* traduction indisponible : on garde l'anglais */ }
+  newsFrBusy = false;
+  if (currentRender === renderNews) renderNews(true);
+}
+function renderNews(fromTranslate) {
   setTopbar(`<a class="icon-btn" href="#home" aria-label="${L.back}">${I.back}</a><h1 class="small">${L.news.title}</h1>`);
   const unread = new Set(news.filter((n) => !newsRead?.has(n.id)).map((n) => n.id));
   view.innerHTML = `<div class="stack">
@@ -2961,11 +2991,12 @@ function renderNews() {
       ${n.image ? `<span class="news-img"><img src="${esc(n.image)}?w=640&fm=webp&q=70" alt="" loading="lazy" decoding="async"></span>` : ''}
       <span class="news-body">
         <span class="news-meta num">${unread.has(n.id) ? `<b class="news-new">${L.news.new}</b>` : ''}${n.date ? esc(fmt.date.format(parseDay(n.date))) : ''}</span>
-        <strong>${esc(n.title)}</strong>
-        ${n.excerpt ? `<span class="news-ex">${esc(n.excerpt)}</span>` : ''}
+        <strong>${esc(newsTitle(n))}</strong>
+        ${newsExcerpt(n) ? `<span class="news-ex">${esc(newsExcerpt(n))}</span>` : ''}
         <span class="news-link">${L.news.read} ${I.ext}</span>
       </span></a>`).join('')}</div>` : `<div class="empty"><strong>${L.news.empty}</strong></div>`}
   </div>`;
+  if (!fromTranslate) newsTranslate();
   // tout est lu une fois la page ouverte (le badge disparaît, les « nouveau » restent affichés jusqu'à la prochaine visite)
   if (newsRead && unread.size) { for (const id of unread) newsRead.add(id); newsSaveRead(); newsBadge(); }
 }

@@ -53,7 +53,10 @@ let added = 0;
 for (const it of found.values()) {
   const prev = byId.get(it.id);
   if (!prev) added++;
-  byId.set(it.id, { ...prev, ...it, image: it.image ?? prev?.image ?? null, seen: prev?.seen ?? today });
+  const next = { ...prev, ...it, image: it.image ?? prev?.image ?? null, seen: prev?.seen ?? today };
+  // traduction française (faite à part) : gardée tant que le titre anglais n'a pas changé
+  if (next.frOf && next.frOf !== it.title) { delete next.titleFr; delete next.excerptFr; delete next.frOf; }
+  byId.set(it.id, next);
 }
 const items = [...byId.values()].sort((a, b) => (b.date ?? b.seen).localeCompare(a.date ?? a.seen)).slice(0, 80);
 const out = { source: `${BASE}/blog`, items };
