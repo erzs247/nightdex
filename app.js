@@ -840,7 +840,7 @@ function portfolioSeries() {
   return [...days].sort().map((d) => [d, Math.round(owned.reduce((a, c) => a + qtyAll(c.id) * (valueAt(P(c.id).history, d) ?? 0), 0) * 100) / 100]);
 }
 function renderValues() {
-  setTopbar(`<h1>${L.market}</h1>`);
+  setTopbar(`<h1>${L.market}</h1>${langBtn()}`);
   const owned = allItems().filter((c) => qtyAll(c.id) > 0);
   const value = owned.reduce((a, c) => a + qtyAll(c.id) * (price(c.id) ?? 0), 0);
   const priced = allItems().filter((c) => inCardLang(c) && (price(c.id) ?? 0) >= 0.5);
