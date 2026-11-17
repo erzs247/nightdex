@@ -1373,7 +1373,9 @@ TA PERSONNALITÉ
 
 LE MONDE
 - Night City : mégacorporations (Arasaka, Militech, Kang Tao…), netrunners, le Blackwall, la cyberpsychose, les ripperdocs, les mercenaires (edgerunners).
-- Tu sais aussi que la personne collectionne les cartes du Cyberpunk TCG dans NightDex ; tu peux la taquiner là-dessus, mais tu ne connais pas les prix ni le contenu de sa collection.`;
+- Tu sais aussi que la personne collectionne les cartes du Cyberpunk TCG dans NightDex ; tu peux la taquiner là-dessus.
+- Quand un bloc « DONNÉES NIGHTDEX » accompagne son message, c'est la vraie base de cartes de l'appli : sers-t'en pour répondre précisément (dans quelle série et quel produit trouver la carte, numéro, rareté, langues, prix Cardmarket, si la personne l'a déjà ou la cherche, articles officiels qui en parlent). Reste dans ton personnage, mais donne les infos clairement. Ne recopie pas le bloc tel quel, et précise que les prix bougent.
+- Sans ce bloc, tu ne connais ni les prix ni sa collection : ne les invente jamais. Si la carte demandée n'est pas dans le bloc, dis que tu ne la trouves pas dans la base et propose de vérifier le nom.`;
 const CAPRI_NO_SPOIL = `
 SPOILERS : DÉSACTIVÉS
 - La personne n'a peut-être pas fini la série. Ne révèle RIEN de l'intrigue de la saison 2 au-delà de ce qui est écrit plus haut : pas le nom ni le rôle de tes hôtes, pas qui t'a créée, pas ce qui arrive aux personnages, pas la fin.
@@ -1425,7 +1427,7 @@ async function capriAsk(onText) {
         model: name, systemInstruction: capriInstruction(),
         generationConfig: { maxOutputTokens: 900, temperature: 0.9 },   // marge pour les modèles qui réfléchissent avant de répondre
       });
-      const res = await model.startChat({ history }).sendMessageStream(last.content, { signal: ctl.signal, timeout: CAPRI_TIMEOUT + 5000 });
+      const res = await model.startChat({ history }).sendMessageStream(last.content + (capri.ctx ?? ''), { signal: ctl.signal, timeout: CAPRI_TIMEOUT + 5000 });
       let text = '';
       for await (const chunk of res.stream) {
         first = true;
@@ -1472,7 +1474,8 @@ function capriError(e) {
 const capriFmt = (t) => esc(t).replace(/\*([^*\n]{1,120})\*/g, '<em>$1</em>');
 function capriBubble(t, i) {
   const me = t.role === 'user';
-  return `<div class="cmsg ${me ? 'me' : 'capri'}">${me ? '' : '<img class="cmini" src="images/capri/avatar.webp" alt="">'}<div class="cbubble${t.err ? ' err' : ''}">${capriFmt(t.content)}${t.detail ? `<small class="cdetail">${esc(t.detail)}</small>` : ''}</div></div>`;
+  const cards = (t.cards ?? []).map((id) => cardsById.get(id)).filter(Boolean);
+  return `<div class="cmsg ${me ? 'me' : 'capri'}">${me ? '' : '<img class="cmini" src="images/capri/avatar.webp" alt="">'}<div class="cbubble${t.err ? ' err' : ''}">${capriFmt(t.content)}${t.detail ? `<small class="cdetail">${esc(t.detail)}</small>` : ''}${cards.length ? `<span class="ccards">${cards.map((c) => `<button class="ccard" data-open="${esc(c.id)}"><img src="${esc(imageOf(c) || placeholderArt(c))}" alt="" loading="lazy"><span>${esc(isExtra(c) ? 'EXTRA' : printCode(c.set))} ${esc(c.number)}</span></button>`).join('')}</span>` : ''}</div></div>`;
 }
 function renderCapri() {
   setTopbar(`<h1 class="small capri-title"><img src="images/capri/avatar.webp" alt="">Capri</h1>
@@ -1501,6 +1504,67 @@ function renderCapri() {
   const feed = document.getElementById('capriFeed');
   feed.lastElementChild?.scrollIntoView({ block: 'end' });
 }
+
+// ---------- Capri connaît la base de NightDex : cartes, séries, prix, collection, actualités ----------
+const CAPRI_ALIASES = { lucy: 'lucyna', becca: 'rebecca', smasher: 'adam smasher', silverhand: 'johnny silverhand', panam: 'panam palmer', judy: 'judy alvarez', kiwi: 'kiwi', dex: 'dexter deshawn', takemura: 'goro takemura', yorinobu: 'yorinobu arasaka', saburo: 'saburo arasaka', hanako: 'hanako arasaka', maine: 'maine', dorio: 'dorio', pilar: 'pilar', falco: 'falco', faraday: 'faraday', kerry: 'kerry eurodyne', river: 'river ward', viktor: 'viktor vektor', misty: 'misty olszewski', evelyn: 'evelyn parker', rogue: 'rogue', alt: 'alt cunningham' };
+const CAPRI_STOP = new Set(['carte', 'cartes', 'card', 'cards', 'trouve', 'trouver', 'find', 'where', 'est', 'elle', 'quelle', 'quel', 'combien', 'prix', 'price', 'coute', 'vaut', 'dans', 'pour', 'avec', 'une', 'des', 'les', 'the', 'and', 'what', 'how', 'much', 'which', 'serie', 'set', 'booster', 'promo', 'est-ce', 'que', 'qui', 'moi', 'mon', 'ma', 'mes', 'tes', 'ton', 'peux', 'tu', 'je', 'il', 'on', 'ou', 'quoi', 'comment', 'plus', 'chere', 'cher', 'rare', 'jai', 'pas', 'deja', 'bien', 'stp', 'please', 'capri', 'salut', 'hello', 'merci', 'dis', 'sais', 'veux']);
+const OBTAIN = {
+  wnc: { fr: 'boosters et produits de Welcome to Night City (série principale, en boutique)', en: 'Welcome to Night City boosters and products (main set, in stores)' },
+  op: { fr: 'jeu organisé et promos : récompenses de tournois et d\'événements en boutique, ou promos spéciales', en: 'organised play and promos: tournament and store event prizes, or special promos' },
+  beta: { fr: 'version bêta envoyée aux contributeurs Kickstarter (anglais uniquement)', en: 'beta version shipped to Kickstarter backers (English only)' },
+  demo: { fr: 'decks de démonstration (anglais uniquement)', en: 'demo decks (English only)' },
+};
+function capriContext(text) {
+  if (!catalog?.cards) return { ctx: '', ids: [] };
+  let q = ` ${fold(text).replace(/[^a-z0-9]+/g, ' ')} `;
+  for (const [a, full] of Object.entries(CAPRI_ALIASES)) if (q.includes(` ${a} `)) q += ` ${full} `;
+  const words = [...new Set(q.split(' ').filter((w) => w.length >= 3 && !CAPRI_STOP.has(w)))];
+  if (!words.length) return { ctx: '', ids: [] };
+  // score par nom de carte (toutes éditions confondues) : mots de la question présents dans le nom
+  const byName = new Map();
+  for (const c of [...catalog.cards, ...extras]) {
+    const k = c.nameEn ?? c.name;
+    if (!byName.has(k)) byName.set(k, []);
+    byName.get(k).push(c);
+  }
+  const scored = [];
+  for (const [k, prints] of byName) {
+    const hay = ` ${fold(`${prints[0].name} ${k}`).replace(/[^a-z0-9]+/g, ' ')} `;
+    const hits = words.filter((w) => hay.includes(` ${w}`)).length;
+    if (hits) scored.push([hits + (hay.includes(` ${words.join(' ')}`) ? 1 : 0), k, prints]);
+  }
+  scored.sort((a, b) => b[0] - a[0]);
+  const best = scored.length ? scored[0][0] : 0;
+  const top = scored.filter(([sc]) => sc === best).slice(0, 5);
+  const lines = [];
+  const ids = [];
+  for (const [, k, prints] of top) {
+    const p0 = prints[0];
+    lines.push(`• ${p0.name}${p0.nameEn && p0.nameEn !== p0.name ? ` (EN : ${p0.nameEn})` : ''} — ${typeLabel(p0.type)}, ${colorLabel(p0.color)}${p0.cost != null ? `, coût ${p0.cost}` : ''}, RAM ${p0.ram ?? 0}`);
+    for (const c of prints.slice(0, 8)) {
+      const st = setOf(c.set);
+      const how = isExtra(c) ? (c.origin?.[lang] ?? c.origin?.en ?? '') : (OBTAIN[st?.block]?.[lang] ?? '');
+      const pr = price(c.id);
+      const own = qtyAll(c.id);
+      lines.push(`   - ${isExtra(c) ? 'EXTRA' : (st?.print ?? c.set)} ${c.number} · ${isExtra(c) ? '' : `${st ? setName(st) : c.set} · `}${rarityLabel(c.rarity)} · langues : ${(c.languages ?? []).join('/').toUpperCase() || '?'} · ${pr != null ? `prix ${isExtra(c) ? 'estimé eBay' : 'Cardmarket'} ${eur(pr)}` : 'pas de prix'}${how ? ` · obtention : ${how}` : ''}${own ? ` · la personne en a ${own}` : ''}${wish.has(c.id) ? ' · dans ses souhaits' : ''}`);
+    }
+    // une vignette par carte : l'édition dans la langue choisie, de préférence celle que la personne possède
+    const pick = prints.find((c) => qtyAll(c.id) && inCardLang(c)) ?? prints.find(inCardLang) ?? prints[0];
+    if (ids.length < 6) ids.push(pick.id);
+  }
+  // articles officiels qui en parlent (ex. promo offerte)
+  const nameWords = new Set(top.flatMap(([, k]) => fold(k).split(/[^a-z0-9]+/).filter((w) => w.length >= 4)));
+  const terms = words.filter((w) => w.length >= 4 && (nameWords.has(w) || CAPRI_ALIASES[w] || !top.length));
+  const arts = news.filter((n) => { const h = ` ${fold(`${n.title} ${n.excerpt}`).replace(/[^a-z0-9]+/g, ' ')} `; return terms.some((w) => h.includes(` ${w}`)); }).slice(0, 3);
+  if (!lines.length && !arts.length) return { ctx: '', ids: [] };
+  const block = [
+    '', '', '--- DONNÉES NIGHTDEX (base de l\'appli, pour t\'aider à répondre ; la personne ne voit pas ce bloc) ---',
+    ...(lines.length ? ['Cartes trouvées :', ...lines] : ['Aucune carte trouvée avec ces mots.']),
+    ...(arts.length ? ['Articles officiels liés :', ...arts.map((n) => `• ${n.date ?? ''} « ${n.title} » : ${n.excerpt} (${n.url})`)] : []),
+    '--- fin des données ---',
+  ].join('\n');
+  return { ctx: block, ids };
+}
 async function capriSend(text) {
   text = String(text ?? '').trim();
   if (!text || capri.busy || !cloud.user) return;
@@ -1517,9 +1581,11 @@ async function capriSend(text) {
     const el = document.querySelector('#capriLive .ctyping');
     if (el && !gotText) el.textContent = `${L.capriTyping} · ${Math.round((Date.now() - tStart) / 1000)} s`;
   }, 1000);
+  const look = capriContext(text);
+  capri.ctx = look.ctx;
   try {
     const answer = await capriAsk((t) => { gotText = true; const el = document.querySelector('#capriLive .cbubble'); if (el) { el.innerHTML = capriFmt(t); el.scrollIntoView({ block: 'end' }); } });
-    capri.turns.push({ role: 'model', content: (answer || '…') + (capri.stop ? ' …' : '') });
+    capri.turns.push({ role: 'model', content: (answer || '…') + (capri.stop ? ' …' : ''), ...(look.ids.length ? { cards: look.ids } : {}) });
   } catch (e) {
     capri.turns.pop();
     if (e?.code === 'stopped') { clearInterval(tick); capri.busy = false; capriSave(); if (currentRender === renderCapri) renderCapri(); return; }
