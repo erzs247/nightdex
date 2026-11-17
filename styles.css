@@ -1006,3 +1006,8 @@ button.deck-tile { text-align: left; width: 100%; }
 .wl-head { display: flex; align-items: center; gap: 14px; } .wl-head b { font: 600 18px var(--font-display); margin-right: auto; }
 .wl-head .link-btn { padding: 0; } .link-btn.danger { color: #ff8494; }
 .wl-line { display: grid; gap: 6px; }
+
+/* decks : langue des cartes possédées comptées */
+.own-row { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; }
+.own-row .note { margin: 0; font-size: 13px; }
+.own-row .seg button { font-size: 14px; padding: 7px 4px; }

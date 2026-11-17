@@ -100,6 +100,7 @@ const TEXT = {
       estimate: 'Prix estimé (eBay)', ebayLive: 'Voir les annonces sur eBay', ebaySold: 'Voir les ventes réussies sur eBay',
     },
     dk: {
+      ownCount: 'Mes cartes comptées :', ownToast: (l) => `Cartes possédées comptées : ${l}`,
       title: 'Decks', new: 'Nouveau deck', untitled: 'Deck sans nom', defaultName: (n) => `Mon deck ${n}`, namePh: 'Nom du deck', cancel: 'Annuler',
       empty: 'Aucun deck pour l\'instant', emptyHint: 'Crée tes decks avec les règles officielles : 3 Légendes, 40 à 50 cartes, la RAM vérifiée automatiquement.',
       cards: (n) => `${n} carte${n > 1 ? 's' : ''}`, legal: 'Deck valide', notLegal: 'Deck pas encore valide', toFix: 'à corriger',
@@ -293,6 +294,7 @@ const TEXT = {
       estimate: 'Estimated price (eBay)', ebayLive: 'See listings on eBay', ebaySold: 'See sold listings on eBay',
     },
     dk: {
+      ownCount: 'My cards counted:', ownToast: (l) => `Owned cards counted: ${l}`,
       title: 'Decks', new: 'New deck', untitled: 'Untitled deck', defaultName: (n) => `My deck ${n}`, namePh: 'Deck name', cancel: 'Cancel',
       empty: 'No decks yet', emptyHint: 'Build decks with the official rules: 3 Legends, 40 to 50 cards, RAM checked automatically.',
       cards: (n) => `${n} card${n > 1 ? 's' : ''}`, legal: 'Legal deck', notLegal: 'Deck not legal yet', toFix: 'to fix',
@@ -416,6 +418,7 @@ const I = {
   bolt: '<svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
   slab: '<svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M5 7.5h14"/><rect x="8" y="10" width="8" height="9" rx="1"/></svg>',
   bell: '<svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>',
+  copy: '<svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>',
   share: '<svg viewBox="0 0 24 24"><circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1"/></svg>',
   cart: '<svg viewBox="0 0 24 24"><path d="M3 4h2.5l2.2 11h10.6l2-8H6.6"/><circle cx="9.5" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>',
   flip: '<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.7L20 8.5"/><path d="M20 4v4.5h-4.5"/><path d="M20 12a8 8 0 0 1-13.7 5.7L4 15.5"/><path d="M4 20v-4.5h4.5"/></svg>',
@@ -2924,7 +2927,10 @@ function deckPrints() {
 }
 const canonOf = (c) => { const l = deckPrints().get(nameKey(c)) ?? [c]; return l.find(inCardLang) ?? l[0]; };
 const deckPool = () => [...deckPrints().values()].map((l) => l.find(inCardLang) ?? l[0]);
-const ownedByName = (c) => (deckPrints().get(nameKey(c)) ?? [c]).reduce((a, x) => a + qtyAll(x.id), 0);
+// exemplaires possédés d'une carte (toutes éditions) : en FR + EN (par défaut), en FR seulement ou en EN seulement
+const deckOwnMode = () => (['fr', 'en'].includes(user.prefs.deckOwn) ? user.prefs.deckOwn : 'all');
+const qtyIn = (x, l) => (!x.languages || x.languages.includes(l) ? qty(x.id, l) : 0);
+const ownedByName = (c, mode = deckOwnMode()) => (deckPrints().get(nameKey(c)) ?? [c]).reduce((a, x) => a + (mode === 'all' ? qtyAll(x.id) : qtyIn(x, mode)), 0);
 const cheapest = (c) => { const ps = (deckPrints().get(nameKey(c)) ?? [c]).map((x) => price(x.id)).filter((v) => v != null); return ps.length ? Math.min(...ps) : null; };
 
 if (!Array.isArray(user.decks)) user.decks = [];
@@ -2979,7 +2985,7 @@ function deckValue(dk) {
   return { v, miss, missCost };
 }
 function renderDecks() {
-  setTopbar(`<h1>${L.dk.title}</h1><button class="chip" data-dact="new">+ ${L.dk.new}</button>`);
+  setTopbar(`<h1>${L.dk.title}</h1>${langBtn()}<button class="chip" data-dact="new">+ ${L.dk.new}</button>`);
   const list = [...user.decks].sort((a, b) => (b.upd ?? 0) - (a.upd ?? 0));
   view.innerHTML = `<div class="stack">
     ${colTabs('decks')}
@@ -3009,7 +3015,7 @@ function renderDeck(d) {
   const ck = deckCheck(dk);
   const legs = dk.legends.map((id) => cardsById.get(id));
   setTopbar(`<a class="icon-btn" href="#decks" aria-label="${L.back}">${I.back}</a><h1 class="small">${esc(dk.name || L.dk.untitled)}</h1>
-    <button class="icon-btn" data-sh="share" aria-label="${L.sh.title}" title="${L.sh.title}">${I.share}</button><button class="chip" data-dact="export">${L.dk.export}</button>`);
+    ${langBtn()}<button class="icon-btn" data-sh="share" aria-label="${L.sh.title}" title="${L.sh.title}">${I.share}</button><button class="icon-btn" data-dact="export" aria-label="${L.dk.export}" title="${L.dk.export}">${I.copy}</button>`);
   const list = dk[deckUI.mode];
   const rows = Object.entries(list).map(([id, n]) => [cardsById.get(id), n]).filter(([c]) => c)
     .sort(([a], [b]) => ['Unit', 'Program', 'Gear'].indexOf(a.type) - ['Unit', 'Program', 'Gear'].indexOf(b.type) || (a.cost ?? 0) - (b.cost ?? 0) || cardName(a).localeCompare(cardName(b)));
@@ -3024,12 +3030,13 @@ function renderDeck(d) {
     <section class="panel deck-status ${ck.valid ? 'is-ok' : ''}">
       <h3>${ck.valid ? `✓ ${L.dk.legal}` : L.dk.notLegal}<small class="num">${eur(val.v)}</small></h3>
       <div class="checks">${ck.checks.map((c) => `<div class="check ${c.ok ? 'ok' : 'ko'}"><b>${c.ok ? '✓' : '✗'}</b><span>${c.label}${c.hint ? `<small>${esc(c.hint)}</small>` : ''}</span></div>`).join('')}</div>
+      <div class="own-row"><span class="note">${L.dk.ownCount}</span><div class="seg">${[['all', 'FR + EN'], ['fr', 'FR'], ['en', 'EN']].map(([k, l]) => `<button data-deck-own="${k}" aria-pressed="${deckOwnMode() === k}">${l}</button>`).join('')}</div></div>
       <div class="ram-row">${COLORS.map((k) => `<span class="ram-pill ${ck.ram[k] ? '' : 'zero'}" style="--fc:${FACTION[k]}">${esc(colorLabel(k))} <b class="num">${ck.ram[k]}</b></span>`).join('')}<small>${L.dk.ramLegend}</small></div>
       ${val.miss ? `<p class="note num" style="margin:0">${L.dk.missing(val.miss, eur(val.missCost))}</p>` : (ck.count ? `<p class="note" style="margin:0">${L.dk.complete}</p>` : '')}
     </section>
     <h2 class="section-title">${L.dk.legends}</h2>
     <div class="leg-slots">${[0, 1, 2].map((i) => legs[i]
-      ? `<div class="leg-slot"><button class="card-img" data-open="${esc(legs[i].id)}" aria-label="${esc(cardName(legs[i]))}">${cardImg(legs[i])}</button><span class="leg-ram num" style="--fc:${FACTION[legs[i].color]}">${legs[i].ram ?? 0}</span><button class="leg-x" data-dleg-del="${i}" aria-label="${L.dk.removeLegend}">${I.x}</button></div>`
+      ? `<div class="leg-slot"><button class="card-img" data-open="${esc(canonOf(legs[i]).id)}" aria-label="${esc(cardName(canonOf(legs[i])))}">${cardImg(canonOf(legs[i]))}</button><span class="leg-ram num" style="--fc:${FACTION[legs[i].color]}">${legs[i].ram ?? 0}</span><button class="leg-x" data-dleg-del="${i}" aria-label="${L.dk.removeLegend}">${I.x}</button></div>`
       : `<button class="leg-slot empty ${deckUI.pick === i ? 'on' : ''}" data-dleg="${i}"><span>+</span>${L.dk.addLegend}</button>`).join('')}</div>
     ${deckUI.pick != null ? legendPicker(dk) : ''}
     <div class="seg">${[['main', `${L.dk.main} · ${ck.count}`], ['side', `${L.dk.side} · ${ck.sideCount}/${DECK.side}`]].map(([k, l]) => `<button data-dmode="${k}" aria-pressed="${deckUI.mode === k}">${l}</button>`).join('')}</div>
@@ -3051,8 +3058,8 @@ function deckRow(c, n, ck) {
   const bad = ck.overRam.has(c.id) || ck.tooMany.has(nameKey(c));
   const own = ownedByName(c);
   return `<div class="row deck-row ${bad ? 'bad' : ''}">
-    <button class="thumb" data-open="${esc(c.id)}" aria-label="${esc(cardName(c))}">${cardImg(c)}</button>
-    <div class="rmain"><b>${esc(cardName(c))}</b><span class="note num">${colorDot(c.color)}${c.cost != null ? `${L.cost} ${c.cost} · ` : ''}RAM ${c.ram ?? 0}${own < n ? ` · <span class="down">${L.dk.own(own, n)}</span>` : ''}${ck.overRam.has(c.id) ? ` · <span class="down">${L.dk.ramShort(c.ram, colorLabel(c.color))}</span>` : ''}</span></div>
+    <button class="thumb" data-open="${esc(canonOf(c).id)}" aria-label="${esc(cardName(canonOf(c)))}">${cardImg(canonOf(c))}</button>
+    <div class="rmain"><b>${esc(cardName(canonOf(c)))}</b><span class="note num">${colorDot(c.color)}${c.cost != null ? `${L.cost} ${c.cost} · ` : ''}RAM ${c.ram ?? 0}${own < n ? ` · <span class="down">${L.dk.own(own, n)}</span>` : ''}${ck.overRam.has(c.id) ? ` · <span class="down">${L.dk.ramShort(c.ram, colorLabel(c.color))}</span>` : ''}</span></div>
     <div class="stepper small"><button data-dk="-1" data-id="${esc(c.id)}" aria-label="${L.removeCopy}">−</button><output class="num">${n}</output><button data-dk="1" data-id="${esc(c.id)}" aria-label="${L.addCopy}">+</button></div>
   </div>`;
 }
@@ -3151,6 +3158,13 @@ document.addEventListener('input', (ev) => {
   }
 });
 document.addEventListener('change', (ev) => { if (ev.target.id === 'deckName' && deckUI.deck) deckTouch(deckUI.deck); });
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-deck-own]');
+  if (!b) return;
+  user.prefs.deckOwn = b.dataset.deckOwn; save();
+  const y = scrollY; currentRender(); scrollTo(0, y);
+  toast(L.dk.ownToast(b.textContent));
+});
 
 // --- synchro : document decks/<uid> ---
 const dRef = (uid = cloud.user.uid) => cloud.api.fsM.doc(cloud.api.db, 'decks', uid);
