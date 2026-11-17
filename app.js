@@ -3032,6 +3032,9 @@ function dOnUser(u) {
 // Tant qu'aucune photo de dos n'est fournie, un dos neutre NightDex est affiché.
 let v3d = null;
 const v3 = { rx: 0, ry: 0, vx: 0, vy: 0, drag: null, raf: 0, lastTap: 0, idle: 0, spin: null };
+// cartes imprimées en foil (elles brillent de base) : seules elles ont l'effet holographique en 3D
+const FOIL_RARITY = new Set(['Nova Rare', 'Secret', 'Iconic Legend', 'Iconic Other', 'Iconic Secret', 'Exclusive']);
+const isFoilCard = (c) => !!c && !isSealed(c) && (FOIL_RARITY.has(c.rarity) || !!P(c.id)?.foil);
 function cardBackFor(c) {
   const backs = config.cardBacks ?? {};
   if (!c || isSealed(c)) return null;
@@ -3044,7 +3047,8 @@ function v3dRender() {
   const ny = ((v3.ry % 360) + 540) % 360 - 180, nx = ((v3.rx % 360) + 540) % 360 - 180;
   const face = Math.abs(ny) > 90 !== Math.abs(nx) > 90 ? 'back' : 'front';
   const gx = 50 + Math.sin((ny * Math.PI) / 180) * 45, gy = 50 - Math.sin((nx * Math.PI) / 180) * 45;
-  for (const g of v3d.querySelectorAll('.c3d-glare')) { g.style.setProperty('--gx', `${gx}%`); g.style.setProperty('--gy', `${gy}%`); g.style.setProperty('--ga', String(Math.min(1, (Math.abs(Math.sin((ny * Math.PI) / 180)) + Math.abs(Math.sin((nx * Math.PI) / 180))) * 0.9 + 0.15))); }
+  const hx = 50 + ny * 0.9, hy = 50 + nx * 0.9;
+  for (const g of v3d.querySelectorAll('.c3d-glare')) { g.style.setProperty('--hx', `${hx}%`); g.style.setProperty('--hy', `${hy}%`); g.style.setProperty('--gx', `${gx}%`); g.style.setProperty('--gy', `${gy}%`); g.style.setProperty('--ga', String(Math.min(1, (Math.abs(Math.sin((ny * Math.PI) / 180)) + Math.abs(Math.sin((nx * Math.PI) / 180))) * 0.9 + 0.15))); }
   v3d.dataset.face = face;
 }
 function v3dLoop() {
@@ -3108,10 +3112,11 @@ function zoomOpen(src, alt, c) {
   }
   const back = cardBackFor(c);
   const sealedItem = c && isSealed(c);
+  const shiny = isFoilCard(c);
   v3d.innerHTML = `<div class="v3d-stage">
       <div class="c3d ${sealedItem ? 'is-sealed' : ''} ${c?.type === 'Legend' ? 'is-legend' : ''}" style="--rc:${RARITY_HEX[c?.rarity] ?? 'var(--accent)'}">
-        <div class="c3d-face c3d-front"><img src="${esc(src)}" alt="${esc(alt ?? '')}" draggable="false"><span class="c3d-glare"></span></div>
-        <div class="c3d-face c3d-back">${back ? `<img src="${esc(back)}" alt="" draggable="false">` : `<span class="c3d-back-default"><b>NIGHT<i>DEX</i></b><small>${c?.type === 'Legend' ? 'LEGEND' : ''}</small></span>`}<span class="c3d-glare"></span></div>
+        <div class="c3d-face c3d-front"><img src="${esc(src)}" alt="${esc(alt ?? '')}" draggable="false">${shiny ? '<span class="c3d-glare c3d-holo"></span><span class="c3d-glare c3d-sparkle"></span><span class="c3d-glare c3d-shine"></span>' : ''}</div>
+        <div class="c3d-face c3d-back">${back ? `<img src="${esc(back)}" alt="" draggable="false">` : `<span class="c3d-back-default"><b>NIGHT<i>DEX</i></b><small>${c?.type === 'Legend' ? 'LEGEND' : ''}</small></span>`}</div>
       </div>
     </div>
     <div class="v3d-bar">
