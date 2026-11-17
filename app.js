@@ -160,8 +160,9 @@ const TEXT = {
       unsure: 'Pas sûr à 100 % : vérifie que c\'est la bonne.', owned: (q) => `Tu en as déjà ${q}.`, versions: 'Autres versions de cette carte :', notIt: 'Ce n\'est pas elle ?',
       add: '+1 Je l\'ai', open: 'Voir la fiche', again: 'Rescanner', added: (q) => `Ajoutée : tu en as ${q}` },
     inst: { title: 'Installe NightDex', pitch: 'Comme une vraie appli : icône sur ton écran, plein écran sans navigateur, et ça marche hors connexion.', btn: 'Installer', ios: 'Sur iPhone : touche Partager (le carré avec la flèche), puis « Sur l\'écran d\'accueil ».', done: 'NightDex est installée ! Ouvre-la depuis ton écran d\'accueil.' },
+    crop: { titleAvatar: 'Recadrer la photo', titleBanner: 'Recadrer la bannière', zoom: 'Zoom', hint: 'Glisse pour déplacer l\'image, pince ou utilise le curseur pour zoomer.', cancel: 'Annuler', ok: 'Valider' },
     mod: {
-      bannerAdd: 'Ajouter une bannière', bannerChange: 'Changer la bannière', bannerEmpty: 'Ta bannière de profil (format large, comme sur Discord)', bannerSaved: 'Bannière enregistrée', bannerRemoved: 'Bannière retirée',
+      bannerAdd: 'Ajouter une bannière', bannerChange: 'Changer la bannière', bannerEmpty: 'Ta bannière de profil', bannerSaved: 'Bannière enregistrée', bannerRemoved: 'Bannière retirée',
       checking: 'Vérification de l\'image…', policy: 'Chaque image est vérifiée automatiquement avant d\'être publiée : pas de nudité, de contenu sexuel, de sang, de cadavre ni de violence.',
       rejected: (c) => `Image refusée : ${c}. Choisis une autre image.`, unavailable: 'Vérification de l\'image impossible pour le moment : elle n\'a pas été publiée. Réessaie plus tard.',
       cats: { sexual: 'contenu sexuel', nudity: 'nudité', gore: 'sang ou blessures', violence: 'violence', hate: 'contenu haineux', drugs: 'drogue', other: 'contenu inapproprié' },
@@ -346,8 +347,9 @@ const TEXT = {
       unsure: 'Not 100 % sure: check it is the right one.', owned: (q) => `You already have ${q}.`, versions: 'Other versions of this card:', notIt: 'Not this one?',
       add: '+1 I have it', open: 'View card', again: 'Scan again', added: (q) => `Added: you have ${q}` },
     inst: { title: 'Install NightDex', pitch: 'Like a real app: an icon on your screen, full screen without a browser, and it works offline.', btn: 'Install', ios: 'On iPhone: tap Share (the square with the arrow), then “Add to Home Screen”.', done: 'NightDex is installed! Open it from your home screen.' },
+    crop: { titleAvatar: 'Crop picture', titleBanner: 'Crop banner', zoom: 'Zoom', hint: 'Drag to move the image, pinch or use the slider to zoom.', cancel: 'Cancel', ok: 'Done' },
     mod: {
-      bannerAdd: 'Add a banner', bannerChange: 'Change banner', bannerEmpty: 'Your profile banner (wide format, like on Discord)', bannerSaved: 'Banner saved', bannerRemoved: 'Banner removed',
+      bannerAdd: 'Add a banner', bannerChange: 'Change banner', bannerEmpty: 'Your profile banner', bannerSaved: 'Banner saved', bannerRemoved: 'Banner removed',
       checking: 'Checking the image…', policy: 'Every image is checked automatically before it is published: no nudity, sexual content, blood, dead bodies or violence.',
       rejected: (c) => `Image refused: ${c}. Choose another image.`, unavailable: 'The image could not be checked right now, so it was not published. Try again later.',
       cats: { sexual: 'sexual content', nudity: 'nudity', gore: 'blood or injuries', violence: 'violence', hate: 'hateful content', drugs: 'drugs', other: 'inappropriate content' },
@@ -1428,11 +1430,12 @@ async function moderateImage(dataUrl) {
   }
   throw Object.assign(new Error('mod'), { userMsg: L.mod.unavailable });
 }
-async function saveProfileImage(file, kind) {
+async function saveProfileImage(src, kind) {
+  if (!cloud.api || !cloud.user) { toast(L.avatarErr); return; }
   const { fsM, db } = cloud.api;
   cloud.modBusy = kind; refreshAccount();
   try {
-    const url = kind === 'banner' ? await resizeBanner(file) : await resizeAvatar(file);
+    const url = typeof src === 'string' ? src : kind === 'banner' ? await resizeBanner(src) : await resizeAvatar(src);
     await moderateImage(url);
     await fsM.setDoc(fsM.doc(db, 'profiles', cloud.user.uid), { [kind]: url, updatedAt: fsM.serverTimestamp() }, { merge: true });
     cloud[kind] = url; toast(kind === 'banner' ? L.mod.bannerSaved : L.avatarSaved);
@@ -2351,8 +2354,8 @@ document.addEventListener('click', async (e) => {
   }
 });
 document.addEventListener('change', (e) => {
-  if (e.target.id === 'avatarFile' && e.target.files?.[0] && cloud.user) saveAvatar(e.target.files[0]);
-  if (e.target.id === 'bannerFile' && e.target.files?.[0] && cloud.user) saveProfileImage(e.target.files[0], 'banner');
+  if (e.target.id === 'avatarFile' && e.target.files?.[0] && cloud.user) openCropper(e.target.files[0], 'avatar');
+  if (e.target.id === 'bannerFile' && e.target.files?.[0] && cloud.user) openCropper(e.target.files[0], 'banner');
 });
 document.addEventListener('change', async (e) => {
   if (e.target.id !== 'importFile') return;
@@ -3636,6 +3639,98 @@ document.addEventListener('change', (e) => {
   if (currentRender === renderWishlist && sheet.hidden) renderWishlist();
 });
 document.addEventListener('click', (e) => { if (e.target.closest('[data-action="notif-on"]')) alertsEnableNotifs(); });
+
+
+// ---------- Recadrage de la photo de profil (carré, affichée en rond) et de la bannière (3:1) ----------
+// Glisser pour déplacer, pincer / molette / curseur pour zoomer, puis Valider : l'image recadrée est vérifiée et publiée.
+const crop = { img: null, url: '', kind: 'avatar', z: 1, x: 0, y: 0, pts: new Map(), start: null };
+const CROP_OUT = { avatar: [160, 160], banner: [960, 320] };
+function openCropper(file, kind) {
+  if (crop.url) URL.revokeObjectURL(crop.url);
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    Object.assign(crop, { img, url, kind, z: 1, x: 0, y: 0, start: null }); crop.pts.clear();
+    openId = null; sheetMode = 'crop';
+    sheetPanel.innerHTML = `${sheetTop()}<div class="stack cropper">
+      <h2 id="sheetTitle" style="margin:0;font:700 22px var(--font-display)">${kind === 'banner' ? L.crop.titleBanner : L.crop.titleAvatar}</h2>
+      <div class="crop-stage ${kind}" id="cropStage"><img src="${esc(url)}" alt="" draggable="false"><span class="crop-mask"></span></div>
+      <label class="crop-zoom"><span>−</span><input type="range" id="cropZoom" min="1" max="4" step="0.01" value="1" aria-label="${L.crop.zoom}"><span>+</span></label>
+      <p class="note" style="margin:0">${L.crop.hint}</p>
+      <div class="field-row"><button class="btn-ghost" data-crop="cancel">${L.crop.cancel}</button><button class="cta" data-crop="ok">${L.crop.ok}</button></div>
+    </div>`;
+    sheet.hidden = false; document.body.style.overflow = 'hidden';
+    requestAnimationFrame(cropApply);
+  };
+  img.onerror = () => toast(L.avatarErr);
+  img.src = url;
+}
+// échelle de base : l'image couvre tout le cadre ; z = zoom en plus
+function cropGeom() {
+  const st = document.getElementById('cropStage');
+  const W = st.clientWidth, H = st.clientHeight;
+  const base = Math.max(W / crop.img.naturalWidth, H / crop.img.naturalHeight);
+  const s = base * crop.z, w = crop.img.naturalWidth * s, h = crop.img.naturalHeight * s;
+  return { st, W, H, s, w, h };
+}
+function cropApply() {
+  if (!crop.img || !document.getElementById('cropStage')) return;
+  const g = cropGeom();
+  // l'image doit toujours couvrir le cadre
+  crop.x = Math.min(0, Math.max(g.W - g.w, crop.x || (g.W - g.w) / 2));
+  crop.y = Math.min(0, Math.max(g.H - g.h, crop.y || (g.H - g.h) / 2));
+  const im = g.st.querySelector('img');
+  im.style.width = `${g.w}px`; im.style.height = `${g.h}px`; im.style.transform = `translate(${crop.x}px, ${crop.y}px)`;
+  const zr = document.getElementById('cropZoom'); if (zr && Number(zr.value) !== crop.z) zr.value = crop.z;
+}
+function cropZoomTo(z, cx, cy) {
+  const g = cropGeom();
+  const nz = Math.min(4, Math.max(1, z));
+  const px = cx ?? g.W / 2, py = cy ?? g.H / 2;
+  const r = nz / crop.z;
+  crop.x = px - (px - crop.x) * r; crop.y = py - (py - crop.y) * r; crop.z = nz;
+  if (crop.x === 0) crop.x = -0.0001; if (crop.y === 0) crop.y = -0.0001;
+  cropApply();
+}
+function cropExport() {
+  const g = cropGeom();
+  const [OW, OH] = CROP_OUT[crop.kind];
+  const c = document.createElement('canvas'); c.width = OW; c.height = OH;
+  c.getContext('2d').drawImage(crop.img, -crop.x / g.s, -crop.y / g.s, g.W / g.s, g.H / g.s, 0, 0, OW, OH);
+  let out = c.toDataURL('image/webp', crop.kind === 'banner' ? 0.78 : 0.82);
+  if (!out.startsWith('data:image/webp')) out = c.toDataURL('image/jpeg', 0.8);
+  if (crop.kind === 'banner' && out.length > 190000) out = c.toDataURL('image/jpeg', 0.6);
+  return out;
+}
+document.addEventListener('pointerdown', (e) => {
+  const st = e.target.closest('#cropStage'); if (!st) return;
+  e.preventDefault(); st.setPointerCapture?.(e.pointerId);
+  crop.pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  crop.start = { x: crop.x, y: crop.y, z: crop.z, pts: new Map([...crop.pts].map(([k, v]) => [k, { ...v }])) };
+});
+document.addEventListener('pointermove', (e) => {
+  if (!crop.pts.has(e.pointerId) || !crop.start || !document.getElementById('cropStage')) return;
+  crop.pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  const now = [...crop.pts.values()], was = [...crop.start.pts.values()];
+  if (now.length >= 2 && was.length >= 2) {
+    const d = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+    const r = document.getElementById('cropStage').getBoundingClientRect();
+    Object.assign(crop, { x: crop.start.x, y: crop.start.y, z: crop.start.z });
+    cropZoomTo(crop.start.z * (d(now[0], now[1]) / (d(was[0], was[1]) || 1)), (now[0].x + now[1].x) / 2 - r.left, (now[0].y + now[1].y) / 2 - r.top);
+  } else if (now.length === 1) {
+    crop.x = crop.start.x + (now[0].x - was[0].x); crop.y = crop.start.y + (now[0].y - was[0].y);
+    if (crop.x === 0) crop.x = -0.0001; if (crop.y === 0) crop.y = -0.0001;
+    cropApply();
+  }
+});
+for (const t of ['pointerup', 'pointercancel']) document.addEventListener(t, (e) => { if (!crop.pts.delete(e.pointerId)) return; crop.start = crop.pts.size ? { x: crop.x, y: crop.y, z: crop.z, pts: new Map([...crop.pts].map(([k, v]) => [k, { ...v }])) } : null; });
+document.addEventListener('wheel', (e) => { const st = e.target.closest('#cropStage'); if (!st) return; e.preventDefault(); const r = st.getBoundingClientRect(); cropZoomTo(crop.z * (e.deltaY < 0 ? 1.08 : 1 / 1.08), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+document.addEventListener('input', (e) => { if (e.target.id === 'cropZoom') cropZoomTo(Number(e.target.value)); });
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-crop]'); if (!b) return;
+  if (b.dataset.crop === 'ok') { const out = cropExport(), kind = crop.kind; openAccount(); saveProfileImage(out, kind); }
+  else openAccount();
+});
 
 // ---------- Navigation ----------
 let currentTab = 'home';
