@@ -1,0 +1,438 @@
+{
+  "source": "https://cyberpunktcg.com/blog",
+  "items": [
+    {
+      "id": "wnc-art-qa",
+      "title": "Behind the Art: Welcome to Night City Artist Q+A",
+      "excerpt": "We’ve seen a hugely positive response to the art of Cyberpunk TCG. Today, we meet five of the artists behind some of our most powerful pieces, and learn more about their connection to the characters and world depicted in their art.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/4MVMWUUrHLfgsiwOaWzRaP/baddfe66e76083f557e011c5417cfee0/Hanako.png",
+      "date": "2026-11-13",
+      "url": "https://cyberpunktcg.com/blog/wnc-art-qa",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "eor-chicago-streampreview",
+      "title": "Edgerunner Open Regional Livestream Preview",
+      "excerpt": "Can’t join us at EOR Chicago? Find out how you can still chip in and enjoy all the action live from home!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/USPEmQQjsnIWq1xrQIhG7/2063a13c56d1b3fce9da5ce174cc93ed/TBUG.png",
+      "date": "2026-11-12",
+      "url": "https://cyberpunktcg.com/blog/eor-chicago-streampreview",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "wc-decks",
+      "title": "Our favorite Welcome to Night City decks: Five lists from the WeirdCo team",
+      "excerpt": "Looking for some fresh deck ideas for your upcoming Night City Brawls and Showdowns? Check out some of the WeirdCo team’s favorite Welcome to Night City brews!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/5e5aMnLofsQfBP1aUh3dsd/0297b366eb531b93af121522f660553f/CrewSplash.png",
+      "date": "2026-11-06",
+      "url": "https://cyberpunktcg.com/blog/wc-decks",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "pr-tips",
+      "title": "Five tips to help you take down your Welcome to Night City Pre-release",
+      "excerpt": "Heading to your Local Game Store to play in a Welcome to Night City Pre-release this weekend? Here are some tips to help you take the tournament down!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/2rG8MQOtJe61lXYVpkruwQ/ff3bd266e6e9d31ff0842e7efd0246e9/Rockerboysplash.png",
+      "date": "2026-10-30",
+      "url": "https://cyberpunktcg.com/blog/pr-tips",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "rules-patch-notes1",
+      "title": "Welcome to Night City Patch Notes: Errata and Rules Updates",
+      "excerpt": "To coincide with the Retail release of Welcome to Night City, we’ve made a couple of errata updates and some tweaks to our Comprehensive and Tournament Rules.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/7CCXzzc7T8eIkONEF3n1vm/be1597ddfc6d5d7a79c5aade229f9fb3/PNSplash.png",
+      "date": "2026-10-28",
+      "url": "https://cyberpunktcg.com/blog/rules-patch-notes1",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "ci-recap",
+      "title": "Top-performing cards from our Creator Invitational Pre-release",
+      "excerpt": "This week, we invited 16 content creators to take part in a livestreamed Pre-release tournament at CD PROJEKT RED HQ! Here are some of the cards that helped our top performers rise to the top!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/379fTbdTnzaBxhUTxUAOlU/0454663d839453b9da52ac87c0a9231a/Animals_Wrecker.webp",
+      "date": "2026-10-23",
+      "url": "https://cyberpunktcg.com/blog/ci-recap",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "set-2-announcement",
+      "title": "Announcing Cyberpunk TCG Set Two — Edgerunners: Burn Bright",
+      "excerpt": "It’s here. Get your first look at Cyberpunk TCG Set Two — Edgerunners: Burn Bright, arriving Spring 2027.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/5qH1RNTlKZg33qEsIsIlkT/4c3415e411e2bfa15a08af822cb70b1e/26-9-14_YourNewLife_Final.webp",
+      "date": "2026-10-20",
+      "url": "https://cyberpunktcg.com/blog/set-2-announcement",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "side-event-preview",
+      "title": "Edgerunner Open Regional Side Event Preview and Schedules",
+      "excerpt": "There’s much more to an Edgerunner Open Regional than just the Main Event. Check out all of the different Side Events we’ve got lined up for all EOR attendees!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/1fNYCHCrQbZ23NY4ZZTFe1/5f5ce3727459986c2d659898148cd599/gorosplash2.png",
+      "date": "2026-10-19",
+      "url": "https://cyberpunktcg.com/blog/side-event-preview",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "judge-program-announcement",
+      "title": "Introducing the Cyberpunk TCG Judge Program",
+      "excerpt": "Interested in becoming a Cyberpunk TCG Judge? Here are all the details you need to know.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/7DWDU8f2skgnu1gjf7v0CN/c860af4768562529b9d9bc00d9f849f3/riversplash2.png",
+      "date": "2026-10-16",
+      "url": "https://cyberpunktcg.com/blog/judge-program-announcement",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "ci-preview",
+      "title": "The Welcome to Night City Creator Invitational takes place October 20!",
+      "excerpt": "Ahead of our Pre-release tournaments, 16 creators will face off in a Pre-release battle live from CD PROJEKT RED HQ in Warsaw!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/5TRF85wxSDLnmKiZCBvYWl/668f5b03d80efe5a697bcf62097aa704/Creator_Invitational_Thumbnail_V2.png",
+      "date": "2026-10-14",
+      "url": "https://cyberpunktcg.com/blog/ci-preview",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "holodd",
+      "title": "Cyberpunk TCG: Holophone Deep Dive and Q+A",
+      "excerpt": "Got questions about Holophone after Wednesday’s announcement? We’ve got answers!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/6jApMxAfEZjRRiBwEir25X/3f261ed5f75bb0190ee8e105af57a05b/Trailer_Person_Holophone_20260929__1_.png",
+      "date": "2026-10-09",
+      "url": "https://cyberpunktcg.com/blog/holodd",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "hp-trailer",
+      "title": "Announcing Cyberpunk TCG: Holophone",
+      "excerpt": "Holophone is a whole new kind of narrative experience coming to Cyberpunk TCG. Check out our trailer for an exclusive first look!\n",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/3DGf341GIhyi2uWfOHHUyk/9eab1f7627a91cac3ce8b8fe9e32ce49/CyberpunkTCG_Holophone_AnnouncementTrailer_Thumbnail.jpg",
+      "date": "2026-10-07",
+      "url": "https://cyberpunktcg.com/blog/hp-trailer",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "pvtqa",
+      "title": "Rare Treatments and Precision Vectorized Texturing: Q&A with WeirdCo Creative Director, Jonny Erner",
+      "excerpt": "Precision Vectorized Texturing (PVT) brings Cyberpunk TCG's incredible art to life across our highest rarity cards. Learn all about it directly from WeirdCo's Creative Director, Jonny Erner.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/1DqwUsLA19yxP8Ls38AkZ6/d6fa5185d5d76a31d9312a7d34eeb318/Smasher_Detail.png",
+      "date": "2026-10-02",
+      "url": "https://cyberpunktcg.com/blog/pvtqa",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "tournament-rules",
+      "title": "Cyberpunk TCG Tournament Rules are now live!",
+      "excerpt": "Ready to take on the competition at Cyberpunk TCG tournaments like Edgerunner Open Regionals? Familiarize yourself with our official Tournament Rules now!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/5zHCq9QsaIyqPlGcE8wWhD/806e75e2f8b72e74e285364673d975f5/riverward.png",
+      "date": "2026-09-25",
+      "url": "https://cyberpunktcg.com/blog/tournament-rules",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "wnc-pr-kit",
+      "title": "Welcome to Night City Pre-release Preview: What’s in the kit?",
+      "excerpt": "Want to find out what you’ll be unboxing at your local Pre-release on October 30? Get all the details here!\n",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/3XlxWejZw27ovRViTqFKqe/9eaeab60a0a559ca9776dc75f3ecdbc1/Retail_Pre_Release_Showcase.png",
+      "date": "2026-09-23",
+      "url": "https://cyberpunktcg.com/blog/wnc-pr-kit",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "nc-showdown-preview",
+      "title": "Night City Showdown Preview",
+      "excerpt": "Got what it takes to take down a Night City Showdown? See what’s on the line when these events hit Local Game Stores later this year.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/2Ft40BFuiVRS5w0FfotezZ/a1dc4c451e72ea3e51a41e1deaecd121/Smashersplash.png",
+      "date": "2026-09-16",
+      "url": "https://cyberpunktcg.com/blog/nc-showdown-preview",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "ncb-preview",
+      "title": "Night City Brawl Weekly Play Preview",
+      "excerpt": "Following the Welcome to Night City Retail release on November 6, you’ll be able to play in weekly Night City Brawl events at your Local Game Store. Learn all about them here.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/qmFx2EeJLWfL6ibTHX3wD/3f2874a70621d0c8060ef101b2cf895d/BombusSplash.png",
+      "date": "2026-09-11",
+      "url": "https://cyberpunktcg.com/blog/ncb-preview",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "gameplay-videos-2",
+      "title": "New Gameplay Videos Coming This Week!",
+      "excerpt": "If you enjoyed our kitchen table starter deck gameplay video, we’ve got good news for you — there’s more! \n",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/5QEhyZu1HEhn0YWGEx54QH/67c4e87ae6d1ff950993b867584efebf/Cyberdeck_VS_Royce_Panam.png",
+      "date": "2026-09-07",
+      "url": "https://cyberpunktcg.com/blog/gameplay-videos-2",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "eo-announcements",
+      "title": "Edgerunner Open Regionals: All the news from our Digital Beta Celebration Stream",
+      "excerpt": "During our Welcome to Night City Digital Beta Celebration stream, we revealed some early details about our upcoming Edgerunner Open Regional events. Catch up on all the news here!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/5Rvjqtv7Hdi3NbiDENSnGB/77f1c56d428121e400668e2ac5cc37b9/Reyessplash.png",
+      "date": "2026-09-04",
+      "url": "https://cyberpunktcg.com/blog/eo-announcements",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "deckbuilder-live",
+      "title": "The Cyberpunk TCG Deck Builder is now live!",
+      "excerpt": "Check out our new deck builder to create lists and share your crew with the world!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/m4Jx6JisVNdvCu77XGrzM/2a2e84d06dc764ef8946985c3de18b2d/Misty_Olszewski.webp",
+      "date": "2026-09-02",
+      "url": "https://cyberpunktcg.com/blog/deckbuilder-live",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "comp-rules-published",
+      "title": "Cyberpunk TCG Comprehensive Rules are now available!",
+      "excerpt": "Getting ready to jump into Cyberpunk TCG at a Beta Event? Take a granular look at how the game works with our newly published comprehensive rules document!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/5zHCq9QsaIyqPlGcE8wWhD/806e75e2f8b72e74e285364673d975f5/riverward.png",
+      "date": "2026-08-28",
+      "url": "https://cyberpunktcg.com/blog/comp-rules-published",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "wnc-starter-decks",
+      "title": "Welcome to Night City Starter Decks: Full Decklists Revealed",
+      "excerpt": "It won’t be long until thousands of you receive your Welcome to Night City Starter Decks. Here’s a full rundown of what you’ll find inside them.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/7KXmp5UjPocvqB3a5P5dYP/eee5dbe01ca95d348021170f467ae5df/Embracing_Power_Starter_Deck.png",
+      "date": "2026-08-21",
+      "url": "https://cyberpunktcg.com/blog/wnc-starter-decks",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "sealed-primer",
+      "title": "Cyberpunk TCG Beta Event and Pre-release Primer",
+      "excerpt": "Beta Events and Retail Pre-releases are your first opportunities to play Cyberpunk TCG in hobby stores. If you want to dive in but don’t know where to start, this handy primer will help.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/6TJ3q07NG214ys3RJ8w0h4/c07537d8dd605539f6bedfc70c47ef2c/Beta_Event_Box_Splash.png",
+      "date": "2026-08-19",
+      "url": "https://cyberpunktcg.com/blog/sealed-primer",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "melee-announcement",
+      "title": "Announcing our Tournament Software Partner for Cyberpunk TCG",
+      "excerpt": "Choosing a tournament software partner is a big decision for any TCG. We’re very excited to announce that we’ve selected Melee.gg as ours.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/379fTbdTnzaBxhUTxUAOlU/0454663d839453b9da52ac87c0a9231a/Animals_Wrecker.webp",
+      "date": "2026-08-18",
+      "url": "https://cyberpunktcg.com/blog/melee-announcement",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "digital-con-details",
+      "title": "Welcome to Night City Digital Beta Celebration Details",
+      "excerpt": "We’re just a few short weeks away from the first wave of Kickstarter fulfillment. To celebrate Cyberpunk TCG cards getting into players’ hands for the first time, we’re hosting a live celebration — and you’re invited!\n",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/zVqpIZkpKdwVhN6dsGLKy/5874bd27ace54c123cbcc63b539c10ac/Screenshot_2026-06-26_at_17.04.10.png",
+      "date": "2026-08-14",
+      "url": "https://cyberpunktcg.com/blog/digital-con-details",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "cardmarket-announcement",
+      "title": "Cyberpunk TCG to be fully supported by Cardmarket in Europe",
+      "excerpt": "Cardmarket is Europe’s biggest TCG marketplace, and today it announced full support for Cyberpunk TCG at release.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/17WdbVkJA4xUm8f5ykfRzy/1c83533a25eb13f00bfbc2962c60381b/c2c3832f-d7a7-4212-9ff8-0d6fa8cbd275.png",
+      "date": "2026-08-12",
+      "url": "https://cyberpunktcg.com/blog/cardmarket-announcement",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "collectibility-insight",
+      "title": "Availability versus Collectibility: How we’re tackling one of the most delicate balances in the TCG world",
+      "excerpt": "Balancing card availability and collectibility isn’t easy, but here’s how we plan to get it right.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/37BH2JH2XXFSB5UQEKr4m4/41c092ff95ca3afd9da1906c59582c0b/prod3.webp",
+      "date": "2026-08-07",
+      "url": "https://cyberpunktcg.com/blog/collectibility-insight",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "gen-con-announcements",
+      "title": "Cyberpunk TCG at Gen Con 2026: All of our Exclusive Card Reveals",
+      "excerpt": "They don’t call it The Best Four Days in Gaming for nothin’. Catch up with all of our card reveals from Gen Con 2026.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/7xvCw4Qrl2yEvKpsL0UvWC/8bb93373e7359f878b2ec9b36cbeb83f/Johnny_Silverhand_-_Rocking_Renegade.webp",
+      "date": "2026-07-31",
+      "url": "https://cyberpunktcg.com/blog/gen-con-announcements",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "community-reveals",
+      "title": "Welcome to Night City Community Card Reveal Schedule",
+      "excerpt": "We've got so many awesome cards to reveal in August that we had to bring in a few chooms to help us out!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/m4Jx6JisVNdvCu77XGrzM/2a2e84d06dc764ef8946985c3de18b2d/Misty_Olszewski.webp",
+      "date": "2026-07-29",
+      "url": "https://cyberpunktcg.com/blog/community-reveals",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "beta-event-guide",
+      "title": "Cyberpunk TCG Beta Event Guide: What’s in the kit?",
+      "excerpt": "Beta Events are our first in-store Cyberpunk TCG tournaments. Learn all about them here.\n",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/1ZrdjOPQnv3dPxkNVxigwf/72970f3813a86df003a25d4f935f67d9/SD02-EBPA_007_MantisBlades_Gear_Common_Red.webp",
+      "date": "2026-07-24",
+      "url": "https://cyberpunktcg.com/blog/beta-event-guide",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "store-locator-live",
+      "title": "The Cyberpunk TCG store locator is now live",
+      "excerpt": "Want to know where you can purchase and play Cyberpunk TCG? Look no further!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/2Tayo7Sa27ni20dLttCgLS/bb9f764c210d89c0e3cd6db260c9c9fb/Saburothumbnail.png",
+      "date": "2026-07-17",
+      "url": "https://cyberpunktcg.com/blog/store-locator-live",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "ax-photo-recap",
+      "title": "In Pictures: Cyberpunk TCG at Anime Expo 2026",
+      "excerpt": "Four days. 2,500 demos. And a whole lot of new chooms. See what we got up to at Anime Expo 2026!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/2MEa6LF6WCztkODbmzKp9t/b74a733ef728757a4251386949834d0e/crewphoto.webp",
+      "date": "2026-07-10",
+      "url": "https://cyberpunktcg.com/blog/ax-photo-recap",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "rebecca-promo-update",
+      "title": "An Update on Rebecca: Having a Moment Promo Card Availability",
+      "excerpt": "Our first convention-exclusive promo card has generated a lot of excitement, and a few questions around availability and accessibility. Today, we've got answers for you.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/zVqpIZkpKdwVhN6dsGLKy/5874bd27ace54c123cbcc63b539c10ac/Screenshot_2026-06-26_at_17.04.10.png",
+      "date": "2026-07-04",
+      "url": "https://cyberpunktcg.com/blog/rebecca-promo-update",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "ax-announcements",
+      "title": "Cyberpunk TCG at Anime Expo 2026: All of the Announcements",
+      "excerpt": "WeirdCo and CD PROJEKT RED are at Anime Expo 2026 this weekend. If you aren’t able to join us, you can catch up with all the new reveals and info we’re sharing at the event right here!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/1j0yuxzJV5nFrninluQoCb/9f2a02d32685e16a5f486c33233eff7b/0e437a32-2a5b-4d49-9189-28c7b4169cff.webp",
+      "date": "2026-07-03",
+      "url": "https://cyberpunktcg.com/blog/ax-announcements",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "ax-preview",
+      "title": "Cyberpunk TCG is headed to Anime Expo July 2 - 5",
+      "excerpt": "Anime Expo 2026 will feature Cyberpunk TCG’s biggest convention presence to date! See what we’ve got lined up for you next week.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/zVqpIZkpKdwVhN6dsGLKy/5874bd27ace54c123cbcc63b539c10ac/Screenshot_2026-06-26_at_17.04.10.png",
+      "date": "2026-06-26",
+      "url": "https://cyberpunktcg.com/blog/ax-preview",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "production-update-1",
+      "title": "Production Diary: Cyberpunk TCG ships to backers starting September 2026",
+      "excerpt": "Cyberpunk TCG is being printed right now! Learn all about our production journey so far, and what’s coming next.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/7sKDN4N3UpdFn9E2U1U0QD/10b44f25e7029f9e2a3eeb2db0b6f350/20260519-DSC08338.webp",
+      "date": "2026-06-19",
+      "url": "https://cyberpunktcg.com/blog/production-update-1",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "wnc-teasers-1",
+      "title": "Night City Teasers: 24 Clues About Upcoming Card Reveals",
+      "excerpt": "You won’t find any new card reveals here. But you will find a set of tricky clues about what we’ve got lined up next!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/m4Jx6JisVNdvCu77XGrzM/2a2e84d06dc764ef8946985c3de18b2d/Misty_Olszewski.webp",
+      "date": "2026-06-17",
+      "url": "https://cyberpunktcg.com/blog/wnc-teasers-1",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "visual-accessibility",
+      "title": "Visual Accessibility: How we’re Making Sure Night City is Open to All",
+      "excerpt": "Learn about the steps our creative team has taken to ensure that Cyberpunk TCG cards are visually clear, intuitive, and accessible.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/6xHNLr7XpfOF4sybvhjq3G/29310affa6dc6b3e44d8920d2fba2005/3f04a537-9664-44b5-87ae-9aefc0bb5228.webp",
+      "date": "2026-06-12",
+      "url": "https://cyberpunktcg.com/blog/visual-accessibility",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "reveal-season-start",
+      "title": "Welcome to Night City Reveal Season Starts Today",
+      "excerpt": "The Welcome to Night City card reveal season officially starts today. Find out what’s ahead, and what that means for our previously revealed cards.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/4b1bZI8hIU0H8dd1x01frf/c9f06772db3ddcc21f596fe44e89f6e2/goro_layers_final.webp",
+      "date": "2026-06-05",
+      "url": "https://cyberpunktcg.com/blog/reveal-season-start",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "beta-rule-updates",
+      "title": "Rule and Game System Updates from Alpha to Beta",
+      "excerpt": "Learn how some of Cyberpunk TCG’s core rules and systems are changing between our Community Alpha and Beta releases.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/5WpdUvQbs26yI8GItDHf2a/5969b7511f58918fe5f26d1d531744e9/CT-005_VIKTOR_VEKTOR_DROP_YOUR_ILLUSIONS.webp",
+      "date": "2026-05-29",
+      "url": "https://cyberpunktcg.com/blog/beta-rule-updates",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "color-tree-blue-yellow",
+      "title": "Developer Insights: The Color Tree Part 2 (Blue and Yellow)",
+      "excerpt": "Get a closer look at the traits and identity of Blue and Yellow in the second part of  our developer insight series exploring the Cyberpunk TCG Color Tree.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/7JFqZL7cXoRWUegw9JjNBb/e5f7f3149d67e85cf9b01a080d5e6450/FACEPLATEFULL.webp",
+      "date": "2026-05-22",
+      "url": "https://cyberpunktcg.com/blog/color-tree-blue-yellow",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "color-tree-red-green",
+      "title": "Developer Insights: The Color Tree Part 1 (Red and Green)",
+      "excerpt": "Find out what makes a Cyberpunk TCG card Red or Green in the first of two developer insight articles introducing you to our Color Tree.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/615PmhExyT9FbwG2gRLNRt/64309c3301c7334e8ba92e0419827c3b/ODAFULL.webp",
+      "date": "2026-05-15",
+      "url": "https://cyberpunktcg.com/blog/color-tree-red-green",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "retail-plans-cyberpunk-tcg",
+      "title": "Retail Plans for Cyberpunk TCG",
+      "excerpt": "A first look at the retail and organized play programs for Cyberpunk TCG — guaranteed allocation, GAMA 2026, and more.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/1MbDXOZCHuqa46e0tApMDx/70880a6185e3a975d219b04dd672bad8/retail-plans.png",
+      "date": "2026-02-27",
+      "url": "https://cyberpunktcg.com/blog/retail-plans-cyberpunk-tcg",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "developer-insights-all-about-ram",
+      "title": "Developer Insights: All About RAM",
+      "excerpt": "RAM is the hidden balancing knob that adds complexity and flexibility to card creation. Here's how it shapes deckbuilding.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/3jQOGcb63Jk2jC13T6WIdd/fe2515e6cfb59d0385ba5cb29a91db00/developer-insights-ram-goro.png",
+      "date": "2026-02-20",
+      "url": "https://cyberpunktcg.com/blog/developer-insights-all-about-ram",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "built-for-players",
+      "title": "Built for Players: How the Cyberpunk TCG Is Fighting the Industry's Scarcity Problem",
+      "excerpt": "We're using Kickstarter to make sure every player who wants the cards can get them — and to keep local game stores stocked.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/3I7NCem10LC5X2a1UNZBja/8828fd398c656abe0db79d3925c22adf/built-for-players.png",
+      "date": "2026-02-05",
+      "url": "https://cyberpunktcg.com/blog/built-for-players",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "developer-insights-gig-dice",
+      "title": "Developer Insights: Gig Dice",
+      "excerpt": "The central mechanic of Cyberpunk TCG, the dice rolling system, captures Night City's unpredictability with a strong dose of skill.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/5L4Tjwb9CeTEn7WW8qZA2V/01c467b1f9dcc9640e1071db65d0075a/developer-insights-gig-dice.jpg",
+      "date": "2026-01-20",
+      "url": "https://cyberpunktcg.com/blog/developer-insights-gig-dice",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "artist-interview-vincenzo-riccardi",
+      "title": "Artist Interview: Vincenzo Riccardi",
+      "excerpt": "We sat down with the artist behind the Arasaka triptych to talk about style, process, and what drew him to Night City.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/73LRqm8fJKYWqjNZy3UuoT/5002be9771f2bb4677010648c6e00df4/artist-vincenzo-triptych-framed.png",
+      "date": "2026-01-15",
+      "url": "https://cyberpunktcg.com/blog/artist-interview-vincenzo-riccardi",
+      "seen": "2026-11-17"
+    },
+    {
+      "id": "introducing-cyberpunk-tcg",
+      "title": "Introducing the Official Cyberpunk Trading Card Game",
+      "excerpt": "The hype trailer is live. Here's a first look at the game's premise — and how to grab a free Lucy promo card.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/5SWrbeHxvhe74B9tl2omdv/fc1b97d451b487d0c2d194f5593ab7d2/cyberpunk-announcement-lucy.png",
+      "date": "2025-12-09",
+      "url": "https://cyberpunktcg.com/blog/introducing-cyberpunk-tcg",
+      "seen": "2026-11-17"
+    }
+  ],
+  "updatedAt": "2026-11-17T06:09:55.205Z"
+}

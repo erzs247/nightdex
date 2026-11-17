@@ -51,6 +51,10 @@ const TEXT = {
     chartWait: 'Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.', chartNone: 'Pas de prix Cardmarket pour cette carte pour l\'instant.',
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue de l\'appli', langToast: 'Appli en français',
+    news: {
+      title: 'Actualités', unread: (n) => `${n} non lu${n > 1 ? 's' : ''}`, new: 'Nouveau', read: 'Lire l\'article', empty: 'Pas encore d\'actualités.',
+      intro: 'Les dernières nouvelles du Cyberpunk TCG, depuis le blog officiel (articles en anglais). Mises à jour chaque jour.',
+    },
     ex: {
       tab: 'Extra', cats: { staff: 'Cartes du personnel', other: 'Hors séries' }, catHint: { staff: 'Offertes aux employés, jamais vendues en boutique.' },
       note: 'Ces cartes ne sont pas sur Cardmarket : leur prix est une estimation d\'après les annonces eBay, mise à jour à la main.',
@@ -194,6 +198,10 @@ const TEXT = {
     chartWait: 'Not enough history to draw a curve yet. Prices are recorded every day.', chartNone: 'No Cardmarket price for this card yet.',
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'App language', langToast: 'App in English',
+    news: {
+      title: 'News', unread: (n) => `${n} unread`, new: 'New', read: 'Read the article', empty: 'No news yet.',
+      intro: 'The latest Cyberpunk TCG news from the official blog. Updated every day.',
+    },
     ex: {
       tab: 'Extra', cats: { staff: 'Staff cards', other: 'Off-set cards' }, catHint: { staff: 'Given to employees, never sold in stores.' },
       note: 'These cards are not on Cardmarket: their price is an estimate from eBay listings, updated by hand.',
@@ -316,6 +324,7 @@ const I = {
   bolt: '<svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
   slab: '<svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M5 7.5h14"/><rect x="8" y="10" width="8" height="9" rx="1"/></svg>',
   zoom: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5M10.5 7.5v6M7.5 10.5h6"/></svg>',
+  mail: '<svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg>',
   globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>',
   person: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
   heart: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
@@ -403,6 +412,7 @@ async function loadData() {
   const embedded = (p) => { const el = document.getElementById(p); return el ? Promise.resolve(JSON.parse(el.textContent)) : null; };
   const get = (p) => embedded(p) ?? fetch(p, { cache: 'no-cache' }).then((r) => { if (!r.ok) throw new Error(p); return r.json(); });
   let sealedFile, extraFile;
+  get('data/news.json').then((n) => { news = n.items ?? []; newsInit(); if (currentRender === renderNews) renderNews(); }).catch(() => {});
   [catalog, priceFile, config, sealedFile, extraFile] = await Promise.all([get('data/catalog.json'), get('data/prices.json'), get('data/config.json').catch(() => config), get('data/sealed.json').catch(() => ({ items: [] })), get('data/extras.json').catch(() => ({ items: [] }))]);
   // cartes hors séries : prix estimé saisi à la main (pas de cote Cardmarket)
   extras = extraFile.items ?? [];
@@ -634,7 +644,7 @@ function progressTile(s) {
 let homeQuery = '';
 function homeTopbar(withMode) {
   const mode = user.prefs.homeMode;
-  setTopbar(`<h1>${L.home}</h1>${withMode ? `<button class="icon-btn" data-action="home-mode" aria-label="${L.toggleView}">${mode === 'grid' ? I.listIcon : I.gridIcon}</button>` : ''}${langBtn()}${globeBtn()}<a class="icon-btn capri-btn" href="#capri" aria-label="Capri"><img src="images/capri/avatar.webp" alt=""></a>${accountBtn()}<button class="icon-btn" data-action="settings" aria-label="${L.settings}">${I.gear}</button>`);
+  setTopbar(`<h1>${L.home}</h1>${withMode ? `<button class="icon-btn" data-action="home-mode" aria-label="${L.toggleView}">${mode === 'grid' ? I.listIcon : I.gridIcon}</button>` : ''}${langBtn()}${newsBtn()}${globeBtn()}<a class="icon-btn capri-btn" href="#capri" aria-label="Capri"><img src="images/capri/avatar.webp" alt=""></a>${accountBtn()}<button class="icon-btn" data-action="settings" aria-label="${L.settings}">${I.gear}</button>`);
 }
 const homeTabs = (active) => `<div class="seg" role="tablist">${[['home', L.setsTab], ['sealed', L.sealed], ...(extras.some(inCardLang) ? [['extra', L.ex.tab]] : [])].map(([h, l]) => `<button data-nav="${h}" aria-pressed="${active === h}">${l}</button>`).join('')}</div>`;
 function renderSealed() {
@@ -752,7 +762,7 @@ function renderSet(code) {
 let colSet = '';
 function renderCollection() {
   setTopbar(`<h1>${L.myCollection}</h1>${langBtn()}${cloud.enabled ? `<a class="chip friends-chip" href="#friends">${L.fr.title}<span class="fbadge" data-friends-badge ${fr.requests.length ? '' : 'hidden'}>${fr.requests.length || ''}</span></a>` : ''}`);
-  const owned = [...catalog.cards, ...extras].filter((c) => qty(c.id) > 0);
+  const owned = [...catalog.cards, ...extras.filter(inCardLang)].filter((c) => qty(c.id) > 0);
   const ownedSealed = sealed.filter((s) => qty(s.id) > 0);
   if (!owned.length && !ownedSealed.length) {
     view.innerHTML = `<div class="stack">${colTabs('collection')}<div class="empty"><strong>${L.emptyCol}</strong>${L.emptyColHint}<a class="btn-ghost" href="#home" style="text-decoration:none">${L.browseSets}</a></div></div>`;
@@ -2919,6 +2929,47 @@ document.addEventListener('click', (e) => {
   else if (img?.src) zoomOpen(img.src, img.alt);
 });
 
+
+// ---------- Actualités officielles (cyberpunktcg.com/blog), badge rouge = articles pas encore lus ----------
+let news = [];
+const NEWS_KEY = 'nightdex:newsRead';
+let newsRead = null;
+function newsInit() {
+  try { newsRead = new Set(JSON.parse(localStorage.getItem(NEWS_KEY) ?? 'null') ?? []); } catch { newsRead = null; }
+  if (!newsRead || !newsRead.size) {
+    // première fois : seuls les 3 articles les plus récents comptent comme nouveaux
+    newsRead = new Set(news.slice(3).map((n) => n.id));
+    newsSaveRead();
+  }
+  newsBadge();
+}
+function newsSaveRead() { try { localStorage.setItem(NEWS_KEY, JSON.stringify([...newsRead].slice(-300))); } catch { /* */ } }
+const newsUnread = () => (newsRead ? news.filter((n) => !newsRead.has(n.id)).length : 0);
+const newsBtn = () => `<a class="icon-btn news-btn" href="#news" aria-label="${L.news.title}">${I.mail}<b class="nbadge num" data-news-badge ${newsUnread() ? '' : 'hidden'}>${newsUnread() > 9 ? '9+' : newsUnread() || ''}</b></a>`;
+function newsBadge() {
+  const n = newsUnread();
+  for (const b of document.querySelectorAll('[data-news-badge]')) { b.hidden = !n; b.textContent = n > 9 ? '9+' : String(n || ''); }
+  const lbl = n ? `${L.news.title} · ${L.news.unread(n)}` : L.news.title;
+  for (const a of document.querySelectorAll('.news-btn')) a.setAttribute('aria-label', lbl);
+}
+function renderNews() {
+  setTopbar(`<a class="icon-btn" href="#home" aria-label="${L.back}">${I.back}</a><h1 class="small">${L.news.title}</h1>`);
+  const unread = new Set(news.filter((n) => !newsRead?.has(n.id)).map((n) => n.id));
+  view.innerHTML = `<div class="stack">
+    <p class="note" style="margin:0">${L.news.intro}</p>
+    ${news.length ? `<div class="news-list">${news.map((n) => `<a class="news-card ${unread.has(n.id) ? 'unread' : ''}" href="${esc(n.url)}" target="_blank" rel="noopener">
+      ${n.image ? `<span class="news-img"><img src="${esc(n.image)}?w=640&fm=webp&q=70" alt="" loading="lazy" decoding="async"></span>` : ''}
+      <span class="news-body">
+        <span class="news-meta num">${unread.has(n.id) ? `<b class="news-new">${L.news.new}</b>` : ''}${n.date ? esc(fmt.date.format(parseDay(n.date))) : ''}</span>
+        <strong>${esc(n.title)}</strong>
+        ${n.excerpt ? `<span class="news-ex">${esc(n.excerpt)}</span>` : ''}
+        <span class="news-link">${L.news.read} ${I.ext}</span>
+      </span></a>`).join('')}</div>` : `<div class="empty"><strong>${L.news.empty}</strong></div>`}
+  </div>`;
+  // tout est lu une fois la page ouverte (le badge disparaît, les « nouveau » restent affichés jusqu'à la prochaine visite)
+  if (newsRead && unread.size) { for (const id of unread) newsRead.add(id); newsSaveRead(); newsBadge(); }
+}
+
 // ---------- Navigation ----------
 let currentTab = 'home';
 function markTabs() {
@@ -2942,6 +2993,7 @@ function route() {
   else if (h === 'values') currentRender = renderValues;
   else if (h === 'sealed') { tab = 'sealed'; currentRender = renderSealed; }
   else if (h === 'extra') { tab = 'home'; currentRender = renderExtra; }
+  else if (h === 'news') { tab = 'home'; currentRender = renderNews; }
   else if (h === 'capri') { currentRender = renderCapri; }
   else if (h === 'friends') { fr.view = null; fr.msg = ''; currentRender = renderFriends; }
   else if (h.startsWith('friend-')) { tab = 'friends'; const uid = h.slice(7); if (fr.view?.uid !== uid) fr.filter = 'all'; renderFriendCurrent = () => renderFriend(uid); currentRender = renderFriendCurrent; }

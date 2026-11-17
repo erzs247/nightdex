@@ -61,12 +61,14 @@ jobs:
           node-version: 22
       - name: Relevé des prix Cardmarket du jour
         run: node scripts/update-prices.mjs
+      - name: Actualités du blog officiel
+        run: node scripts/update-news.mjs || echo "Actualités indisponibles aujourd'hui"
       - name: Enregistrer l'historique
         run: |
           git config user.name "nightdex-bot"
           git config user.email "nightdex-bot@users.noreply.github.com"
           git add data/
-          git diff --cached --quiet || git commit -m "Prix Cardmarket du $(date +%F)"
+          git diff --cached --quiet || git commit -m "Prix et actualités du $(date +%F)"
           git push
 
   publier:
