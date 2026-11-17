@@ -100,7 +100,7 @@ const TEXT = {
     },
     paidLabel: 'Prix d\'achat / carte', paidHint: 'Différence avec la cote', paidVs: 'Différence :', boughtFor: (v) => `achetées ${v}`,
     paidSum: (n, v) => `Prix d'achat noté pour ${n} carte${n > 1 ? 's' : ''} : ${v}`,
-    zoom: 'Agrandir la carte', zoomHint: 'Pince ou double-touche pour zoomer',
+    zoom: 'Voir la carte en 3D', v3d: { flip: 'Retourner', reset: 'Remettre de face', tip: 'Glisse pour tourner la carte · double-touche pour la retourner' },
     otherCopies: (n, l) => `+ ${n} exemplaire${n > 1 ? 's' : ''} en ${l} (bouton FR | EN pour y passer)`, colLang: (l) => `Collection ${l.toUpperCase()}`,
     cardLanguage: 'Langue des cartes', cardLangHint: 'Le bouton FR | EN de l\'accueil fait la même chose : séries, noms et images dans cette langue.',
     cardLangToast: (l) => (l === 'fr' ? 'Cartes : séries françaises' : 'Cartes : séries anglaises'),
@@ -247,7 +247,7 @@ const TEXT = {
     },
     paidLabel: 'Bought at / card', paidHint: 'Difference with the price', paidVs: 'Difference:', boughtFor: (v) => `bought for ${v}`,
     paidSum: (n, v) => `Purchase price logged for ${n} card${n > 1 ? 's' : ''}: ${v}`,
-    zoom: 'Enlarge card', zoomHint: 'Pinch or double-tap to zoom',
+    zoom: 'View card in 3D', v3d: { flip: 'Flip', reset: 'Face front', tip: 'Drag to rotate the card · double-tap to flip it' },
     otherCopies: (n, l) => `+ ${n} cop${n > 1 ? 'ies' : 'y'} in ${l} (switch with FR | EN)`, colLang: (l) => `${l.toUpperCase()} collection`,
     cardLanguage: 'Card language', cardLangHint: 'The FR | EN button on the home screen does the same: sets, names and images in that language.',
     cardLangToast: (l) => (l === 'fr' ? 'Cards: French sets' : 'Cards: English sets'),
@@ -323,6 +323,7 @@ const I = {
   camera: '<svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.8"/></svg>',
   bolt: '<svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
   slab: '<svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M5 7.5h14"/><rect x="8" y="10" width="8" height="9" rx="1"/></svg>',
+  flip: '<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.7L20 8.5"/><path d="M20 4v4.5h-4.5"/><path d="M20 12a8 8 0 0 1-13.7 5.7L4 15.5"/><path d="M4 20v-4.5h4.5"/></svg>',
   zoom: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5M10.5 7.5v6M7.5 10.5h6"/></svg>',
   mail: '<svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg>',
   globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>',
@@ -987,7 +988,7 @@ function openCard(id, keepNav) {
   sheetPanel.innerHTML = `${sheetTop(navList.length > 1)}
     <div class="stack detail">
       <div class="detail-top ${sealedItem ? 'is-sealed' : ''}" ${rarityStyle(c.rarity)}>
-        <button class="card-img zoomable" data-zoom ${c.hd ? `data-hd="${esc(c.hd)}"` : ''} aria-label="${L.zoom}">${cardImg(c, true)}${c.pack ? `<span class="pack-badge num">×${c.pack}</span>` : ''}<span class="zoom-hint">${I.zoom}</span></button>
+        <button class="card-img zoomable" data-zoom ${c.hd ? `data-hd="${esc(c.hd)}"` : ''} aria-label="${L.zoom}">${cardImg(c, true)}${c.pack ? `<span class="pack-badge num">×${c.pack}</span>` : ''}<span class="zoom-hint">3D</span></button>
         <div class="detail-info">
           <h2 id="sheetTitle">${esc(cardName(c))}</h2>
           ${sealedItem
@@ -2191,7 +2192,7 @@ document.addEventListener('input', (e) => {
 });
 document.addEventListener('keydown', (e) => {
   if (sheet.hidden) return;
-  if (e.key === 'Escape') { if (zoomEl && !zoomEl.hidden) { zoomClose(); return; } closeCard(); }
+  if (e.key === 'Escape') { if (!zoomEl.hidden) { zoomClose(); return; } closeCard(); }
   else if (openId && (e.key === 'ArrowRight' || e.key === 'ArrowLeft') && !e.target.closest('input, textarea')) { e.preventDefault(); navStep(e.key === 'ArrowRight' ? 1 : -1); }
 });
 sheet.addEventListener('click', (e) => { if (e.target.matches('.sheet-backdrop')) closeCard(); });
@@ -2914,96 +2915,115 @@ function dOnUser(u) {
 }
 
 
-// ---------- Zoom plein écran sur une carte : pincer, double-toucher, molette (PC), glisser pour se déplacer ----------
-let zoomEl = null;
-const zs = { k: 1, x: 0, y: 0, pts: new Map(), start: null, lastTap: 0, moved: false };
-function zoomApply(anim) {
-  const img = zoomEl.querySelector('img');
-  img.style.transition = anim ? 'transform .2s ease' : 'none';
-  img.style.transform = `translate(${zs.x}px, ${zs.y}px) scale(${zs.k})`;
-  zoomEl.classList.toggle('zoomed', zs.k > 1.01);
+// ---------- Vue 3D d'une carte : la tourner dans tous les sens, la retourner, reflet holographique ----------
+// Le dos dépend du type : les Légendes ont un dos différent des autres cartes (images dans data/config.json → cardBacks).
+// Tant qu'aucune photo de dos n'est fournie, un dos neutre NightDex est affiché.
+let v3d = null;
+const v3 = { rx: 0, ry: 0, vx: 0, vy: 0, drag: null, raf: 0, lastTap: 0, idle: 0, spin: null };
+function cardBackFor(c) {
+  const backs = config.cardBacks ?? {};
+  if (!c || isSealed(c)) return null;
+  return (c.type === 'Legend' ? backs.legend : backs.normal) || null;
 }
-function zoomClamp() {
-  const img = zoomEl.querySelector('img');
-  const w = img.offsetWidth * zs.k, h = img.offsetHeight * zs.k;
-  const mx = Math.max(0, (w - innerWidth) / 2 + 20), my = Math.max(0, (h - innerHeight) / 2 + 20);
-  zs.k = Math.min(5, Math.max(1, zs.k));
-  zs.x = Math.min(mx, Math.max(-mx, zs.x)); zs.y = Math.min(my, Math.max(-my, zs.y));
-  if (zs.k === 1) { zs.x = 0; zs.y = 0; }
+function v3dRender() {
+  const card = v3d.querySelector('.c3d');
+  card.style.transform = `rotateX(${v3.rx.toFixed(2)}deg) rotateY(${v3.ry.toFixed(2)}deg)`;
+  // reflet : suit l'angle de la carte (côté visible)
+  const ny = ((v3.ry % 360) + 540) % 360 - 180, nx = ((v3.rx % 360) + 540) % 360 - 180;
+  const face = Math.abs(ny) > 90 !== Math.abs(nx) > 90 ? 'back' : 'front';
+  const gx = 50 + Math.sin((ny * Math.PI) / 180) * 45, gy = 50 - Math.sin((nx * Math.PI) / 180) * 45;
+  for (const g of v3d.querySelectorAll('.c3d-glare')) { g.style.setProperty('--gx', `${gx}%`); g.style.setProperty('--gy', `${gy}%`); g.style.setProperty('--ga', String(Math.min(1, (Math.abs(Math.sin((ny * Math.PI) / 180)) + Math.abs(Math.sin((nx * Math.PI) / 180))) * 0.9 + 0.15))); }
+  v3d.dataset.face = face;
 }
-// zoom autour d'un point de l'écran (cx, cy)
-function zoomAt(k, cx, cy) {
-  const ox = cx - innerWidth / 2, oy = cy - innerHeight / 2;
-  const r = k / zs.k;
-  zs.x = ox - (ox - zs.x) * r; zs.y = oy - (oy - zs.y) * r; zs.k = k;
+function v3dLoop() {
+  cancelAnimationFrame(v3.raf);
+  const step = () => {
+    if (v3d.hidden) return;
+    if (v3.spin) {                                   // animation (entrée, retournement) vers une cible
+      const t = Math.min(1, (performance.now() - v3.spin.t0) / v3.spin.ms), e = 1 - (1 - t) ** 3;
+      v3.rx = v3.spin.fx + (v3.spin.tx - v3.spin.fx) * e; v3.ry = v3.spin.fy + (v3.spin.ty - v3.spin.fy) * e;
+      if (t >= 1) v3.spin = null;
+    } else if (!v3.drag) {
+      if (Math.abs(v3.vx) + Math.abs(v3.vy) > 0.02) { v3.rx += v3.vx; v3.ry += v3.vy; v3.vx *= 0.95; v3.vy *= 0.95; v3.idle = performance.now(); }
+      else if (performance.now() - v3.idle > 2500) {   // au repos : léger flottement
+        const k = (performance.now() - v3.idle - 2500) / 1000;
+        v3.rx += (Math.sin(k * 0.9) * 6 - (v3.rx - Math.round(v3.rx / 180) * 180)) * 0.02;
+        v3.ry += (Math.sin(k * 0.6) * 10 - (v3.ry - Math.round(v3.ry / 180) * 180)) * 0.02;
+      }
+    }
+    v3dRender();
+    v3.raf = requestAnimationFrame(step);
+  };
+  v3.raf = requestAnimationFrame(step);
 }
-function zoomOpen(src, alt) {
-  if (!zoomEl) {
-    zoomEl = document.createElement('div');
-    zoomEl.className = 'zoom-view'; zoomEl.hidden = true;
-    zoomEl.setAttribute('role', 'dialog'); zoomEl.setAttribute('aria-modal', 'true');
-    zoomEl.innerHTML = `<img alt="" draggable="false"><button class="icon-btn zoom-close" aria-label="${L.close}">${I.x}</button><p class="zoom-tip"></p>`;
-    document.body.append(zoomEl);
-    zoomEl.querySelector('.zoom-close').addEventListener('click', zoomClose);
-    zoomEl.addEventListener('pointerdown', zoomDown);
-    zoomEl.addEventListener('pointermove', zoomMove);
-    for (const t of ['pointerup', 'pointercancel', 'pointerleave']) zoomEl.addEventListener(t, zoomUp);
-    zoomEl.addEventListener('wheel', (e) => { e.preventDefault(); zoomAt(zs.k * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.clientX, e.clientY); zoomClamp(); zoomApply(); }, { passive: false });
+const v3dSpinTo = (tx, ty, ms = 650) => { v3.spin = { fx: v3.rx, fy: v3.ry, tx, ty, ms, t0: performance.now() }; v3.vx = 0; v3.vy = 0; v3.idle = performance.now(); };
+function v3dFlip() { v3dSpinTo(Math.round(v3.rx / 180) * 180, Math.round((v3.ry + 180) / 180) * 180); }
+function zoomOpen(src, alt, c) {
+  if (!v3d) {
+    v3d = document.createElement('div');
+    v3d.className = 'v3d'; v3d.hidden = true;
+    v3d.setAttribute('role', 'dialog'); v3d.setAttribute('aria-modal', 'true');
+    document.body.append(v3d);
+    v3d.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('button')) return;
+      v3d.setPointerCapture?.(e.pointerId);
+      v3.drag = { x: e.clientX, y: e.clientY, t: performance.now(), moved: false };
+      v3.spin = null; v3.vx = 0; v3.vy = 0;
+    });
+    v3d.addEventListener('pointermove', (e) => {
+      if (!v3.drag) return;
+      const dx = e.clientX - v3.drag.x, dy = e.clientY - v3.drag.y;
+      if (Math.abs(dx) + Math.abs(dy) > 4) v3.drag.moved = true;
+      const k = 0.45;
+      v3.ry += dx * k; v3.rx -= dy * k;
+      const dt = Math.max(8, performance.now() - v3.drag.t);
+      v3.vy = (dx * k * 16) / dt; v3.vx = (-dy * k * 16) / dt;
+      Object.assign(v3.drag, { x: e.clientX, y: e.clientY, t: performance.now() });
+      v3.idle = performance.now();
+    });
+    const up = (e) => {
+      if (!v3.drag) return;
+      const tap = !v3.drag.moved;
+      v3.drag = null; v3.idle = performance.now();
+      if (!tap || e.type !== 'pointerup') return;
+      const now = Date.now();
+      if (now - v3.lastTap < 320) { v3.lastTap = 0; v3dFlip(); return; }   // double-touche : retourner
+      v3.lastTap = now;
+      if (!e.target.closest('.c3d')) setTimeout(() => { if (v3.lastTap === now) zoomClose(); }, 320);   // toucher à côté : fermer
+    };
+    for (const t of ['pointerup', 'pointercancel']) v3d.addEventListener(t, up);
+    v3d.addEventListener('click', (e) => { const b = e.target.closest('[data-v3d]'); if (!b) return; if (b.dataset.v3d === 'close') zoomClose(); else if (b.dataset.v3d === 'flip') v3dFlip(); else if (b.dataset.v3d === 'reset') v3dSpinTo(0, 0); });
   }
-  const img = zoomEl.querySelector('img');
-  img.src = src; img.alt = alt ?? '';
-  zoomEl.querySelector('.zoom-tip').textContent = L.zoomHint;
-  zoomEl.querySelector('.zoom-close').setAttribute('aria-label', L.close);
-  Object.assign(zs, { k: 1, x: 0, y: 0, start: null }); zs.pts.clear();
-  zoomEl.hidden = false; zoomApply();
-  zoomEl.querySelector('.zoom-close').focus({ preventScroll: true });
+  const back = cardBackFor(c);
+  const sealedItem = c && isSealed(c);
+  v3d.innerHTML = `<div class="v3d-stage">
+      <div class="c3d ${sealedItem ? 'is-sealed' : ''} ${c?.type === 'Legend' ? 'is-legend' : ''}" style="--rc:${RARITY_HEX[c?.rarity] ?? 'var(--accent)'}">
+        <div class="c3d-face c3d-front"><img src="${esc(src)}" alt="${esc(alt ?? '')}" draggable="false"><span class="c3d-glare"></span></div>
+        <div class="c3d-face c3d-back">${back ? `<img src="${esc(back)}" alt="" draggable="false">` : `<span class="c3d-back-default"><b>NIGHT<i>DEX</i></b><small>${c?.type === 'Legend' ? 'LEGEND' : ''}</small></span>`}<span class="c3d-glare"></span></div>
+      </div>
+    </div>
+    <div class="v3d-bar">
+      <button class="chip" data-v3d="flip">${I.flip}<span>${L.v3d.flip}</span></button>
+      <button class="chip" data-v3d="reset">${L.v3d.reset}</button>
+    </div>
+    <p class="v3d-tip">${L.v3d.tip}</p>
+    <button class="icon-btn v3d-close" data-v3d="close" aria-label="${L.close}">${I.x}</button>`;
+  v3d.hidden = false;
+  Object.assign(v3, { rx: -12, ry: -200, vx: 0, vy: 0, drag: null, idle: performance.now() });
+  v3dSpinTo(0, 0, 900);                                   // entrée : la carte arrive en tournoyant
+  v3dLoop();
+  v3d.querySelector('.v3d-close').focus({ preventScroll: true });
 }
-function zoomClose() { if (zoomEl) zoomEl.hidden = true; }
-function zoomDown(e) {
-  if (e.target.closest('.zoom-close')) return;
-  zoomEl.setPointerCapture?.(e.pointerId);
-  zs.pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-  zs.moved = false;
-  zs.start = { k: zs.k, x: zs.x, y: zs.y, pts: new Map([...zs.pts].map(([id, p]) => [id, { ...p }])) };
-}
-function zoomMove(e) {
-  if (!zs.pts.has(e.pointerId) || !zs.start) return;
-  zs.pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-  const now = [...zs.pts.values()], was = [...zs.start.pts.values()];
-  if (now.length >= 2 && was.length >= 2) {
-    const d = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
-    const c0 = { x: (was[0].x + was[1].x) / 2, y: (was[0].y + was[1].y) / 2 }, c1 = { x: (now[0].x + now[1].x) / 2, y: (now[0].y + now[1].y) / 2 };
-    Object.assign(zs, { k: zs.start.k, x: zs.start.x, y: zs.start.y });
-    zoomAt(zs.start.k * (d(now[0], now[1]) / (d(was[0], was[1]) || 1)), c0.x, c0.y);
-    zs.x += c1.x - c0.x; zs.y += c1.y - c0.y;
-  } else if (now.length === 1 && was.length >= 1) {
-    const dx = now[0].x - was[0].x, dy = now[0].y - was[0].y;
-    if (Math.abs(dx) + Math.abs(dy) > 6) zs.moved = true;
-    if (zs.k > 1) { zs.x = zs.start.x + dx; zs.y = zs.start.y + dy; }
-  }
-  zs.moved = zs.moved || now.length > 1;
-  zoomClamp(); zoomApply();
-}
-function zoomUp(e) {
-  if (!zs.pts.has(e.pointerId)) return;
-  const single = zs.pts.size === 1;
-  zs.pts.delete(e.pointerId);
-  zs.start = zs.pts.size ? { k: zs.k, x: zs.x, y: zs.y, pts: new Map([...zs.pts].map(([id, p]) => [id, { ...p }])) } : null;
-  if (!single || zs.moved || e.type !== 'pointerup') return;
-  // toucher simple : double-toucher = zoom / dézoom ; toucher hors de la carte sans zoom = fermer
-  const t = Date.now();
-  if (t - zs.lastTap < 300) { if (zs.k > 1.01) Object.assign(zs, { k: 1, x: 0, y: 0 }); else zoomAt(2.5, e.clientX, e.clientY); zoomClamp(); zoomApply(true); zs.lastTap = 0; return; }
-  zs.lastTap = t;
-  if (zs.k <= 1.01 && e.target === zoomEl) setTimeout(() => { if (zs.lastTap === t) zoomClose(); }, 300);
-}
+function zoomClose() { if (v3d) { v3d.hidden = true; cancelAnimationFrame(v3.raf); } }
+const zoomEl = { get hidden() { return !v3d || v3d.hidden; } };
 document.addEventListener('click', (e) => {
   const z = e.target.closest('[data-zoom]');
   if (!z) return;
   const img = z.querySelector('img.slab-photo[src]') ?? z.querySelector('img');
-  if (z.dataset.hd) zoomOpen(z.dataset.hd, img?.alt);
-  else if (img?.src) zoomOpen(img.src, img.alt);
+  const c = openId ? cardsById.get(openId) : null;
+  if (z.dataset.hd) zoomOpen(z.dataset.hd, img?.alt, c);
+  else if (img?.src) zoomOpen(img.src, img.alt, z.closest('.gview-img') ? null : c);
 });
-
 
 // ---------- Actualités officielles (cyberpunktcg.com/blog), badge rouge = articles pas encore lus ----------
 let news = [];

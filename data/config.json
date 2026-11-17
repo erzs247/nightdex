@@ -85,5 +85,10 @@
   },
   "admins": [
     "XYVqyK7LCoQ7Gbfq9weJB2jnKQN2"
-  ]
+  ],
+  "cardBacks": {
+    "_aide": "Images du dos des cartes pour la vue 3D (Légendes et autres cartes). Vide = dos neutre NightDex.",
+    "legend": "",
+    "normal": ""
+  }
 }

@@ -868,19 +868,36 @@ button:disabled { opacity: .5; cursor: default; }
 .pool-card.blocked .card-img img { filter: grayscale(.7) brightness(.6); }
 .pool-n { position: absolute; left: 4px; top: 4px; padding: 2px 7px; border-radius: 99px; background: var(--accent); color: var(--accent-ink); font-weight: 800; font-size: 13px; }
 
-/* ---------- Zoom plein écran ---------- */
-.card-img.zoomable { position: relative; display: block; padding: 0; border: 0; background: none; cursor: zoom-in; }
-.zoom-hint { position: absolute; right: 6px; bottom: 6px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: #05060acc; color: #fff; pointer-events: none; }
-.zoom-hint svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
-.gview-img[data-zoom] { cursor: zoom-in; }
-.zoom-view { position: fixed; inset: 0; z-index: 1000; background: #000e; display: grid; place-items: center; touch-action: none; overflow: hidden; user-select: none; -webkit-user-select: none; }
-.zoom-view[hidden] { display: none; }
-.zoom-view img { max-width: min(94vw, 720px); max-height: 88vh; width: auto; height: auto; border-radius: 14px; box-shadow: 0 10px 50px #000; transform-origin: center; will-change: transform; cursor: zoom-in; }
-.zoom-view.zoomed img { cursor: grab; border-radius: 4px; }
-.zoom-close { position: absolute; top: max(12px, env(safe-area-inset-top)); right: 12px; background: #1d2337; color: #fff; }
-.zoom-close svg { stroke: currentColor; fill: none; stroke-width: 2; }
-.zoom-tip { position: absolute; bottom: max(16px, env(safe-area-inset-bottom)); left: 0; right: 0; text-align: center; color: #fffb; font-size: 13px; margin: 0; pointer-events: none; transition: opacity .2s; }
-.zoom-view.zoomed .zoom-tip { opacity: 0; }
+/* ---------- Vue 3D d'une carte ---------- */
+.card-img.zoomable { position: relative; display: block; padding: 0; border: 0; background: none; cursor: pointer; }
+.zoom-hint { position: absolute; right: 6px; bottom: 6px; min-width: 32px; height: 26px; padding: 0 7px; border-radius: 8px; display: grid; place-items: center; background: #05060acc; color: var(--accent); font: 800 12px/1 var(--font-display); letter-spacing: .04em; pointer-events: none; box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 50%, transparent); }
+.gview-img[data-zoom] { cursor: pointer; }
+.v3d { position: fixed; inset: 0; z-index: 1000; background: radial-gradient(circle at 50% 40%, #1b2140 0%, #05060a 70%); display: grid; place-items: center; touch-action: none; overflow: hidden; user-select: none; -webkit-user-select: none; cursor: grab; }
+.v3d:active { cursor: grabbing; }
+.v3d[hidden] { display: none; }
+.v3d-stage { perspective: 1400px; }
+.c3d { position: relative; width: min(74vw, 46vh, 380px); aspect-ratio: 63/88; transform-style: preserve-3d; will-change: transform; }
+.c3d.is-sealed { aspect-ratio: 3/4; }
+.c3d-face { position: absolute; inset: 0; border-radius: 4.6% / 3.3%; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 30px 60px -20px #000, 0 0 0 1px #ffffff14; background: #0b0d14; }
+.c3d-face img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.c3d.is-sealed .c3d-face { background: transparent; box-shadow: none; } .c3d.is-sealed .c3d-front img { object-fit: contain; }
+.c3d-back { transform: rotateY(180deg); }
+.c3d-glare { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: color-dodge; opacity: var(--ga, .3);
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), #ffffffb0 0%, #ffffff30 22%, transparent 55%),
+    linear-gradient(115deg, transparent 20%, color-mix(in srgb, var(--rc) 45%, transparent) 40%, #6ff2ff40 50%, #ff7ad940 60%, transparent 80%); background-size: 100% 100%, 220% 220%; background-position: center, var(--gx, 50%) var(--gy, 50%); }
+.c3d.is-sealed .c3d-glare { display: none; }
+/* dos neutre (en attendant les photos des vrais dos) */
+.c3d-back-default { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; background: repeating-linear-gradient(135deg, #0d1020 0 10px, #10142a 10px 20px); box-shadow: inset 0 0 0 10px #05060a, inset 0 0 0 12px var(--accent); }
+.c3d-back-default b { font: 800 clamp(26px, 9vw, 44px)/1 var(--font-display); color: var(--accent); letter-spacing: .06em; transform: skewX(-8deg); }
+.c3d-back-default b i { font-style: normal; color: #fff; }
+.c3d-back-default small { font: 700 13px var(--font-display); letter-spacing: .3em; color: var(--accent); }
+.c3d.is-legend .c3d-back-default { box-shadow: inset 0 0 0 10px #05060a, inset 0 0 0 12px #ff9f2e; } .c3d.is-legend .c3d-back-default b, .c3d.is-legend .c3d-back-default small { color: #ff9f2e; }
+.v3d-bar { position: absolute; bottom: max(54px, calc(env(safe-area-inset-bottom) + 44px)); left: 0; right: 0; display: flex; justify-content: center; gap: 8px; }
+.v3d-bar .chip { display: inline-flex; align-items: center; gap: 6px; background: #141826e6; }
+.v3d-bar svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.v3d-tip { position: absolute; bottom: max(16px, env(safe-area-inset-bottom)); left: 0; right: 0; text-align: center; color: #fffa; font-size: 13px; margin: 0; pointer-events: none; }
+.v3d-close { position: absolute; top: max(12px, env(safe-area-inset-top)); right: 12px; background: #1d2337; color: #fff; }
+.v3d-close svg { stroke: currentColor; fill: none; stroke-width: 2; }
 
 /* ---------- Actualités ---------- */
 .news-btn { position: relative; }
