@@ -53,6 +53,36 @@ const TEXT = {
     chartWait: 'Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.', chartNone: 'Pas de prix Cardmarket pour cette carte pour l\'instant.',
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue de l\'appli', langToast: 'Appli en français',
+    al: {
+      title: 'Alertes prix', count: (n) => `${n} active${n > 1 ? 's' : ''}`, label: 'Alerte si le prix passe sous (€)', off: 'Aucune alerte', hit: 'Prix atteint !', waiting: 'En attente',
+      howTo: 'Ouvre une carte de tes souhaits et indique un prix : NightDex te prévient quand la cote Cardmarket passe en dessous.',
+      enable: 'Activer les notifications sur ce téléphone', enabled: 'Notifications activées', denied: 'Notifications refusées', unsupported: 'Ce navigateur ne gère pas les notifications',
+      notifOn: 'Notifications activées : tu seras prévenu même appli fermée quand Android le permet (appli installée), sinon à la prochaine ouverture.',
+      notifBlocked: 'Notifications bloquées : autorise-les dans les réglages du navigateur pour ce site.',
+      askNotif: 'Alerte enregistrée. Active les notifications dans tes Souhaits pour être prévenu sur ton téléphone.',
+      toast: (n) => `🔔 ${n} alerte${n > 1 ? 's' : ''} prix atteinte${n > 1 ? 's' : ''} : voir tes souhaits`,
+      notifTitle: (n, p) => `${n} est à ${p}`, notifBody: (t) => `Ton alerte NightDex : sous ${t}. Touche pour voir tes souhaits.`,
+    },
+    sh: {
+      title: 'Partager le deck', signIn: 'Connecte-toi à ton compte NightDex pour partager ou importer un deck.', rulesNeeded: 'Partage indisponible : mets à jour les règles Firestore.', error: 'Partage impossible pour le moment, réessaie.',
+      hint: (n) => `Donne ce code à tes amis : ils retrouveront « ${n} » dans Decks → Importer avec un code.`, copy: 'Copier le code', send: 'Envoyer…', copied: 'Code copié',
+      update: 'Si tu modifies ton deck, appuie à nouveau sur Partager pour mettre à jour la version partagée (même code).', stop: 'Arrêter le partage', stopped: 'Le code ne fonctionne plus',
+      message: (n, c) => `Mon deck Cyberpunk TCG « ${n} » sur NightDex — code : ${c}`, importTitle: 'Importer avec un code', codePh: 'Code à 6 caractères', open: 'Voir le deck',
+      badCode: 'Ce code n\'est pas valide (6 lettres ou chiffres).', notFound: (c) => `Aucun deck partagé avec le code ${c}.`, by: (p) => `Deck de ${p}`, codeLabel: 'code',
+      import: 'Copier dans mes decks', imported: 'Deck ajouté à tes decks', friendDecks: 'Ses decks',
+    },
+    buy: {
+      btn: 'Acheter', setBtn: 'Liste d\'achat Cardmarket des cartes manquantes', deckBtn: (n) => `Acheter les ${n} carte${n > 1 ? 's' : ''} manquante${n > 1 ? 's' : ''} sur Cardmarket`,
+      title: 'Liste d\'achat Cardmarket', from: { wish: 'souhaits pas encore possédés', set: 'cartes manquantes de la série', deck: 'cartes du deck qui te manquent' },
+      filters: 'Filtres', one: '1 exemplaire', playset: 'Playset (3)', lang: 'Langue', cond: 'État minimum', max: 'Prix max par carte (€)', noMax: 'Aucun', version: 'Version', normal: 'Normale',
+      estimate: 'Total estimé (prix tendance)', summary: (n, k) => `${n} carte${n > 1 ? 's' : ''} à acheter · ${k} ligne${k > 1 ? 's' : ''}`,
+      offers: 'Voir les offres filtrées', add: 'Ajouter', none: 'Rien à acheter : tu as déjà tout !', noneFiltered: 'Aucune carte avec ces filtres.',
+      copy: 'Copier la liste pour Cardmarket', copied: 'Liste copiée : colle-la dans tes Wants Cardmarket', openWants: 'Ouvrir mes Wants sur Cardmarket',
+      howTitle: 'Trouver un vendeur qui a le plus de cartes',
+      how: ['Copie la liste avec le bouton ci-dessus.', 'Sur Cardmarket, ouvre <b>Wants</b>, crée une liste et colle les cartes (ajout par liste / decklist). Choisis la langue et l\'état minimum pour toute la liste.', 'Lance l\'<b>Assistant d\'achat</b> (Shopping Wizard) : Cardmarket cherche le ou les vendeurs qui ont le plus de tes cartes au meilleur prix, frais de port compris.', 'Pour une carte précise, « Voir les offres filtrées » ouvre ses offres déjà triées par langue, état et version.'],
+    },
+    cp: { title: 'Mes exemplaires', cond: 'État', foilOnly: 'imprimée en foil', foilPrice: (v) => `foil ≈ ${v}`, more: (n) => `+ ${n} autres exemplaires (en Near Mint)`,
+      conds: { MT: 'Mint (MT)', NM: 'Near Mint (NM)', EX: 'Excellent (EX)', GD: 'Good (GD)', LP: 'Light Played (LP)', PL: 'Played (PL)', PO: 'Poor (PO)' } },
     news: {
       title: 'Actualités', unread: (n) => `${n} non lu${n > 1 ? 's' : ''}`, new: 'Nouveau', read: 'Lire l\'article', empty: 'Pas encore d\'actualités.',
       intro: 'Les dernières nouvelles du Cyberpunk TCG, depuis le blog officiel. Titres et résumés traduits en français ; les articles complets sont en anglais sur le site officiel. Mises à jour chaque jour.',
@@ -202,6 +232,36 @@ const TEXT = {
     chartWait: 'Not enough history to draw a curve yet. Prices are recorded every day.', chartNone: 'No Cardmarket price for this card yet.',
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'App language', langToast: 'App in English',
+    al: {
+      title: 'Price alerts', count: (n) => `${n} active`, label: 'Alert when price drops below (€)', off: 'No alert', hit: 'Price reached!', waiting: 'Waiting',
+      howTo: 'Open a card from your wishlist and enter a price: NightDex tells you when the Cardmarket trend drops below it.',
+      enable: 'Enable notifications on this phone', enabled: 'Notifications enabled', denied: 'Notifications denied', unsupported: 'This browser does not support notifications',
+      notifOn: 'Notifications enabled: you will be alerted even with the app closed when Android allows it (installed app), otherwise next time you open it.',
+      notifBlocked: 'Notifications blocked: allow them in your browser settings for this site.',
+      askNotif: 'Alert saved. Enable notifications in your Wishlist to be alerted on your phone.',
+      toast: (n) => `🔔 ${n} price alert${n > 1 ? 's' : ''} reached: see your wishlist`,
+      notifTitle: (n, p) => `${n} is at ${p}`, notifBody: (t) => `Your NightDex alert: below ${t}. Tap to see your wishlist.`,
+    },
+    sh: {
+      title: 'Share deck', signIn: 'Sign in to your NightDex account to share or import a deck.', rulesNeeded: 'Sharing unavailable: update the Firestore rules.', error: 'Could not share right now, try again.',
+      hint: (n) => `Give this code to your friends: they will find “${n}” in Decks → Import with a code.`, copy: 'Copy code', send: 'Send…', copied: 'Code copied',
+      update: 'If you edit your deck, tap Share again to update the shared version (same code).', stop: 'Stop sharing', stopped: 'The code no longer works',
+      message: (n, c) => `My Cyberpunk TCG deck “${n}” on NightDex — code: ${c}`, importTitle: 'Import with a code', codePh: '6-character code', open: 'View deck',
+      badCode: 'This code is not valid (6 letters or digits).', notFound: (c) => `No shared deck with code ${c}.`, by: (p) => `Deck by ${p}`, codeLabel: 'code',
+      import: 'Copy to my decks', imported: 'Deck added to your decks', friendDecks: 'Their decks',
+    },
+    buy: {
+      btn: 'Buy', setBtn: 'Cardmarket shopping list for missing cards', deckBtn: (n) => `Buy the ${n} missing card${n > 1 ? 's' : ''} on Cardmarket`,
+      title: 'Cardmarket shopping list', from: { wish: 'wishlist cards you don\'t own yet', set: 'missing cards from the set', deck: 'deck cards you are missing' },
+      filters: 'Filters', one: '1 copy', playset: 'Playset (3)', lang: 'Language', cond: 'Minimum condition', max: 'Max price per card (€)', noMax: 'None', version: 'Version', normal: 'Normal',
+      estimate: 'Estimated total (trend prices)', summary: (n, k) => `${n} card${n > 1 ? 's' : ''} to buy · ${k} line${k > 1 ? 's' : ''}`,
+      offers: 'See filtered offers', add: 'Add', none: 'Nothing to buy: you have everything!', noneFiltered: 'No card matches these filters.',
+      copy: 'Copy list for Cardmarket', copied: 'List copied: paste it into your Cardmarket Wants', openWants: 'Open my Wants on Cardmarket',
+      howTitle: 'Find a seller with the most cards',
+      how: ['Copy the list with the button above.', 'On Cardmarket, open <b>Wants</b>, create a list and paste the cards (add by list / decklist). Set the language and minimum condition for the whole list.', 'Run the <b>Shopping Wizard</b>: Cardmarket finds the seller(s) who have the most of your cards at the best price, shipping included.', 'For a specific card, “See filtered offers” opens its offers already filtered by language, condition and version.'],
+    },
+    cp: { title: 'My copies', cond: 'Condition', foilOnly: 'printed in foil', foilPrice: (v) => `foil ≈ ${v}`, more: (n) => `+ ${n} more copies (Near Mint)`,
+      conds: { MT: 'Mint (MT)', NM: 'Near Mint (NM)', EX: 'Excellent (EX)', GD: 'Good (GD)', LP: 'Light Played (LP)', PL: 'Played (PL)', PO: 'Poor (PO)' } },
     news: {
       title: 'News', unread: (n) => `${n} unread`, new: 'New', read: 'Read the article', empty: 'No news yet.',
       intro: 'The latest Cyberpunk TCG news from the official blog. Updated every day.',
@@ -327,6 +387,9 @@ const I = {
   camera: '<svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.8"/></svg>',
   bolt: '<svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
   slab: '<svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M5 7.5h14"/><rect x="8" y="10" width="8" height="9" rx="1"/></svg>',
+  bell: '<svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>',
+  share: '<svg viewBox="0 0 24 24"><circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1"/></svg>',
+  cart: '<svg viewBox="0 0 24 24"><path d="M3 4h2.5l2.2 11h10.6l2-8H6.6"/><circle cx="9.5" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>',
   flip: '<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.7L20 8.5"/><path d="M20 4v4.5h-4.5"/><path d="M20 12a8 8 0 0 1-13.7 5.7L4 15.5"/><path d="M4 20v-4.5h4.5"/></svg>',
   zoom: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5M10.5 7.5v6M7.5 10.5h6"/></svg>',
   mail: '<svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg>',
@@ -460,6 +523,23 @@ const okey = (id, l = cardLang) => {
 const ownedOf = (map, id, l = cardLang) => map?.[okey(id, l)] ?? 0;
 const qty = (id, l = cardLang) => ownedOf(user.owned, id, l);
 const qtyAll = (id) => (okey(id, 'fr') === okey(id, 'en') ? qty(id) : qty(id, 'fr') + qty(id, 'en'));
+// état et version de chaque exemplaire : copies[clé de collection] = [{ c: 'NM', f: 1 si foil }, …] (autant que d'exemplaires)
+const CONDS = ['MT', 'NM', 'EX', 'GD', 'LP', 'PL', 'PO'];
+function copiesOf(id, l = cardLang) {
+  if (!user.copies || typeof user.copies !== 'object') user.copies = {};
+  const n = qty(id, l), list = (user.copies[okey(id, l)] ?? []).slice(0, n);
+  while (list.length < n) list.push({ c: 'NM', f: 0 });
+  return list;
+}
+function setCopies(id, list, l = cardLang) {
+  const k = okey(id, l);
+  const clean = list.slice(0, qty(id, l)).map((x) => ({ c: CONDS.includes(x.c) ? x.c : 'NM', f: x.f ? 1 : 0 }));
+  if (clean.every((x) => x.c === 'NM' && !x.f)) delete user.copies[k]; else user.copies[k] = clean;
+}
+const foilPrice = (id) => P(id)?.trendFoil ?? null;
+// valeur des exemplaires d'une langue : prix foil pour les exemplaires foil quand Cardmarket le donne
+const valueOf = (id, l = cardLang) => copiesOf(id, l).reduce((a, x) => a + ((x.f ? foilPrice(id) : null) ?? price(id) ?? 0), 0);
+const valueAll = (id) => (okey(id, 'fr') === okey(id, 'en') ? valueOf(id) : valueOf(id, 'fr') + valueOf(id, 'en'));
 // anciennes données (une seule quantité par carte) : les cartes qui n'existent qu'en anglais passent en « @en », le reste reste en FR
 function migrateOwned(map) {
   if (!map) return map;
@@ -770,6 +850,7 @@ function renderSet(code) {
     </div>
     ${!all.length && (cardsBySet.get(code) ?? []).length ? `<div class="empty"><strong>${L.noCardsLang(cardLang)}</strong><button class="btn-ghost" data-action="cardlang">${L.showOther(cardLang === 'fr' ? 'en' : 'fr')}</button></div>` : cardsBlock(list, user.prefs.setMode)}
     <p class="note num">${L.setNote(L.sorts[user.prefs.sort], list.length, hasPrices() ? eur(full) : '')}</p>
+    ${all.some((c) => !qty(c.id)) ? `<a class="btn-ghost buy-entry" href="#buy-set-${esc(code)}">${I.cart}<span>${L.buy.setBtn}</span></a>` : ''}
   </div>`;
 }
 
@@ -783,7 +864,7 @@ function renderCollection() {
     return;
   }
   const total = owned.reduce((a, c) => a + qty(c.id), 0);
-  const value = [...owned, ...ownedSealed].reduce((a, c) => a + qty(c.id) * (price(c.id) ?? 0), 0);
+  const value = [...owned, ...ownedSealed].reduce((a, c) => a + valueOf(c.id), 0);
   const sealedQty = ownedSealed.reduce((a, s) => a + qty(s.id), 0);
   const withPaid = [...owned, ...ownedSealed].filter((c) => paidOf(c.id) != null);
   const paidTot = withPaid.reduce((a, c) => a + qty(c.id) * paidOf(c.id), 0);
@@ -805,8 +886,16 @@ function renderCollection() {
   </div>`;
 }
 
+function wishAlertsPanel(list) {
+  const withAlert = list.filter((c) => user.alerts[c.id] != null);
+  const ns = notifState();
+  return `<section class="panel alerts-panel"><h3>${I.bell}${L.al.title}<small>${L.al.count(withAlert.length)}</small></h3>
+    ${withAlert.length ? `<div class="al-list">${withAlert.map((c) => `<button class="al-item ${alertHit(c.id) ? 'hit' : ''}" data-open="${esc(c.id)}"><span>${esc(cardName(c))}</span><span class="num">${eur(price(c.id))} / <b>${eur(user.alerts[c.id])}</b></span></button>`).join('')}</div>` : `<p class="note" style="margin:0">${L.al.howTo}</p>`}
+    ${ns === 'granted' ? `<p class="note" style="margin:0">✓ ${L.al.notifOn}</p>` : ns === 'denied' ? `<p class="note" style="margin:0">${L.al.notifBlocked}</p>` : ns === 'unsupported' ? '' : `<button class="btn-ghost" data-action="notif-on">${I.bell}<span>${L.al.enable}</span></button>`}
+  </section>`;
+}
 function renderWishlist() {
-  setTopbar(`<h1>${L.wishlist}</h1>`);
+  setTopbar(`<h1>${L.wishlist}</h1>${wish.size ? `<a class="chip" href="#buy-wish">${I.cart}<span>${L.buy.btn}</span></a>` : ''}`);
   const list = sortCards([...wish].map((id) => cardsById.get(id)).filter(Boolean), 'price-desc');
   if (!list.length) {
     view.innerHTML = `<div class="empty"><strong>${L.emptyWish}</strong>${L.emptyWishHint}</div>`;
@@ -817,8 +906,10 @@ function renderWishlist() {
   view.innerHTML = `<div class="stack">
     <div class="hero-value"><small>${L.wishBudget}</small><strong class="num">${eur(cost)}</strong>
     <span class="note">${L.wishNote(missing.length, list.length)}</span></div>
+    ${wishAlertsPanel(list)}
     <div class="rows">${list.map((c) => cardRow(c)).join('')}</div>
   </div>`;
+  alertsAck();
 }
 
 let searchQuery = '';
@@ -846,7 +937,7 @@ function portfolioSeries() {
 function renderValues() {
   setTopbar(`<h1>${L.market}</h1>${langBtn()}`);
   const owned = allItems().filter((c) => qtyAll(c.id) > 0);
-  const value = owned.reduce((a, c) => a + qtyAll(c.id) * (price(c.id) ?? 0), 0);
+  const value = owned.reduce((a, c) => a + valueAll(c.id), 0);
   const priced = allItems().filter((c) => inCardLang(c) && (price(c.id) ?? 0) >= 0.5);
   const movers = priced.map((c) => [c, change(c.id, 7)]).filter(([, v]) => v != null && v !== 0);
   const ups = [...movers].filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 5);
@@ -1017,6 +1108,13 @@ function openCard(id, keepNav) {
           </div>
         </div>
       </div>
+      ${q > 0 && !sealedItem ? `<section class="panel copies"><h3>${L.cp.title}<small>${p.foil ? L.cp.foilOnly : foilPrice(id) != null ? L.cp.foilPrice(eur(foilPrice(id))) : ''}</small></h3>
+        ${copiesOf(id).slice(0, 12).map((x, i) => `<div class="copy-row"><span class="num">#${i + 1}</span>
+          <select data-copy-cond="${i}" aria-label="${L.cp.cond} #${i + 1}">${CONDS.map((k) => `<option value="${k}" ${x.c === k ? 'selected' : ''}>${esc(L.cp.conds[k])}</option>`).join('')}</select>
+          ${p.foil ? `<span class="foil-tag">Foil</span>` : foilPrice(id) != null ? `<button class="chip" data-copy-foil="${i}" aria-pressed="${!!x.f}">Foil</button>` : ''}</div>`).join('')}
+        ${q > 12 ? `<p class="note" style="margin:0">${L.cp.more(q - 12)}</p>` : ''}
+      </section>` : ''}
+      ${wish.has(id) && !sealedItem ? alertLine(id) : ''}
       ${q > 0 ? `<div class="paid-line">
         <label for="cardPaid">${L.paidLabel}</label>
         <input id="cardPaid" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0,00" value="${paidOf(id) ?? ''}" data-paid-id="${esc(id)}">
@@ -1040,7 +1138,7 @@ function openCard(id, keepNav) {
       : `<a class="cta" href="${esc(cm.url)}" target="_blank" rel="noopener">${cm.exact ? L.cmView : L.cmSearch} ${I.ext}</a>`}
       ${sealedItem ? '' : `<button class="btn-ghost" data-action="g-add-card" data-id="${esc(id)}">${I.slab}<span>${L.gr.addThis}${user.graded.some((e) => e.id === id) ? ` · ${L.gr.youHave(user.graded.filter((e) => e.id === id).length)}` : ''}</span></button>`}
       ${c.official ? `<a class="btn-ghost" style="text-align:center;text-decoration:none" href="${esc(c.official)}" target="_blank" rel="noopener">${L.official}</a>` : ''}
-      ${q > 0 && p.trend ? `<p class="note num" style="text-align:center">${L.worth(q, eur(q * p.trend))}${paidOf(id) != null ? ` · ${L.boughtFor(eur(q * paidOf(id)))}` : ''}</p>` : ''}
+      ${q > 0 && p.trend ? `<p class="note num" style="text-align:center">${L.worth(q, eur(valueOf(id)))}${paidOf(id) != null ? ` · ${L.boughtFor(eur(q * paidOf(id)))}` : ''}</p>` : ''}
       ${c.artist ? `<p class="note" style="text-align:center">${esc(L.art(c.artist))}</p>` : ''}
     </div>`;
   sheet.hidden = false;
@@ -1768,9 +1866,11 @@ async function renderFriend(uid) {
       const [snap, name] = await Promise.all([fsx().getDoc(dref('users', uid)), friendName(uid)]);
       let avatar = null;
       try { const p = await fsx().getDoc(dref('profiles', uid)); avatar = p.exists() ? p.data().avatar : null; } catch { /* pas de photo */ }
+      let decks = [];
+      try { const ds = await fsx().getDoc(dref('decks', uid)); if (ds.exists()) decks = ds.data().list ?? []; } catch { /* pas de decks ou règles pas à jour */ }
       let gd = { items: [], sales: {} };
       try { const gs = await fsx().getDoc(dref('graded', uid)); if (gs.exists()) gd = gFromCloud(gs.data()); } catch { /* pas de slabs ou règles pas à jour */ }
-      fr.view = { uid, graded: gd.items, gsales: gd.sales, pseudo: name.pseudo, avatar, owned: migrateOwned({ ...(snap.exists() ? snap.data().owned ?? {} : {}) }), wish: snap.exists() ? snap.data().wish ?? [] : [] };
+      fr.view = { uid, decks, graded: gd.items, gsales: gd.sales, pseudo: name.pseudo, avatar, owned: migrateOwned({ ...(snap.exists() ? snap.data().owned ?? {} : {}) }), wish: snap.exists() ? snap.data().wish ?? [] : [] };
     } catch (e) {
       view.innerHTML = `<div class="empty"><strong>${L.fr.cantSee}</strong>${L.fr.cantSeeHint}<a class="btn-ghost" href="#friends" style="text-decoration:none">${L.back}</a></div>`;
       return;
@@ -1798,6 +1898,7 @@ async function renderFriend(uid) {
       <div class="stat"><small>${L.kValue}</small><b class="num">${eur(value)}</b></div>
     </div>
     <div class="chips">${[['all', L.fr.fAll], ['trade', L.fr.fTrade], ['give', L.fr.fGive], ['wish', L.fr.fWish]].map(([k, l]) => `<button class="chip" data-frf="${k}" aria-pressed="${fr.filter === k}">${l} · ${lists[k].length}</button>`).join('')}</div>
+    ${v.decks?.length && fr.filter === 'all' ? `<h2 class="section-title">${L.sh.friendDecks} · ${v.decks.length}</h2><div class="deck-list">${v.decks.map((dk) => { const ck = deckCheck({ ...dk, side: dk.side ?? {} }); const legs = (dk.legends ?? []).map((id) => cardsById.get(id)); return `<button class="deck-tile" data-frdeck="${esc(dk.d)}"><span class="deck-legs">${[0, 1, 2].map((i) => (legs[i] ? `<img src="${esc(imageOf(legs[i]) || placeholderArt(legs[i]))}" alt="" loading="lazy">` : '<span class="leg-empty"></span>')).join('')}</span><span class="deck-meta"><b>${esc(dk.name || L.dk.untitled)}</b><span class="note num">${COLORS.filter((k) => ck.ram[k]).map(colorDot).join('')} ${L.dk.cards(ck.count)}</span><span class="dbadge ${ck.valid ? 'ok' : 'ko'}">${ck.valid ? `✓ ${L.dk.legal}` : L.dk.notLegal}</span></span></button>`; }).join('')}</div>` : ''}
     ${v.graded?.length && fr.filter === 'all' ? `<h2 class="section-title">${L.gr.tab} · ${v.graded.length}</h2><div class="slabs">${v.graded.filter((e) => cardsById.has(e.id)).map((e) => slabTile(e, { friend: uid })).join('')}</div><h2 class="section-title">${L.gr.tabCards}</h2>` : ''}
     ${shown.length ? `<div class="cards">${shown.map((c) => friendTile(c, v)).join('')}</div>` : `<div class="empty"><strong>${L.noCards}</strong>${L.fr.emptyFilter}</div>`}
   </div>`;
@@ -2101,7 +2202,9 @@ document.addEventListener('click', async (e) => {
   else if (d.qty && openId) {
     const id = openId;
     const n = Math.max(0, qty(id) + Number(d.qty));
+    const keepCopies = copiesOf(id);
     if (n) user.owned[okey(id)] = n; else delete user.owned[okey(id)];
+    setCopies(id, keepCopies); gSave();
     save(); refreshCard(id); openCard(id);
   } else if (d.close !== undefined) closeCard();
   else if (d.action === 'home-mode') { user.prefs.homeMode = user.prefs.homeMode === 'grid' ? 'list' : 'grid'; save(); currentRender(); }
@@ -2244,7 +2347,7 @@ function gValue(e, sales = gSales(e)) {
   const last = sales.slice(-3).map(([, p]) => p).sort((a, b) => a - b);
   return last[Math.floor(last.length / 2)];
 }
-const gSig = () => JSON.stringify([user.graded, Object.entries(user.gsales).sort(), Object.entries(user.paid).sort()]);
+const gSig = () => JSON.stringify([user.graded, Object.entries(user.gsales).sort(), Object.entries(user.paid).sort(), Object.entries(user.copies ?? {}).sort(), Object.entries(user.alerts ?? {}).sort()]);
 let gLastSig = gSig();
 function gSave() {
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* stockage indisponible */ }
@@ -2339,13 +2442,14 @@ function gMerge(a, b) {
     const seen = new Set((sales[k] ?? []).map((s) => s.join('|')));
     sales[k] = [...(sales[k] ?? []), ...list.filter((s) => !seen.has(s.join('|')))];
   }
-  return { items: [...items.values()], sales, paid: { ...(a?.paid ?? {}), ...(b?.paid ?? {}) } };
+  return { items: [...items.values()], sales, paid: { ...(a?.paid ?? {}), ...(b?.paid ?? {}) }, copies: { ...(a?.copies ?? {}), ...(b?.copies ?? {}) }, alerts: { ...(a?.alerts ?? {}), ...(b?.alerts ?? {}) } };
 }
 // Firestore n'accepte pas les tableaux de tableaux : ventes envoyées sous forme { d, p }
-const gToCloud = () => ({ items: user.graded, paid: user.paid, sales: Object.fromEntries(Object.entries(user.gsales).map(([k, l]) => [k, l.map(([d, p]) => ({ d, p }))])) });
-const gFromCloud = (d) => ({ items: d?.items ?? [], paid: d?.paid ?? {}, sales: Object.fromEntries(Object.entries(d?.sales ?? {}).map(([k, l]) => [k, l.map((s) => [s.d, s.p])])) });
+const gToCloud = () => ({ items: user.graded, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, sales: Object.fromEntries(Object.entries(user.gsales).map(([k, l]) => [k, l.map(([d, p]) => ({ d, p }))])) });
+const gFromCloud = (d) => ({ items: d?.items ?? [], paid: d?.paid ?? {}, copies: d?.copies ?? {}, alerts: d?.alerts ?? {}, sales: Object.fromEntries(Object.entries(d?.sales ?? {}).map(([k, l]) => [k, l.map((s) => [s.d, s.p])])) });
 function gApply(d) {
-  user.graded = d.items; user.gsales = d.sales; user.paid = d.paid ?? {};
+  user.graded = d.items; user.gsales = d.sales; user.paid = d.paid ?? {}; user.copies = d.copies ?? {}; user.alerts = d.alerts ?? {};
+  if (typeof alertsMirror === 'function') alertsMirror();
   gLastSig = gSig();
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* */ }
   if (currentRender === renderGraded && sheet.hidden) renderGraded();
@@ -2373,7 +2477,7 @@ function gOnUser(u) {
   gCloud.unsub = cloud.api.fsM.onSnapshot(gRef(u.uid), async (snap) => {
     if (snap.metadata.hasPendingWrites) return;
     const remote = snap.exists() ? gFromCloud(snap.data()) : null;
-    const local = { items: user.graded, sales: user.gsales, paid: user.paid };
+    const local = { items: user.graded, sales: user.gsales, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {} };
     if (first) {
       first = false;
       const next = !remote ? local : (user.gSyncedUid !== u.uid || user.gPending) ? gMerge(remote, local) : remote;
@@ -2713,6 +2817,7 @@ function renderDecks() {
           ${val.miss ? `<span class="note num">${L.dk.missing(val.miss, eur(val.missCost))}</span>` : `<span class="note">${L.dk.complete}</span>`}</span>
       </a>`;
     }).join('')}</div>` : `<div class="empty"><strong>${L.dk.empty}</strong>${L.dk.emptyHint}<button class="cta" data-dact="new">+ ${L.dk.new}</button></div>`}
+    <section class="panel"><h3>${L.sh.importTitle}</h3><div class="code-row"><input class="search num" id="deckCodeInput" maxlength="8" placeholder="${L.sh.codePh}" autocomplete="off" autocapitalize="characters"><button class="chip" data-sh="code">${L.sh.open}</button></div></section>
     <details class="panel rules"><summary><h3>${L.dk.rulesTitle}</h3></summary><ul>${L.dk.rules.map((r) => `<li>${r}</li>`).join('')}</ul></details>
   </div>`;
 }
@@ -2727,7 +2832,7 @@ function renderDeck(d) {
   const ck = deckCheck(dk);
   const legs = dk.legends.map((id) => cardsById.get(id));
   setTopbar(`<a class="icon-btn" href="#decks" aria-label="${L.back}">${I.back}</a><h1 class="small">${esc(dk.name || L.dk.untitled)}</h1>
-    <button class="chip" data-dact="export">${L.dk.export}</button>`);
+    <button class="icon-btn" data-sh="share" aria-label="${L.sh.title}" title="${L.sh.title}">${I.share}</button><button class="chip" data-dact="export">${L.dk.export}</button>`);
   const list = dk[deckUI.mode];
   const rows = Object.entries(list).map(([id, n]) => [cardsById.get(id), n]).filter(([c]) => c)
     .sort(([a], [b]) => ['Unit', 'Program', 'Gear'].indexOf(a.type) - ['Unit', 'Program', 'Gear'].indexOf(b.type) || (a.cost ?? 0) - (b.cost ?? 0) || cardName(a).localeCompare(cardName(b)));
@@ -2760,6 +2865,7 @@ function renderDeck(d) {
       <button class="chip" data-downed aria-pressed="${deckUI.owned}">${L.dk.mine}</button></div>
     <div class="chips">${[['', L.dk.allColors], ...COLORS.map((k) => [k, colorLabel(k)])].map(([k, l]) => `<button class="chip" data-dcolor="${k}" aria-pressed="${deckUI.color === k}">${k ? colorDot(k) : ''}${esc(l)}</button>`).join('')}</div>
     <div id="deckResults">${deckResults(dk, ck)}</div>
+    ${val.miss ? `<a class="btn-ghost buy-entry" href="#buy-deck-${esc(dk.d)}">${I.cart}<span>${L.buy.deckBtn(val.miss)}</span></a>` : ''}
     <button class="btn-ghost" data-dact="dup">${L.dk.duplicate}</button>
     <button class="btn-ghost danger" data-dact="del">${deckUI.confirmDel ? L.dk.delSure : L.dk.del}</button>
   </div>`;
@@ -3102,6 +3208,339 @@ function renderNews(fromTranslate) {
   if (newsRead && unread.size) { for (const id of unread) newsRead.add(id); newsSaveRead(); newsBadge(); }
 }
 
+
+// état / foil d'un exemplaire (fiche de carte)
+document.addEventListener('change', (e) => {
+  const sel = e.target.closest('[data-copy-cond]');
+  if (!sel || !openId) return;
+  const list = copiesOf(openId); list[Number(sel.dataset.copyCond)].c = sel.value;
+  setCopies(openId, list); gSave();
+});
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-copy-foil]');
+  if (!b || !openId) return;
+  const id = openId, list = copiesOf(id), i = Number(b.dataset.copyFoil);
+  list[i].f = list[i].f ? 0 : 1;
+  setCopies(id, list); gSave(); refreshCard(id); openCard(id, true);
+  if (currentRender === renderCollection || currentRender === renderValues) currentRender();
+});
+
+// ---------- Liste d'achat Cardmarket : cartes manquantes (souhaits, série, deck), filtres, export « Wants » ----------
+// Cardmarket choisit ensuite lui-même le ou les vendeurs qui ont le plus de cartes de la liste (Assistant d'achat / Shopping Wizard).
+const COND_ID = { MT: 1, NM: 2, EX: 3, GD: 4, LP: 5, PL: 6, PO: 7 };
+const buyUI = { src: '', target: 1, lang: null, cond: 'NM', max: '', rar: new Set(), foil: false, skip: new Set() };
+function buySource(src) {
+  const l = buyUI.lang;
+  const inL = (c) => !c.languages || c.languages.includes(l);
+  const printIn = (c) => (inL(c) ? c : (deckPrints().get(nameKey(c)) ?? []).find(inL) ?? c);
+  if (src === 'wish') {
+    return { title: L.wishlist, lines: [...wish].map((id) => cardsById.get(id)).filter((c) => c && !isSealed(c)).map((c) => [printIn(c), Math.max(0, 1 - qty(c.id, l))]) };
+  }
+  if (src.startsWith('set-')) {
+    const code = src.slice(4), s = setOf(code);
+    return { title: s ? `${s.print ?? s.code} · ${setName(s)}` : code, perSet: true, lines: (cardsBySet.get(code) ?? []).filter(inL).map((c) => [c, Math.max(0, buyUI.target - qty(c.id, l))]) };
+  }
+  if (src.startsWith('deck-')) {
+    const dk = deckById(src.slice(5));
+    if (!dk) return { title: '?', lines: [] };
+    const need = new Map();
+    const add = (id, n) => { const c = cardsById.get(id); if (!c) return; const k = nameKey(c); need.set(k, [(need.get(k)?.[0] ?? 0) + n, c]); };
+    for (const id of dk.legends) if (id) add(id, 1);
+    for (const [id, n] of Object.entries(dk.main)) add(id, n);
+    return { title: dk.name || L.dk.untitled, lines: [...need.values()].map(([n, c]) => [printIn(c), Math.max(0, n - ownedByName(c))]) };
+  }
+  return { title: '', lines: [] };
+}
+function buyLines() {
+  const src = buySource(buyUI.src);
+  const max = buyUI.max === '' ? null : Number(buyUI.max);
+  const lines = src.lines.filter(([c, n]) => n > 0 && (!buyUI.rar.size || buyUI.rar.has(c.rarity)) && (max == null || (price(c.id) != null && price(c.id) <= max)))
+    .sort(([a], [b]) => (price(b.id) ?? -1) - (price(a.id) ?? -1));
+  return { ...src, lines, all: src.lines.filter(([, n]) => n > 0) };
+}
+function cmProductUrl(c) {
+  const { gameSlug = 'Cyberpunk', languageIds = { en: 1, fr: 2 } } = config.cardmarket ?? {};
+  const q = `language=${languageIds[buyUI.lang] ?? 1}&minCondition=${COND_ID[buyUI.cond] ?? 2}${buyUI.foil ? '&isFoil=Y' : ''}`;
+  return c.cardmarket?.path ? `https://www.cardmarket.com/${lang}/${gameSlug}/${c.cardmarket.path}?${q}` : `https://www.cardmarket.com/${lang}/${gameSlug}/Products/Search?searchString=${encodeURIComponent(c.nameEn ?? c.name)}`;
+}
+function renderBuy(src) {
+  if (buyUI.src !== src) Object.assign(buyUI, { src, target: 1, lang: cardLang, cond: 'NM', max: '', rar: new Set(), foil: false, skip: new Set() });
+  const data = buyLines();
+  const kept = data.lines.filter(([c]) => !buyUI.skip.has(c.id));
+  const total = kept.reduce((a, [c, n]) => a + n * (price(c.id) ?? 0), 0);
+  const count = kept.reduce((a, [, n]) => a + n, 0);
+  const rars = [...new Set(data.all.map(([c]) => c.rarity))].sort((a, b) => RARITIES.indexOf(a) - RARITIES.indexOf(b));
+  const back = src === 'wish' ? '#wishlist' : src.startsWith('set-') ? `#${src}` : `#${src}`;
+  setTopbar(`<a class="icon-btn" href="${back}" aria-label="${L.back}">${I.back}</a><h1 class="small">${L.buy.title}</h1>`);
+  view.innerHTML = `<div class="stack buy">
+    <p class="note" style="margin:0"><b>${esc(data.title)}</b> · ${L.buy.from[src.split('-')[0]] ?? ''}</p>
+    <section class="panel">
+      <h3>${L.buy.filters}</h3>
+      ${data.perSet ? `<div class="seg">${[[1, L.buy.one], [3, L.buy.playset]].map(([k, l]) => `<button data-buy-target="${k}" aria-pressed="${buyUI.target === k}">${l}</button>`).join('')}</div>` : ''}
+      <div class="field-row">
+        <label class="field"><span>${L.buy.lang}</span><select id="buyLang"><option value="fr" ${buyUI.lang === 'fr' ? 'selected' : ''}>Français</option><option value="en" ${buyUI.lang === 'en' ? 'selected' : ''}>English</option></select></label>
+        <label class="field"><span>${L.buy.cond}</span><select id="buyCond">${CONDS.map((k) => `<option value="${k}" ${buyUI.cond === k ? 'selected' : ''}>${esc(L.cp.conds[k])}</option>`).join('')}</select></label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span>${L.buy.max}</span><input id="buyMax" type="number" inputmode="decimal" min="0" step="0.5" value="${esc(buyUI.max)}" placeholder="${L.buy.noMax}"></label>
+        <label class="field"><span>${L.buy.version}</span><select id="buyFoil"><option value="0">${L.buy.normal}</option><option value="1" ${buyUI.foil ? 'selected' : ''}>Foil</option></select></label>
+      </div>
+      ${rars.length > 1 ? `<div class="chips wrap">${rars.map((r) => `<button class="chip" data-buy-rar="${esc(r)}" aria-pressed="${buyUI.rar.has(r)}" ${rarityStyle(r)}>${esc(rarityLabel(r))}</button>`).join('')}</div>` : ''}
+    </section>
+    <div class="hero-value"><small>${L.buy.estimate}</small><strong class="num">${eur(total)}</strong><span class="note">${L.buy.summary(count, kept.length)}</span></div>
+    ${data.lines.length ? `<div class="rows">${data.lines.map(([c, n]) => `<div class="row buy-row ${buyUI.skip.has(c.id) ? 'off' : ''}">
+        <button class="thumb" data-open="${esc(c.id)}" aria-label="${esc(cardName(c))}">${cardImg(c)}</button>
+        <div class="rmain"><b>${n}× ${esc(cardName(c))}</b><span class="note num">${esc(printCode(c.set))} · ${esc(c.number)} · ${esc(rarityLabel(c.rarity))} · ${price(c.id) != null ? eur(price(c.id)) : L.noPrice}</span>
+          <a class="buy-link" href="${esc(cmProductUrl(c))}" target="_blank" rel="noopener">${L.buy.offers} ${I.ext}</a></div>
+        <button class="chip" data-buy-skip="${esc(c.id)}" aria-pressed="${!buyUI.skip.has(c.id)}">${buyUI.skip.has(c.id) ? L.buy.add : '✓'}</button>
+      </div>`).join('')}</div>` : `<div class="empty"><strong>${data.all.length ? L.buy.noneFiltered : L.buy.none}</strong></div>`}
+    ${kept.length ? `<button class="cta" data-buy-act="copy">${L.buy.copy}</button>
+    <a class="btn-ghost" style="text-align:center;text-decoration:none" href="https://www.cardmarket.com/${lang}/${esc(config.cardmarket?.gameSlug ?? 'Cyberpunk')}/Wants" target="_blank" rel="noopener">${L.buy.openWants} ${I.ext}</a>
+    <section class="panel"><h3>${L.buy.howTitle}</h3><ol class="buy-how">${L.buy.how.map((x) => `<li>${x}</li>`).join('')}</ol></section>` : ''}
+  </div>`;
+}
+function buyText() {
+  return buyLines().lines.filter(([c]) => !buyUI.skip.has(c.id)).map(([c, n]) => `${n} ${c.nameEn ?? c.name}`).join('\n');
+}
+document.addEventListener('click', async (e) => {
+  const t = e.target.closest('[data-buy-target],[data-buy-rar],[data-buy-skip],[data-buy-act]');
+  if (!t || !buyUI.src) return;
+  const d = t.dataset;
+  if (d.buyTarget) buyUI.target = Number(d.buyTarget);
+  else if (d.buyRar) buyUI.rar.has(d.buyRar) ? buyUI.rar.delete(d.buyRar) : buyUI.rar.add(d.buyRar);
+  else if (d.buySkip) buyUI.skip.has(d.buySkip) ? buyUI.skip.delete(d.buySkip) : buyUI.skip.add(d.buySkip);
+  else if (d.buyAct === 'copy') {
+    const txt = buyText();
+    try { await navigator.clipboard.writeText(txt); toast(L.buy.copied); } catch { prompt(L.buy.copy, txt); }
+    return;
+  }
+  const y = scrollY; renderBuy(buyUI.src); scrollTo(0, y);
+});
+document.addEventListener('change', (e) => {
+  if (!buyUI.src || !['buyLang', 'buyCond', 'buyMax', 'buyFoil'].includes(e.target.id)) return;
+  const v = e.target.value;
+  if (e.target.id === 'buyLang') buyUI.lang = v;
+  else if (e.target.id === 'buyCond') buyUI.cond = v;
+  else if (e.target.id === 'buyMax') buyUI.max = v;
+  else buyUI.foil = v === '1';
+  // rendu différé : l'événement peut arriver pendant que le champ perd le focus
+  clearTimeout(buyUI.timer);
+  buyUI.timer = setTimeout(() => { if (currentRender && location.hash === `#buy-${buyUI.src}`) { const y = scrollY; renderBuy(buyUI.src); scrollTo(0, y); } }, 0);
+});
+
+// ---------- Partage de decks : avec un code (sharedDecks/<CODE>) ou en regardant les decks d'un ami ----------
+const SHARE_ABC = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const newShareCode = () => Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => SHARE_ABC[b % SHARE_ABC.length]).join('');
+const shareRef = (code) => cloud.api.fsM.doc(cloud.api.db, 'sharedDecks', code);
+const deckPayload = (dk) => ({ name: String(dk.name || L.dk.untitled).slice(0, 60), legends: dk.legends.map((x) => x ?? null), main: dk.main, side: dk.side ?? {} });
+const shareUrl = (code) => `${location.origin}${location.pathname}#deckcode-${code}`;
+async function deckShare(dk) {
+  if (!cloud.user) { toast(L.sh.signIn); openAccount(); return; }
+  const { fsM } = cloud.api;
+  try {
+    let code = dk.share;
+    if (code) {
+      const snap = await fsM.getDoc(shareRef(code)).catch(() => null);
+      if (!snap?.exists() || snap.data().uid !== cloud.user.uid) code = null;
+    }
+    if (!code) {
+      for (let i = 0; i < 5 && !code; i++) { const c = newShareCode(); const snap = await fsM.getDoc(shareRef(c)); if (!snap.exists()) code = c; }
+      if (!code) throw new Error('code');
+    }
+    await fsM.setDoc(shareRef(code), { ...deckPayload(dk), by: fr.me?.pseudo ?? '', uid: cloud.user.uid, at: fsM.serverTimestamp(), v: 1 });
+    dk.share = code; deckTouch(dk);
+    openShareSheet(dk);
+  } catch (e) { toast(e?.code === 'permission-denied' ? L.sh.rulesNeeded : L.sh.error); }
+}
+function openShareSheet(dk) {
+  openId = null; sheetMode = 'share';
+  sheetPanel.innerHTML = `${sheetTop()}<div class="stack share-sheet">
+    <h2 id="sheetTitle" style="margin:0;font:700 22px var(--font-display)">${L.sh.title}</h2>
+    <p class="note" style="margin:0">${L.sh.hint(esc(dk.name || L.dk.untitled))}</p>
+    <div class="share-code num" id="shareCode">${esc(dk.share)}</div>
+    <div class="field-row">
+      <button class="cta" data-sh="copy">${L.sh.copy}</button>
+      <button class="btn-ghost" data-sh="send">${L.sh.send}</button>
+    </div>
+    <p class="note" style="margin:0">${L.sh.update}</p>
+    <button class="btn-ghost danger" data-sh="stop">${L.sh.stop}</button>
+  </div>`;
+  sheet.hidden = false; document.body.style.overflow = 'hidden';
+}
+async function deckUnshare(dk) {
+  try { await cloud.api.fsM.deleteDoc(shareRef(dk.share)); } catch { /* déjà supprimé */ }
+  delete dk.share; deckTouch(dk); closeCard(); toast(L.sh.stopped);
+}
+// aperçu d'un deck qui n'est pas à moi (code ou ami), avec copie dans mes decks
+let previewDeck = null;
+function renderDeckPreview() {
+  const pv = previewDeck;
+  setTopbar(`<a class="icon-btn" href="${esc(pv.back)}" aria-label="${L.back}">${I.back}</a><h1 class="small">${esc(pv.deck.name || L.dk.untitled)}</h1>`);
+  const dk = { ...pv.deck, legends: pv.deck.legends ?? [], main: pv.deck.main ?? {}, side: pv.deck.side ?? {} };
+  const ck = deckCheck(dk);
+  const legs = dk.legends.map((id) => cardsById.get(id)).filter(Boolean);
+  const rows = Object.entries(dk.main).map(([id, n]) => [cardsById.get(id), n]).filter(([c]) => c)
+    .sort(([a], [b]) => ['Unit', 'Program', 'Gear'].indexOf(a.type) - ['Unit', 'Program', 'Gear'].indexOf(b.type) || (a.cost ?? 0) - (b.cost ?? 0));
+  const val = deckValue(dk);
+  view.innerHTML = `<div class="stack">
+    <p class="note" style="margin:0">${pv.by ? L.sh.by(esc(pv.by)) : ''}${pv.code ? ` · ${L.sh.codeLabel} <b class="num">${esc(pv.code)}</b>` : ''}</p>
+    <section class="panel deck-status ${ck.valid ? 'is-ok' : ''}"><h3>${ck.valid ? `✓ ${L.dk.legal}` : L.dk.notLegal}<small class="num">${eur(val.v)}</small></h3>
+      <p class="note num" style="margin:0">${L.dk.cards(ck.count)}${ck.sideCount ? ` + ${ck.sideCount} ${L.dk.side.toLowerCase()}` : ''} · ${val.miss ? L.dk.missing(val.miss, eur(val.missCost)) : L.dk.complete}</p></section>
+    <div class="leg-slots">${legs.map((c) => `<div class="leg-slot"><button class="card-img" data-open="${esc(c.id)}">${cardImg(c)}</button></div>`).join('')}</div>
+    <div class="rows">${rows.map(([c, n]) => `<div class="row deck-row"><button class="thumb" data-open="${esc(c.id)}">${cardImg(c)}</button><div class="rmain"><b>${n}× ${esc(cardName(c))}</b><span class="note num">${colorDot(c.color)}${esc(typeLabel(c.type))}${c.cost != null ? ` · ${L.cost} ${c.cost}` : ''}${ownedByName(c) < n ? ` · <span class="down">${L.dk.own(ownedByName(c), n)}</span>` : ''}</span></div><span></span></div>`).join('')}</div>
+    <button class="cta" data-sh="import">${L.sh.import}</button>
+  </div>`;
+}
+async function openDeckCode(raw) {
+  const code = String(raw ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  setTopbar(`<a class="icon-btn" href="#decks" aria-label="${L.back}">${I.back}</a><h1 class="small">${L.sh.importTitle}</h1>`);
+  if (code.length !== 6) { view.innerHTML = `<div class="empty"><strong>${L.sh.badCode}</strong></div>`; return; }
+  if (!cloud.user) { view.innerHTML = `<div class="empty"><strong>${L.sh.signIn}</strong><button class="btn-ghost" data-action="account">${L.account}</button></div>`; return; }
+  view.innerHTML = `<div class="empty"><strong>${L.fr.loading}</strong></div>`;
+  try {
+    const snap = await cloud.api.fsM.getDoc(shareRef(code));
+    if (!snap.exists()) { view.innerHTML = `<div class="empty"><strong>${L.sh.notFound(code)}</strong></div>`; return; }
+    const d = snap.data();
+    previewDeck = { deck: { name: d.name, legends: d.legends, main: d.main, side: d.side }, by: d.by ? `@${d.by}` : '', code, back: '#decks' };
+    if (location.hash === `#deckcode-${code}`) renderDeckPreview();
+  } catch (e) { view.innerHTML = `<div class="empty"><strong>${e?.code === 'permission-denied' ? L.sh.rulesNeeded : L.sh.error}</strong></div>`; }
+}
+function importPreview() {
+  const pv = previewDeck; if (!pv) return;
+  const d = `d${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
+  const legends = [0, 1, 2].map((i) => pv.deck.legends?.[i] ?? null);
+  user.decks.push({ d, name: `${pv.deck.name || L.dk.untitled}${pv.by ? ` (${pv.by})` : ''}`.slice(0, 60), legends, main: { ...(pv.deck.main ?? {}) }, side: { ...(pv.deck.side ?? {}) }, upd: Date.now() });
+  dSave(); toast(L.sh.imported); location.hash = `#deck-${d}`;
+}
+document.addEventListener('click', async (e) => {
+  const t = e.target.closest('[data-sh],[data-frdeck]');
+  if (!t) return;
+  if (t.dataset.frdeck) {
+    const dk = fr.view?.decks?.find((x) => x.d === t.dataset.frdeck);
+    if (!dk) return;
+    previewDeck = { deck: dk, by: `@${fr.view.pseudo}`, code: '', back: `#friend-${fr.view.uid}` };
+    location.hash = '#deckview';
+    return;
+  }
+  const a = t.dataset.sh;
+  const dk = deckUI.deck && deckById(deckUI.deck.d);
+  if (a === 'share' && dk) deckShare(dk);
+  else if (a === 'copy' && dk?.share) { try { await navigator.clipboard.writeText(dk.share); toast(L.sh.copied); } catch { prompt(L.sh.title, dk.share); } }
+  else if (a === 'send' && dk?.share) {
+    const text = L.sh.message(dk.name || L.dk.untitled, dk.share);
+    if (navigator.share) navigator.share({ title: 'NightDex', text, url: shareUrl(dk.share) }).catch(() => {});
+    else { try { await navigator.clipboard.writeText(`${text}\n${shareUrl(dk.share)}`); toast(L.sh.copied); } catch { prompt(L.sh.title, shareUrl(dk.share)); } }
+  } else if (a === 'stop' && dk?.share) deckUnshare(dk);
+  else if (a === 'import') importPreview();
+  else if (a === 'code') { const v = document.getElementById('deckCodeInput')?.value ?? ''; location.hash = `#deckcode-${v.toUpperCase().replace(/[^A-Z0-9]/g, '')}`; }
+});
+document.addEventListener('keydown', (e) => { if (e.target.id === 'deckCodeInput' && e.key === 'Enter') { e.preventDefault(); location.hash = `#deckcode-${e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')}`; } });
+
+// ---------- Alertes prix sur les souhaits + notifications sur le téléphone ----------
+// alerts[id] = prix cible. Vérifié à chaque ouverture de l'appli, et en arrière-plan par le service worker
+// (synchronisation périodique, appli installée sur Android) : notification quand le prix tendance passe sous la cible.
+if (!user.alerts || typeof user.alerts !== 'object') user.alerts = {};
+const ALERT_SEEN = 'nightdex:alertSeen';
+let alertSeen = (() => { try { return JSON.parse(localStorage.getItem(ALERT_SEEN) ?? '{}') ?? {}; } catch { return {}; } })();
+const alertHit = (id) => user.alerts[id] != null && price(id) != null && price(id) <= user.alerts[id];
+const alertsTriggered = () => Object.keys(user.alerts).filter((id) => cardsById.has(id) && alertHit(id));
+const alertsUnread = () => alertsTriggered().filter((id) => alertSeen[id] !== `${priceFile.updatedAt}|${user.alerts[id]}`);
+// copie pour le service worker (il ne lit pas le localStorage)
+function swDb() {
+  return new Promise((res, rej) => { const r = indexedDB.open('nightdex-sw', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+}
+async function swPut(key, val) { try { const db = await swDb(); await new Promise((res, rej) => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').put(val, key); t.oncomplete = res; t.onerror = () => rej(t.error); }); } catch { /* */ } }
+function alertsMirror() {
+  const out = {};
+  for (const [id, t] of Object.entries(user.alerts)) { const c = cardsById.get(id); if (c) out[id] = { t, n: cardName(c) }; }
+  swPut('alerts', out); swPut('lang', lang); swPut('seen', alertSeen);
+}
+function alertsBadge() {
+  const n = alertsUnread().length;
+  for (const a of document.querySelectorAll('.tabbar a[data-tab="wishlist"]')) {
+    let b = a.querySelector('.abadge');
+    if (!b) { b = document.createElement('b'); b.className = 'abadge num'; a.append(b); }
+    b.hidden = !n; b.textContent = n > 9 ? '9+' : String(n || '');
+  }
+}
+async function alertsNotify(ids) {
+  if (!ids.length || !('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    const reg = await navigator.serviceWorker?.ready;
+    for (const id of ids.slice(0, 5)) {
+      const c = cardsById.get(id);
+      const title = L.al.notifTitle(cardName(c), eur(price(id)));
+      const opts = { body: L.al.notifBody(eur(user.alerts[id])), tag: `alert-${id}`, icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', data: { url: './#wishlist' } };
+      if (reg?.showNotification) await reg.showNotification(title, opts); else new Notification(title, opts);
+    }
+  } catch { /* notifications indisponibles */ }
+}
+// à l'ouverture : nouvelles alertes déclenchées → notification + toast + badge
+function alertsCheck() {
+  alertsMirror();
+  const fresh = alertsUnread().filter((id) => !alertSeen[`n:${id}`] || alertSeen[`n:${id}`] !== `${priceFile.updatedAt}|${user.alerts[id]}`);
+  if (fresh.length) {
+    for (const id of fresh) alertSeen[`n:${id}`] = `${priceFile.updatedAt}|${user.alerts[id]}`;
+    try { localStorage.setItem(ALERT_SEEN, JSON.stringify(alertSeen)); } catch { /* */ }
+    swPut('seen', alertSeen);
+    alertsNotify(fresh);
+    toast(L.al.toast(fresh.length));
+  }
+  alertsBadge();
+}
+function alertsAck() {
+  for (const id of alertsTriggered()) alertSeen[id] = `${priceFile.updatedAt}|${user.alerts[id]}`;
+  try { localStorage.setItem(ALERT_SEEN, JSON.stringify(alertSeen)); } catch { /* */ }
+  swPut('seen', alertSeen);
+  alertsBadge();
+}
+const notifState = () => (!('Notification' in window) ? 'unsupported' : Notification.permission);
+async function alertsEnableNotifs() {
+  if (!('Notification' in window)) { toast(L.al.unsupported); return; }
+  const perm = await Notification.requestPermission();
+  if (perm === 'granted') {
+    try {
+      const reg = await navigator.serviceWorker?.ready;
+      if (reg?.periodicSync) {
+        const st = await navigator.permissions?.query({ name: 'periodic-background-sync' }).catch(() => null);
+        if (!st || st.state === 'granted') await reg.periodicSync.register('nightdex-alerts', { minInterval: 12 * 3600 * 1000 });
+      }
+    } catch { /* arrière-plan indisponible : vérification à l'ouverture seulement */ }
+    alertsMirror();
+    toast(L.al.enabled);
+  } else toast(L.al.denied);
+  if (currentRender === renderWishlist) renderWishlist();
+}
+function setAlert(id, v) {
+  const n = v === '' || v == null ? null : Math.round(Number(v) * 100) / 100;
+  if (n == null || !(n > 0)) delete user.alerts[id]; else user.alerts[id] = n;
+  delete alertSeen[id]; delete alertSeen[`n:${id}`];
+  try { localStorage.setItem(ALERT_SEEN, JSON.stringify(alertSeen)); } catch { /* */ }
+  gSave(); alertsMirror(); alertsBadge();
+}
+const alertLine = (id) => {
+  const c = cardsById.get(id), p = price(id);
+  if (!c || isSealed(c)) return '';
+  const t = user.alerts[id];
+  return `<div class="alert-line ${t != null && alertHit(id) ? 'hit' : ''}">
+    <span class="al-ico">${I.bell}</span>
+    <label for="alertInput">${L.al.label}</label>
+    <input id="alertInput" type="number" inputmode="decimal" min="0" step="0.1" value="${t ?? ''}" placeholder="${p != null ? (Math.floor(p * 0.9 * 10) / 10).toFixed(2) : '0,00'}" data-alert-id="${esc(id)}">
+    <span class="al-state">${t == null ? `<span class="muted">${L.al.off}</span>` : alertHit(id) ? `<b class="up">${L.al.hit}</b>` : L.al.waiting}</span>
+  </div>`;
+};
+document.addEventListener('change', (e) => {
+  const inp = e.target.closest('[data-alert-id]');
+  if (!inp) return;
+  const id = inp.dataset.alertId;
+  setAlert(id, inp.value);
+  if (user.alerts[id] != null && notifState() === 'default') toast(L.al.askNotif);
+  const box = inp.closest('.alert-line');
+  if (box) { const tmp = document.createElement('div'); tmp.innerHTML = alertLine(id); box.querySelector('.al-state').innerHTML = tmp.querySelector('.al-state').innerHTML; box.classList.toggle('hit', alertHit(id)); }
+  if (currentRender === renderWishlist && sheet.hidden) renderWishlist();
+});
+document.addEventListener('click', (e) => { if (e.target.closest('[data-action="notif-on"]')) alertsEnableNotifs(); });
+
 // ---------- Navigation ----------
 let currentTab = 'home';
 function markTabs() {
@@ -3119,6 +3558,8 @@ function route() {
   else if (h === 'collection') currentRender = renderCollection;
   else if (h === 'graded') { tab = 'collection'; currentRender = renderGraded; }
   else if (h === 'decks') { tab = 'decks'; currentRender = renderDecks; }
+  else if (h.startsWith('deckcode-')) { tab = 'decks'; const code = h.slice(9); currentRender = () => openDeckCode(code); }
+  else if (h === 'deckview') { tab = 'decks'; currentRender = () => (previewDeck ? renderDeckPreview() : (location.hash = '#decks')); }
   else if (h.startsWith('deck-')) { tab = 'decks'; const d = h.slice(5); currentRender = () => renderDeck(d); }
   else if (h === 'wishlist') currentRender = renderWishlist;
   else if (h === 'search') currentRender = renderSearch;
@@ -3126,6 +3567,7 @@ function route() {
   else if (h === 'sealed') { tab = 'sealed'; currentRender = renderSealed; }
   else if (h === 'extra') { tab = 'home'; currentRender = renderExtra; }
   else if (h === 'news') { tab = 'home'; currentRender = renderNews; }
+  else if (h.startsWith('buy-')) { const src = h.slice(4); tab = src === 'wish' ? 'wishlist' : src.startsWith('deck') ? 'decks' : 'home'; currentRender = () => renderBuy(src); }
   else if (h === 'capri') { currentRender = renderCapri; }
   else if (h === 'friends') { fr.view = null; fr.msg = ''; currentRender = renderFriends; }
   else if (h.startsWith('friend-')) { tab = 'friends'; const uid = h.slice(7); if (fr.view?.uid !== uid) fr.filter = 'all'; renderFriendCurrent = () => renderFriend(uid); currentRender = renderFriendCurrent; }
@@ -3505,6 +3947,7 @@ pcQuery.addEventListener('change', () => {
 renderChrome();
 try {
   await loadData();
+  setTimeout(alertsCheck, 800);
   if (user.prefs.ownV !== 2) { migrateOwned(user.owned); user.prefs.ownV = 2; save(); }
   route();
   initCloud();
