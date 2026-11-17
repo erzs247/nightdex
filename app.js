@@ -39,6 +39,8 @@ const TEXT = {
     wishBudget: 'Budget pour compléter mes souhaits', wishNote: (n, m) => `${n} ${plural(n, 'carte', 'cartes')} à acheter sur ${m}, au prix tendance Cardmarket.`,
     searchPh: 'Nom de carte ou numéro (ex. MS01 012)', searchHint: (n, m) => `${n} cartes dans ${m} séries. Tapez au moins 2 lettres.`,
     results: (n) => `${n} ${plural(n, 'résultat', 'résultats')}`, noResult: 'Aucune carte trouvée',
+    valuesAll: 'Valeur totale : vos cartes françaises et anglaises comptées ensemble.',
+    valuesLists: (l) => (l === 'fr' ? 'Listes ci-dessous : cartes en français (bouton FR | EN pour voir les cartes anglaises).' : 'Listes ci-dessous : cartes en anglais (bouton FR | EN pour voir les cartes françaises).'),
     colValue: 'Valeur de ma collection', colValueHint: 'Marquez des cartes comme possédées pour suivre la valeur de votre collection dans le temps.',
     pricesNote: (d) => `Prix Cardmarket (tendance, en euros) · mis à jour le ${d}`, noPricesNote: 'Les prix Cardmarket ne sont pas encore importés.',
     risers: 'Plus fortes hausses sur 7 jours', fallers: 'Plus fortes baisses sur 7 jours', priciest: 'Cartes les plus chères', noHistory: 'Pas encore assez d\'historique.',
@@ -186,6 +188,8 @@ const TEXT = {
     wishBudget: 'Budget to complete my wishlist', wishNote: (n, m) => `${n} ${plural(n, 'card', 'cards')} to buy out of ${m}, at Cardmarket trend price.`,
     searchPh: 'Card name or number (e.g. MS01 012)', searchHint: (n, m) => `${n} cards in ${m} sets. Type at least 2 letters.`,
     results: (n) => `${n} ${plural(n, 'result', 'results')}`, noResult: 'No card found',
+    valuesAll: 'Total value: your French and English cards counted together.',
+    valuesLists: (l) => (l === 'fr' ? 'Lists below: French cards (FR | EN button to see English cards).' : 'Lists below: English cards (FR | EN button to see French cards).'),
     colValue: 'My collection value', colValueHint: 'Mark cards as owned to follow the value of your collection over time.',
     pricesNote: (d) => `Cardmarket prices (trend, in euros) · updated ${d}`, noPricesNote: 'Cardmarket prices have not been imported yet.',
     risers: 'Biggest risers over 7 days', fallers: 'Biggest fallers over 7 days', priciest: 'Most expensive cards', noHistory: 'Not enough history yet.',
@@ -853,9 +857,11 @@ function renderValues() {
   view.innerHTML = `<div class="stack">
     <section class="panel">
       <div class="hero-value"><small>${L.colValue}</small><strong class="num">${eur(value)}</strong></div>
+      <p class="note lang-scope">${L.valuesAll}</p>
       ${owned.length ? '<div class="ranges" id="pfRanges"></div><div class="chart" id="pfChart"></div>' : `<p class="note">${L.colValueHint}</p>`}
       <p class="note">${hasPrices() ? L.pricesNote(updated) : L.noPricesNote}</p>
     </section>
+    <p class="note lang-scope">${L.valuesLists(cardLang)}</p>
     <h2 class="section-title">${L.risers}</h2>
     <div class="rows">${ups.map(([c]) => cardRow(c, 7)).join('') || empty}</div>
     <h2 class="section-title">${L.fallers}</h2>
