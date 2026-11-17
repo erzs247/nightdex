@@ -53,6 +53,12 @@ const TEXT = {
     chartWait: 'Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.', chartNone: 'Pas de prix Cardmarket pour cette carte pour l\'instant.',
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue de l\'appli', langToast: 'Appli en français',
+    wl: {
+      new: 'Nouvelle liste', lists: 'Mes listes :', rename: 'Renommer', del: 'Supprimer la liste', namePrompt: 'Nom de la liste (ex. Johnny, Deck rouge, Cadeaux…)',
+      created: (n) => `Liste « ${n} » créée`, deleted: 'Liste supprimée (les cartes restent dans tes souhaits)', delConfirm: (n) => `Supprimer la liste « ${n} » ? Les cartes restent dans tes souhaits.`,
+      budget: (n) => `Budget pour la liste « ${n} »`, empty: 'Cette liste est vide', emptyHint: 'Ouvre une carte de tes souhaits et touche le nom de la liste pour l\'y ranger.',
+      intro: 'Astuce : crée des listes (« + Nouvelle liste ») pour ranger tes souhaits par thème et voir le budget de chacune.',
+    },
     al: {
       title: 'Alertes prix', count: (n) => `${n} active${n > 1 ? 's' : ''}`, label: 'Alerte si le prix passe sous (€)', off: 'Aucune alerte', hit: 'Prix atteint !', waiting: 'En attente',
       howTo: 'Ouvre une carte de tes souhaits et indique un prix : NightDex te prévient quand la cote Cardmarket passe en dessous.',
@@ -240,6 +246,12 @@ const TEXT = {
     chartWait: 'Not enough history to draw a curve yet. Prices are recorded every day.', chartNone: 'No Cardmarket price for this card yet.',
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'App language', langToast: 'App in English',
+    wl: {
+      new: 'New list', lists: 'My lists:', rename: 'Rename', del: 'Delete list', namePrompt: 'List name (e.g. Johnny, Red deck, Gifts…)',
+      created: (n) => `List “${n}” created`, deleted: 'List deleted (cards stay in your wishlist)', delConfirm: (n) => `Delete the list “${n}”? The cards stay in your wishlist.`,
+      budget: (n) => `Budget for “${n}”`, empty: 'This list is empty', emptyHint: 'Open a card from your wishlist and tap the list name to add it.',
+      intro: 'Tip: create lists (“+ New list”) to sort your wishlist by theme and see each list\'s budget.',
+    },
     al: {
       title: 'Price alerts', count: (n) => `${n} active`, label: 'Alert when price drops below (€)', off: 'No alert', hit: 'Price reached!', waiting: 'Waiting',
       howTo: 'Open a card from your wishlist and enter a price: NightDex tells you when the Cardmarket trend drops below it.',
@@ -910,23 +922,72 @@ function wishAlertsPanel(list) {
     ${ns === 'granted' ? `<p class="note" style="margin:0">✓ ${L.al.notifOn}</p>` : ns === 'denied' ? `<p class="note" style="margin:0">${L.al.notifBlocked}</p>` : ns === 'unsupported' ? '' : `<button class="btn-ghost" data-action="notif-on">${I.bell}<span>${L.al.enable}</span></button>`}
   </section>`;
 }
+// sous-listes de souhaits : wlists = [{ k, name, ids: [...] }] ; une carte peut être dans plusieurs listes
+if (!Array.isArray(user.wlists)) user.wlists = [];
+const wlById = (k) => user.wlists.find((l) => l.k === k);
+const wlCards = (l) => (l?.ids ?? []).filter((id) => wish.has(id));
+function wlNew(name, firstId) {
+  const n = String(name ?? '').trim().slice(0, 40);
+  if (!n) return null;
+  const l = { k: `w${Date.now().toString(36)}${Math.random().toString(36).slice(2, 4)}`, name: n, ids: firstId ? [firstId] : [] };
+  user.wlists.push(l); gSave();
+  return l;
+}
+function wlToggle(k, id) {
+  const l = wlById(k); if (!l) return;
+  l.ids = l.ids.includes(id) ? l.ids.filter((x) => x !== id) : [...l.ids, id];
+  if (l.ids.includes(id) && !wish.has(id)) { wish.add(id); save(); refreshCard(id); }
+  gSave();
+}
+const wlChips = (id) => `<div class="wl-line"><span class="note">${L.wl.lists}</span><div class="chips wrap">${user.wlists.map((l) => `<button class="chip" data-wl-toggle="${esc(l.k)}" data-id="${esc(id)}" aria-pressed="${l.ids.includes(id)}">${esc(l.name)}</button>`).join('')}<button class="chip" data-wl-new="${esc(id)}">+ ${L.wl.new}</button></div></div>`;
 function renderWishlist() {
-  setTopbar(`<h1>${L.wishlist}</h1>${wish.size ? `<a class="chip" href="#buy-wish">${I.cart}<span>${L.buy.btn}</span></a>` : ''}`);
-  const list = sortCards([...wish].map((id) => cardsById.get(id)).filter(Boolean), 'price-desc');
-  if (!list.length) {
+  let cur = wlById(user.prefs.wl) ? user.prefs.wl : '';
+  const sub = cur ? wlById(cur) : null;
+  setTopbar(`<h1>${L.wishlist}</h1>${wish.size ? `<a class="chip" href="#buy-${cur ? `wishl-${esc(cur)}` : 'wish'}">${I.cart}<span>${L.buy.btn}</span></a>` : ''}`);
+  const all = [...wish].map((id) => cardsById.get(id)).filter(Boolean);
+  if (!all.length) {
     view.innerHTML = `<div class="empty"><strong>${L.emptyWish}</strong>${L.emptyWishHint}</div>`;
     return;
   }
+  const list = sortCards(sub ? wlCards(sub).map((id) => cardsById.get(id)).filter(Boolean) : all, 'price-desc');
   const missing = list.filter((c) => !qty(c.id));
   const cost = missing.reduce((a, c) => a + (price(c.id) ?? 0), 0);
   view.innerHTML = `<div class="stack">
-    <div class="hero-value"><small>${L.wishBudget}</small><strong class="num">${eur(cost)}</strong>
+    <div class="chips wl-tabs"><button class="chip" data-wl="" aria-pressed="${!sub}">${L.all} · ${all.length}</button>${user.wlists.map((l) => `<button class="chip" data-wl="${esc(l.k)}" aria-pressed="${cur === l.k}">${esc(l.name)} · ${wlCards(l).length}</button>`).join('')}<button class="chip wl-add" data-wl-new="">+ ${L.wl.new}</button></div>
+    ${sub ? `<div class="wl-head"><b>${esc(sub.name)}</b><button class="link-btn" data-wl-rename="${esc(sub.k)}">${L.wl.rename}</button><button class="link-btn danger" data-wl-del="${esc(sub.k)}">${L.wl.del}</button></div>` : ''}
+    <div class="hero-value"><small>${sub ? L.wl.budget(sub.name) : L.wishBudget}</small><strong class="num">${eur(cost)}</strong>
     <span class="note">${L.wishNote(missing.length, list.length)}</span></div>
-    ${wishAlertsPanel(list)}
-    <div class="rows">${list.map((c) => cardRow(c)).join('')}</div>
+    ${list.length ? `${wishAlertsPanel(list)}<div class="rows">${list.map((c) => cardRow(c)).join('')}</div>` : `<div class="empty"><strong>${L.wl.empty}</strong>${L.wl.emptyHint}</div>`}
+    ${!sub && !user.wlists.length ? `<p class="note">${L.wl.intro}</p>` : ''}
   </div>`;
   alertsAck();
 }
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-wl],[data-wl-new],[data-wl-toggle],[data-wl-rename],[data-wl-del]');
+  if (!t) return;
+  const d = t.dataset;
+  if (d.wl !== undefined) { user.prefs.wl = d.wl; save(); renderWishlist(); }
+  else if (d.wlNew !== undefined) {
+    const name = prompt(L.wl.namePrompt, '');
+    const l = wlNew(name, d.wlNew || null);
+    if (!l) return;
+    toast(L.wl.created(l.name));
+    if (d.wlNew) { if (!wish.has(d.wlNew)) { wish.add(d.wlNew); save(); refreshCard(d.wlNew); } if (openId) openCard(openId, true); }
+    else { user.prefs.wl = l.k; save(); renderWishlist(); }
+  } else if (d.wlToggle) {
+    wlToggle(d.wlToggle, d.id);
+    t.setAttribute('aria-pressed', wlById(d.wlToggle)?.ids.includes(d.id) ?? false);
+    if (currentRender === renderWishlist && sheet.hidden) renderWishlist();
+  } else if (d.wlRename) {
+    const l = wlById(d.wlRename); if (!l) return;
+    const name = String(prompt(L.wl.namePrompt, l.name) ?? '').trim().slice(0, 40);
+    if (name) { l.name = name; gSave(); renderWishlist(); }
+  } else if (d.wlDel) {
+    const l = wlById(d.wlDel); if (!l) return;
+    if (!confirm(L.wl.delConfirm(l.name))) return;
+    user.wlists = user.wlists.filter((x) => x.k !== l.k); user.prefs.wl = ''; save(); gSave(); renderWishlist(); toast(L.wl.deleted);
+  }
+});
 
 let searchQuery = '';
 function renderSearch() {
@@ -1130,6 +1191,7 @@ function openCard(id, keepNav) {
           ${p.foil ? `<span class="foil-tag">Foil</span>` : foilPrice(id) != null ? `<button class="chip" data-copy-foil="${i}" aria-pressed="${!!x.f}">Foil</button>` : ''}</div>`).join('')}
         ${q > 12 ? `<p class="note" style="margin:0">${L.cp.more(q - 12)}</p>` : ''}
       </section>` : ''}
+      ${wish.has(id) ? wlChips(id) : ''}
       ${wish.has(id) && !sealedItem ? alertLine(id) : ''}
       ${q > 0 ? `<div class="paid-line">
         <label for="cardPaid">${L.paidLabel}</label>
@@ -2274,6 +2336,8 @@ function toggleWish(id) {
   save(); refreshCard(id);
   petEvent('wish', { on: wish.has(id) });
   for (const b of sheetPanel.querySelectorAll(`[data-wish="${CSS.escape(id)}"]`)) b.setAttribute('aria-pressed', wish.has(id));
+  if (openId === id && !sheet.hidden) openCard(id, true);   // affiche ou retire les listes et l'alerte prix
+  if (currentRender === renderWishlist) renderWishlist();
   toast(wish.has(id) ? L.addedWish : L.removedWish);
 }
 
@@ -2441,7 +2505,7 @@ function gValue(e, sales = gSales(e)) {
   const last = sales.slice(-3).map(([, p]) => p).sort((a, b) => a - b);
   return last[Math.floor(last.length / 2)];
 }
-const gSig = () => JSON.stringify([user.graded, Object.entries(user.gsales).sort(), Object.entries(user.paid).sort(), Object.entries(user.copies ?? {}).sort(), Object.entries(user.alerts ?? {}).sort()]);
+const gSig = () => JSON.stringify([user.graded, Object.entries(user.gsales).sort(), Object.entries(user.paid).sort(), Object.entries(user.copies ?? {}).sort(), Object.entries(user.alerts ?? {}).sort(), user.wlists ?? []]);
 let gLastSig = gSig();
 function gSave() {
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* stockage indisponible */ }
@@ -2536,13 +2600,13 @@ function gMerge(a, b) {
     const seen = new Set((sales[k] ?? []).map((s) => s.join('|')));
     sales[k] = [...(sales[k] ?? []), ...list.filter((s) => !seen.has(s.join('|')))];
   }
-  return { items: [...items.values()], sales, paid: { ...(a?.paid ?? {}), ...(b?.paid ?? {}) }, copies: { ...(a?.copies ?? {}), ...(b?.copies ?? {}) }, alerts: { ...(a?.alerts ?? {}), ...(b?.alerts ?? {}) } };
+  return { items: [...items.values()], sales, paid: { ...(a?.paid ?? {}), ...(b?.paid ?? {}) }, copies: { ...(a?.copies ?? {}), ...(b?.copies ?? {}) }, alerts: { ...(a?.alerts ?? {}), ...(b?.alerts ?? {}) }, wlists: [...new Map([...(a?.wlists ?? []), ...(b?.wlists ?? [])].map((l) => [l.k, l])).values()] };
 }
 // Firestore n'accepte pas les tableaux de tableaux : ventes envoyées sous forme { d, p }
-const gToCloud = () => ({ items: user.graded, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, sales: Object.fromEntries(Object.entries(user.gsales).map(([k, l]) => [k, l.map(([d, p]) => ({ d, p }))])) });
-const gFromCloud = (d) => ({ items: d?.items ?? [], paid: d?.paid ?? {}, copies: d?.copies ?? {}, alerts: d?.alerts ?? {}, sales: Object.fromEntries(Object.entries(d?.sales ?? {}).map(([k, l]) => [k, l.map((s) => [s.d, s.p])])) });
+const gToCloud = () => ({ items: user.graded, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [], sales: Object.fromEntries(Object.entries(user.gsales).map(([k, l]) => [k, l.map(([d, p]) => ({ d, p }))])) });
+const gFromCloud = (d) => ({ items: d?.items ?? [], paid: d?.paid ?? {}, copies: d?.copies ?? {}, alerts: d?.alerts ?? {}, wlists: d?.wlists ?? [], sales: Object.fromEntries(Object.entries(d?.sales ?? {}).map(([k, l]) => [k, l.map((s) => [s.d, s.p])])) });
 function gApply(d) {
-  user.graded = d.items; user.gsales = d.sales; user.paid = d.paid ?? {}; user.copies = d.copies ?? {}; user.alerts = d.alerts ?? {};
+  user.graded = d.items; user.gsales = d.sales; user.paid = d.paid ?? {}; user.copies = d.copies ?? {}; user.alerts = d.alerts ?? {}; user.wlists = d.wlists ?? [];
   if (typeof alertsMirror === 'function') alertsMirror();
   gLastSig = gSig();
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* */ }
@@ -2571,7 +2635,7 @@ function gOnUser(u) {
   gCloud.unsub = cloud.api.fsM.onSnapshot(gRef(u.uid), async (snap) => {
     if (snap.metadata.hasPendingWrites) return;
     const remote = snap.exists() ? gFromCloud(snap.data()) : null;
-    const local = { items: user.graded, sales: user.gsales, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {} };
+    const local = { items: user.graded, sales: user.gsales, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [] };
     if (first) {
       first = false;
       const next = !remote ? local : (user.gSyncedUid !== u.uid || user.gPending) ? gMerge(remote, local) : remote;
@@ -3351,6 +3415,10 @@ function buySource(src) {
   const l = buyUI.lang;
   const inL = (c) => !c.languages || c.languages.includes(l);
   const printIn = (c) => (inL(c) ? c : (deckPrints().get(nameKey(c)) ?? []).find(inL) ?? c);
+  if (src.startsWith('wishl-')) {
+    const wl = wlById(src.slice(6));
+    return { title: wl ? wl.name : L.wishlist, lines: wlCards(wl).map((id) => cardsById.get(id)).filter((c) => c && !isSealed(c)).map((c) => [printIn(c), Math.max(0, 1 - qty(c.id, l))]) };
+  }
   if (src === 'wish') {
     return { title: L.wishlist, lines: [...wish].map((id) => cardsById.get(id)).filter((c) => c && !isSealed(c)).map((c) => [printIn(c), Math.max(0, 1 - qty(c.id, l))]) };
   }
@@ -3388,10 +3456,10 @@ function renderBuy(src) {
   const total = kept.reduce((a, [c, n]) => a + n * (price(c.id) ?? 0), 0);
   const count = kept.reduce((a, [, n]) => a + n, 0);
   const rars = [...new Set(data.all.map(([c]) => c.rarity))].sort((a, b) => RARITIES.indexOf(a) - RARITIES.indexOf(b));
-  const back = src === 'wish' ? '#wishlist' : src.startsWith('set-') ? `#${src}` : `#${src}`;
+  const back = src.startsWith('wish') ? '#wishlist' : src.startsWith('set-') ? `#${src}` : `#${src}`;
   setTopbar(`<a class="icon-btn" href="${back}" aria-label="${L.back}">${I.back}</a><h1 class="small">${L.buy.title}</h1>`);
   view.innerHTML = `<div class="stack buy">
-    <p class="note" style="margin:0"><b>${esc(data.title)}</b> · ${L.buy.from[src.split('-')[0]] ?? ''}</p>
+    <p class="note" style="margin:0"><b>${esc(data.title)}</b> · ${L.buy.from[src.startsWith('wishl-') ? 'wish' : src.split('-')[0]] ?? ''}</p>
     <section class="panel">
       <h3>${L.buy.filters}</h3>
       ${data.perSet ? `<div class="seg">${[[1, L.buy.one], [3, L.buy.playset]].map(([k, l]) => `<button data-buy-target="${k}" aria-pressed="${buyUI.target === k}">${l}</button>`).join('')}</div>` : ''}
@@ -3777,7 +3845,7 @@ function route() {
   else if (h === 'sealed') { tab = 'sealed'; currentRender = renderSealed; }
   else if (h === 'extra') { tab = 'home'; currentRender = renderExtra; }
   else if (h === 'news') { tab = 'home'; currentRender = renderNews; }
-  else if (h.startsWith('buy-')) { const src = h.slice(4); tab = src === 'wish' ? 'wishlist' : src.startsWith('deck') ? 'decks' : 'home'; currentRender = () => renderBuy(src); }
+  else if (h.startsWith('buy-')) { const src = h.slice(4); tab = src.startsWith('wish') ? 'wishlist' : src.startsWith('deck') ? 'decks' : 'home'; currentRender = () => renderBuy(src); }
   else if (h === 'capri') { currentRender = renderCapri; }
   else if (h === 'friends') { fr.view = null; fr.msg = ''; currentRender = renderFriends; }
   else if (h.startsWith('friend-')) { tab = 'friends'; const uid = h.slice(7); if (fr.view?.uid !== uid) fr.filter = 'all'; renderFriendCurrent = () => renderFriend(uid); currentRender = renderFriendCurrent; }
