@@ -121,7 +121,7 @@ const TEXT = {
       grade: 'Note', cert: 'N° de certificat', certPh: 'Sur l\'étiquette du slab', certShort: 'Certificat', verify: 'vérifier',
       purchase: 'Achat', paid: 'Prix payé (€)', date: 'Date', photo: 'Photo du slab', optional: 'facultatif',
       photoAdd: 'Prendre ou choisir une photo', photoChange: 'Changer la photo', photoDel: 'Retirer la photo', photoErr: 'Impossible de lire cette photo.',
-      photoHint: 'Elle remplace le slab dessiné. Gardée sur ton téléphone et dans ton compte si tu es connecté.',
+      photoHint: 'Elle remplace le slab dessiné. Gardée sur ton téléphone et dans ton compte si tu es connecté. Vérifiée automatiquement avant d\'être partagée (pas de nudité, de sang ni de violence).',
       save: 'Enregistrer', del: 'Supprimer ce slab', delSure: 'Appuie encore pour supprimer', added: 'Slab ajouté', saved: 'Slab modifié', deleted: 'Slab supprimé',
       estimate: 'Valeur estimée', paidOn: (p, d) => `Payé ${p}${d ? ` le ${d}` : ''}`,
       curve: 'Ventes réussies', salesCount: (n) => `${n} vente${n > 1 ? 's' : ''} relevée${n > 1 ? 's' : ''}`, salePrice: 'Prix de vente (€)', addSale: 'Vente', delSale: 'Supprimer cette vente', saleAdded: 'Vente ajoutée à la courbe',
@@ -308,7 +308,7 @@ const TEXT = {
       grade: 'Grade', cert: 'Cert number', certPh: 'On the slab label', certShort: 'Cert', verify: 'verify',
       purchase: 'Purchase', paid: 'Price paid (€)', date: 'Date', photo: 'Slab photo', optional: 'optional',
       photoAdd: 'Take or choose a photo', photoChange: 'Change photo', photoDel: 'Remove photo', photoErr: 'Could not read this photo.',
-      photoHint: 'It replaces the drawn slab. Kept on your phone and in your account when signed in.',
+      photoHint: 'It replaces the drawn slab. Kept on your phone and in your account when signed in. Checked automatically before it is shared (no nudity, blood or violence).',
       save: 'Save', del: 'Delete this slab', delSure: 'Tap again to delete', added: 'Slab added', saved: 'Slab updated', deleted: 'Slab deleted',
       estimate: 'Estimated value', paidOn: (p, d) => `Paid ${p}${d ? ` on ${d}` : ''}`,
       curve: 'Sold prices', salesCount: (n) => `${n} sale${n > 1 ? 's' : ''} logged`, salePrice: 'Sold price (€)', addSale: 'Sale', delSale: 'Delete this sale', saleAdded: 'Sale added to the curve',
@@ -2580,7 +2580,17 @@ function gOnUser(u) {
       if (!remote || JSON.stringify(gMerge(next, {})) !== JSON.stringify(gMerge(remote, {}))) await gPush();
       else { user.gPending = false; gSave(); }
       // photos prises avant la connexion : envoyées dans le compte
-      for (const e of user.graded) if (e.ph) gIdb('readonly', (s) => s.get(e.g)).then((url) => { if (url) cloud.api.fsM.setDoc(gPhotoRef(u.uid, e.g), { img: url }).catch(() => {}); }).catch(() => {});
+      for (const e of user.graded) if (e.ph) gIdb('readonly', (s) => s.get(e.g)).then(async (url) => {
+        if (!url) return;
+        if (!e.phOk) {
+          try { await moderateImage(url); e.phOk = true; gSave(); }
+          catch (err) {   // refusée : retirée du compte, reste seulement sur ce téléphone ; vérification impossible : on réessaiera
+            if (err?.userMsg && err.userMsg !== L.mod.unavailable) cloud.api.fsM.deleteDoc(gPhotoRef(u.uid, e.g)).catch(() => {});
+            return;
+          }
+        }
+        cloud.api.fsM.setDoc(gPhotoRef(u.uid, e.g), { img: url }).catch(() => {});
+      }).catch(() => {});
       return;
     }
     if (gCloud.dirty || !remote) return;
@@ -2702,7 +2712,16 @@ async function gSaveForm() {
   const f = gForm;
   if (!cardsById.has(f.id)) return;
   const isNew = !f.g;
+  const old = f.g ? user.graded.find((x) => x.g === f.g) : null;
   const e = { g: f.g || `g${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, id: f.id, l: f.l, co: f.co, gr: f.gr, cert: f.cert || '', paid: f.paid === '' ? null : Math.round(Number(f.paid) * 100) / 100, at: f.at || '', ph: !!(f.photo || (f.ph && f.photo !== null)) };
+  if (f.ph && f.photo === undefined && old?.phOk) e.phOk = true;
+  // nouvelle photo : vérifiée automatiquement (comme les photos de profil) avant d'être enregistrée et partagée
+  if (f.photo && cloud.user) {
+    const btn = sheetPanel.querySelector('[data-action="g-save"]');
+    if (btn) { btn.disabled = true; btn.textContent = L.mod.checking; }
+    try { await moderateImage(f.photo); e.phOk = true; }
+    catch (err) { if (btn) { btn.disabled = false; btn.textContent = L.gr.save; } toast(err?.userMsg ?? L.mod.unavailable); return; }
+  }
   if (f.photo) await gPhotoPut(e.g, f.photo);
   else if (f.photo === null && f.g) await gPhotoDel(e.g);
   user.graded = isNew ? [...user.graded, e] : user.graded.map((x) => (x.g === e.g ? e : x));
