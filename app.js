@@ -890,7 +890,7 @@ function wishAlertsPanel(list) {
   const withAlert = list.filter((c) => user.alerts[c.id] != null);
   const ns = notifState();
   return `<section class="panel alerts-panel"><h3>${I.bell}${L.al.title}<small>${L.al.count(withAlert.length)}</small></h3>
-    ${withAlert.length ? `<div class="al-list">${withAlert.map((c) => `<button class="al-item ${alertHit(c.id) ? 'hit' : ''}" data-open="${esc(c.id)}"><span>${esc(cardName(c))}</span><span class="num">${eur(price(c.id))} / <b>${eur(user.alerts[c.id])}</b></span></button>`).join('')}</div>` : `<p class="note" style="margin:0">${L.al.howTo}</p>`}
+    ${withAlert.length ? `<div class="al-list">${withAlert.map((c) => `<button class="al-item ${alertHit(c.id) ? 'hit' : ''}" data-open="${esc(c.id)}"><span>${esc(cardName(c))}</span><span class="num">${eur(price(c.id))} → <b>${eur(user.alerts[c.id])}</b></span></button>`).join('')}</div>` : `<p class="note" style="margin:0">${L.al.howTo}</p>`}
     ${ns === 'granted' ? `<p class="note" style="margin:0">✓ ${L.al.notifOn}</p>` : ns === 'denied' ? `<p class="note" style="margin:0">${L.al.notifBlocked}</p>` : ns === 'unsupported' ? '' : `<button class="btn-ghost" data-action="notif-on">${I.bell}<span>${L.al.enable}</span></button>`}
   </section>`;
 }
