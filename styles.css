@@ -974,3 +974,18 @@ button.deck-tile { text-align: left; width: 100%; }
 .tabbar a { position: relative; }
 .abadge { position: absolute; top: 2px; left: 50%; margin-left: 6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px; background: #ff2d4b; color: #fff; font: 700 11px/18px var(--font-body); text-align: center; box-shadow: 0 0 0 2px var(--bg); }
 .abadge[hidden] { display: none; }
+
+/* bannière de profil */
+.profile-banner { margin: -14px -14px 0; aspect-ratio: 3 / 1; border-radius: 16px 16px 0 0; overflow: hidden; background: linear-gradient(120deg, #2a1d4d, #0e3a4a); display: grid; place-items: center; }
+.profile-banner img { width: 100%; height: 100%; object-fit: cover; }
+.profile-banner span { color: #fffb; font-size: 13px; padding: 0 16px; text-align: center; }
+.profile-panel .profile-banner + .profile-row { margin-top: -38px; }
+.profile-panel .profile-banner + .profile-row .profile-avatar { width: 72px; height: 72px; box-shadow: 0 0 0 4px var(--surface); }
+.profile-panel.is-supporter .profile-banner + .profile-row .profile-avatar { box-shadow: 0 0 0 4px var(--surface), 0 0 0 7px #f5c542; }
+.profile-panel .profile-banner + .profile-row .profile-text { margin-top: 38px; }
+.friend-hero { position: relative; border-radius: 16px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); padding-bottom: 12px; }
+.friend-hero .fh-banner { display: block; width: 100%; aspect-ratio: 3 / 1; object-fit: cover; }
+.friend-hero .fh-avatar { display: grid; place-items: center; width: 72px; height: 72px; margin: -36px 0 0 14px; position: relative; border-radius: 50%; overflow: hidden; background: var(--surface-2); box-shadow: 0 0 0 4px var(--surface); font: 700 28px var(--font-display); }
+.friend-hero.no-banner .fh-avatar { margin-top: 12px; }
+.friend-hero .fh-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.friend-hero b { display: block; margin: 6px 0 0 14px; font: 600 18px var(--font-display); }

@@ -72,15 +72,15 @@ service cloud.firestore {
         && request.resource.data.active is bool;
     }
 
-    // photo de profil : visible par le compte et ses amis, réservée aux soutiens actifs
+    // photo et bannière de profil : visibles par le compte et ses amis, réservées aux soutiens actifs ; un admin peut les retirer
     match /profiles/{uid} {
       allow read: if isMe(uid) || isFriendOf(uid);
-      allow delete: if isMe(uid);
+      allow delete: if isMe(uid) || isAdmin();
       allow create, update: if isMe(uid)
         && get(/databases/$(database)/documents/supporters/$(uid)).data.active == true
-        && request.resource.data.keys().hasOnly(['avatar', 'updatedAt'])
-        && request.resource.data.avatar is string
-        && request.resource.data.avatar.size() < 80000;
+        && request.resource.data.keys().hasOnly(['avatar', 'banner', 'updatedAt'])
+        && (!('avatar' in request.resource.data) || (request.resource.data.avatar is string && request.resource.data.avatar.size() < 80000))
+        && (!('banner' in request.resource.data) || (request.resource.data.banner is string && request.resource.data.banner.size() < 200000));
     }
 
     // pseudos uniques : handles/<pseudo> → { uid }

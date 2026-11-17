@@ -160,6 +160,13 @@ const TEXT = {
       unsure: 'Pas sûr à 100 % : vérifie que c\'est la bonne.', owned: (q) => `Tu en as déjà ${q}.`, versions: 'Autres versions de cette carte :', notIt: 'Ce n\'est pas elle ?',
       add: '+1 Je l\'ai', open: 'Voir la fiche', again: 'Rescanner', added: (q) => `Ajoutée : tu en as ${q}` },
     inst: { title: 'Installe NightDex', pitch: 'Comme une vraie appli : icône sur ton écran, plein écran sans navigateur, et ça marche hors connexion.', btn: 'Installer', ios: 'Sur iPhone : touche Partager (le carré avec la flèche), puis « Sur l\'écran d\'accueil ».', done: 'NightDex est installée ! Ouvre-la depuis ton écran d\'accueil.' },
+    mod: {
+      bannerAdd: 'Ajouter une bannière', bannerChange: 'Changer la bannière', bannerEmpty: 'Ta bannière de profil (format large, comme sur Discord)', bannerSaved: 'Bannière enregistrée', bannerRemoved: 'Bannière retirée',
+      checking: 'Vérification de l\'image…', policy: 'Chaque image est vérifiée automatiquement avant d\'être publiée : pas de nudité, de contenu sexuel, de sang, de cadavre ni de violence.',
+      rejected: (c) => `Image refusée : ${c}. Choisis une autre image.`, unavailable: 'Vérification de l\'image impossible pour le moment : elle n\'a pas été publiée. Réessaie plus tard.',
+      cats: { sexual: 'contenu sexuel', nudity: 'nudité', gore: 'sang ou blessures', violence: 'violence', hate: 'contenu haineux', drugs: 'drogue', other: 'contenu inapproprié' },
+      adminTitle: 'Retirer la photo et la bannière d\'un compte (image signalée) :', adminRemove: 'Retirer', adminDone: 'Images du compte retirées',
+    },
     adm: { title: 'Administration', role: 'rôle admin', idPh: 'ID NightDex du donateur', activate: 'Activer', remove: 'Retirer', listTitle: 'Soutiens actifs', none: 'Aucun soutien pour l\'instant.', on: 'Soutien activé', off: 'Soutien retiré', badId: 'ID invalide : copie-le depuis « Mon compte » du donateur.', denied: 'Refusé : les règles Firestore ne reconnaissent pas encore ce compte comme admin (publie les nouvelles règles).' },
     support: 'Soutenir NightDex', supportHint: 'NightDex est gratuit et fait par un fan. Un don aide à le faire vivre et débloque des bonus (photo de profil, cadre doré).',
     supporter: 'Soutien', supporterThanks: 'Merci pour ton soutien ! Tes bonus sont actifs.',
@@ -339,6 +346,13 @@ const TEXT = {
       unsure: 'Not 100 % sure: check it is the right one.', owned: (q) => `You already have ${q}.`, versions: 'Other versions of this card:', notIt: 'Not this one?',
       add: '+1 I have it', open: 'View card', again: 'Scan again', added: (q) => `Added: you have ${q}` },
     inst: { title: 'Install NightDex', pitch: 'Like a real app: an icon on your screen, full screen without a browser, and it works offline.', btn: 'Install', ios: 'On iPhone: tap Share (the square with the arrow), then “Add to Home Screen”.', done: 'NightDex is installed! Open it from your home screen.' },
+    mod: {
+      bannerAdd: 'Add a banner', bannerChange: 'Change banner', bannerEmpty: 'Your profile banner (wide format, like on Discord)', bannerSaved: 'Banner saved', bannerRemoved: 'Banner removed',
+      checking: 'Checking the image…', policy: 'Every image is checked automatically before it is published: no nudity, sexual content, blood, dead bodies or violence.',
+      rejected: (c) => `Image refused: ${c}. Choose another image.`, unavailable: 'The image could not be checked right now, so it was not published. Try again later.',
+      cats: { sexual: 'sexual content', nudity: 'nudity', gore: 'blood or injuries', violence: 'violence', hate: 'hateful content', drugs: 'drugs', other: 'inappropriate content' },
+      adminTitle: 'Remove an account\'s picture and banner (reported image):', adminRemove: 'Remove', adminDone: 'Account images removed',
+    },
     adm: { title: 'Administration', role: 'admin role', idPh: 'Donor\'s NightDex ID', activate: 'Activate', remove: 'Remove', listTitle: 'Active supporters', none: 'No supporters yet.', on: 'Supporter activated', off: 'Supporter removed', badId: 'Invalid ID: copy it from the donor\'s “My account”.', denied: 'Refused: the Firestore rules do not recognise this account as admin yet (publish the new rules).' },
     support: 'Support NightDex', supportHint: 'NightDex is free and fan-made. A donation keeps it alive and unlocks extras (profile picture, gold frame).',
     supporter: 'Supporter', supporterThanks: 'Thanks for your support! Your extras are active.',
@@ -1251,7 +1265,7 @@ function onCloudUser(u) {
   cloud.unsub?.(); cloud.unsub = null;
   cloud.user = u ? { uid: u.uid, email: u.email, name: u.displayName } : null;
   cloud.confirmDelete = false;
-  cloud.supporter = false; cloud.avatar = null;
+  cloud.supporter = false; cloud.avatar = null; cloud.banner = null;
   gOnUser(u); dOnUser(u);
   if (!u) { cloud.status = 'off'; friendsStop(); renderChromeBadges(); refreshAccount(); if (currentRender === renderFriends || currentRender === renderFriendCurrent) currentRender(); return; }
   cloud.status = 'syncing'; refreshAccount();
@@ -1319,9 +1333,18 @@ function adminPanel() {
     <form class="inline-form" id="adminForm"><input class="search" id="adminId" autocomplete="off" placeholder="${L.adm.idPh}"><button class="cta" ${admin.busy ? 'disabled' : ''}>${L.adm.activate}</button></form>
     ${admin.msg ? `<p class="form-err">${esc(admin.msg)}</p>` : ''}
     <span class="note">${L.adm.listTitle} (${admin.list.length})</span>
+    <span class="note">${L.mod.adminTitle}</span>
+    <form class="inline-form" id="adminModForm"><input class="search" id="adminModId" autocomplete="off" placeholder="${L.adm.idPh}"><button class="btn-ghost">${L.mod.adminRemove}</button></form>
     ${admin.list.map((a) => `<div class="id-row"><b>${a.pseudo !== '?' ? '@' + esc(a.pseudo) : '—'}</b><code>${esc(a.uid)}</code><button class="chip" data-admin-off="${esc(a.uid)}">${L.adm.remove}</button></div>`).join('') || `<span class="note">${L.adm.none}</span>`}
   </div>`;
 }
+document.addEventListener('submit', async (e) => {
+  if (e.target.id !== 'adminModForm') return;
+  e.preventDefault();
+  const uid = document.getElementById('adminModId').value.trim();
+  if (!/^[A-Za-z0-9]{20,40}$/.test(uid)) { toast(L.adm.badId); return; }
+  try { await fsx().deleteDoc(dref('profiles', uid)); toast(L.mod.adminDone); } catch (er) { toast(er?.code === 'permission-denied' ? L.adm.denied : L.fr.error); }
+});
 document.addEventListener('submit', (e) => {
   if (e.target.id !== 'adminForm') return;
   e.preventDefault();
@@ -1334,7 +1357,7 @@ document.addEventListener('click', (e) => {
 async function loadProfile(uid) {
   const { fsM, db } = cloud.api;
   try { const s = await fsM.getDoc(fsM.doc(db, 'supporters', uid)); if (cloud.user?.uid === uid) cloud.supporter = s.exists() && s.data().active === true; } catch { /* pas de statut */ }
-  try { const p = await fsM.getDoc(fsM.doc(db, 'profiles', uid)); if (cloud.user?.uid === uid) cloud.avatar = p.exists() ? p.data().avatar ?? null : null; } catch { /* pas de photo */ }
+  try { const p = await fsM.getDoc(fsM.doc(db, 'profiles', uid)); if (cloud.user?.uid === uid) { cloud.avatar = p.exists() ? p.data().avatar ?? null : null; cloud.banner = p.exists() ? p.data().banner ?? null : null; } } catch { /* pas de photo */ }
   refreshAccount();
 }
 function resizeAvatar(file) {
@@ -1354,13 +1377,73 @@ function resizeAvatar(file) {
     img.src = URL.createObjectURL(file);
   });
 }
-async function saveAvatar(file) {
+// bannière de profil (comme Discord) : 960 × 320, recadrée au centre
+function resizeBanner(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const W = 960, H = 320, c = document.createElement('canvas');
+      c.width = W; c.height = H;
+      const k = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+      const w = W / k, h = H / k;
+      c.getContext('2d').drawImage(img, (img.naturalWidth - w) / 2, (img.naturalHeight - h) / 2, w, h, 0, 0, W, H);
+      URL.revokeObjectURL(img.src);
+      let url = c.toDataURL('image/webp', 0.78);
+      if (!url.startsWith('data:image/webp')) url = c.toDataURL('image/jpeg', 0.78);
+      if (url.length > 190000) url = c.toDataURL('image/jpeg', 0.6);
+      resolve(url);
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+}
+// ---------- Vérification automatique des images de profil (Gemini, même service que Capri) ----------
+// Refuse la nudité, le contenu sexuel, le sang, les blessures, les cadavres, la violence réelle, les symboles haineux et la drogue.
+// En cas de doute ou si la vérification est impossible, l'image n'est pas publiée.
+const MOD_PROMPT = `Tu es le modérateur des images de profil d'une application de collection de cartes, utilisée aussi par des adolescents.
+Analyse l'image et réponds UNIQUEMENT en JSON : {"ok": true ou false, "category": "none" | "sexual" | "nudity" | "gore" | "violence" | "hate" | "drugs" | "other", "reason": "raison courte en français"}.
+REFUSE (ok=false) : nudité ou semi-nudité, contenu sexuel ou très suggestif, sang, blessures, mutilation, cadavre ou personne morte, violence réelle ou torture, arme pointée sur une vraie personne, symboles ou gestes haineux, drogue, automutilation, contenu choquant.
+ACCEPTE (ok=true) : selfies et personnes habillées, animaux, paysages, objets, cartes à jouer, logos, illustrations de jeux vidéo ou d'anime (même des personnages armés ou en action) tant qu'il n'y a ni gore, ni nudité, ni sang.
+En cas de doute sur la nudité, le sang ou un cadavre, refuse.`;
+async function moderateImage(dataUrl) {
+  if (!cloud.api?.app) throw Object.assign(new Error('mod'), { userMsg: L.mod.unavailable });
+  if (!capri.aiM) { capri.aiM = await import(`${FIREBASE}/firebase-ai.js`); capri.ai = capri.aiM.getAI(cloud.api.app, { backend: new capri.aiM.GoogleAIBackend() }); }
+  const [, mime, data] = /^data:([^;]+);base64,(.*)$/.exec(dataUrl) ?? [];
+  const models = cloud.cfg?.capriModels?.length ? cloud.cfg.capriModels : CAPRI_MODELS_DEFAULT;
+  for (const name of models) {
+    let res;
+    try {
+      const model = capri.aiM.getGenerativeModel(capri.ai, { model: name, generationConfig: { responseMimeType: 'application/json', temperature: 0, maxOutputTokens: 300 } });
+      res = await model.generateContent([{ text: MOD_PROMPT }, { inlineData: { mimeType: mime, data } }]);
+    } catch (e) {
+      if (/SAFETY|blocked|PROHIBITED/i.test(String(e?.message))) throw Object.assign(new Error('mod'), { userMsg: L.mod.rejected(L.mod.cats.other) });
+      continue;   // modèle indisponible : on essaie le suivant
+    }
+    const r = res.response;
+    if (r.promptFeedback?.blockReason || r.candidates?.[0]?.finishReason === 'SAFETY') throw Object.assign(new Error('mod'), { userMsg: L.mod.rejected(L.mod.cats.other) });
+    let out;
+    try { out = JSON.parse(r.text()); } catch { continue; }
+    if (out?.ok === true && (!out.category || out.category === 'none')) return true;
+    throw Object.assign(new Error('mod'), { userMsg: L.mod.rejected(L.mod.cats[out?.category] ?? L.mod.cats.other) });
+  }
+  throw Object.assign(new Error('mod'), { userMsg: L.mod.unavailable });
+}
+async function saveProfileImage(file, kind) {
   const { fsM, db } = cloud.api;
+  cloud.modBusy = kind; refreshAccount();
   try {
-    const url = await resizeAvatar(file);
-    await fsM.setDoc(fsM.doc(db, 'profiles', cloud.user.uid), { avatar: url, updatedAt: fsM.serverTimestamp() });
-    cloud.avatar = url; toast(L.avatarSaved);
-  } catch (e) { toast(e?.code === 'permission-denied' ? L.avatarDenied : L.avatarErr); }
+    const url = kind === 'banner' ? await resizeBanner(file) : await resizeAvatar(file);
+    await moderateImage(url);
+    await fsM.setDoc(fsM.doc(db, 'profiles', cloud.user.uid), { [kind]: url, updatedAt: fsM.serverTimestamp() }, { merge: true });
+    cloud[kind] = url; toast(kind === 'banner' ? L.mod.bannerSaved : L.avatarSaved);
+  } catch (e) { toast(e?.userMsg ?? (e?.code === 'permission-denied' ? L.avatarDenied : L.avatarErr)); }
+  cloud.modBusy = null; refreshAccount();
+}
+const saveAvatar = (file) => saveProfileImage(file, 'avatar');
+async function removeProfileImage(kind) {
+  const { fsM, db } = cloud.api;
+  try { await fsM.setDoc(fsM.doc(db, 'profiles', cloud.user.uid), { [kind]: fsM.deleteField(), updatedAt: fsM.serverTimestamp() }, { merge: true }); cloud[kind] = null; toast(kind === 'banner' ? L.mod.bannerRemoved : L.avatarRemoved); }
+  catch { toast(L.avatarErr); }
   refreshAccount();
 }
 const supportLink = (cls = 'support-link') => (supportUrl() ? `<a class="${cls}" href="${esc(supportUrl())}" target="_blank" rel="noopener">${I.heartSmall}<span>${L.support}</span></a>` : '');
@@ -1385,7 +1468,8 @@ function openAccount(keep) {
         ${status}
         <span class="note">${L.syncInfo(Object.values(user.owned).filter((q) => q > 0).length, wish.size)}</span>
       </div>
-      <div class="panel profile-panel ${cloud.supporter ? 'is-supporter' : ''}">
+      <div class="panel profile-panel ${cloud.supporter ? 'is-supporter' : ''} ${cloud.banner ? 'has-banner' : ''}">
+        ${cloud.supporter || cloud.banner ? `<div class="profile-banner">${cloud.banner ? `<img src="${esc(cloud.banner)}" alt="">` : `<span>${L.mod.bannerEmpty}</span>`}</div>` : ''}
         <div class="profile-row">
           <span class="profile-avatar">${cloud.avatar ? `<img src="${esc(cloud.avatar)}" alt="">` : I.person}</span>
           <div class="profile-text">
@@ -1394,10 +1478,16 @@ function openAccount(keep) {
           </div>
         </div>
         ${cloud.supporter ? `<div class="profile-actions">
-          <label class="btn-ghost" for="avatarFile">${cloud.avatar ? L.avatarChange : L.avatarAdd}</label>
-          <input id="avatarFile" type="file" accept="image/*" hidden>
+          <label class="btn-ghost" for="avatarFile">${cloud.modBusy === 'avatar' ? L.mod.checking : cloud.avatar ? L.avatarChange : L.avatarAdd}</label>
+          <input id="avatarFile" type="file" accept="image/*" hidden ${cloud.modBusy ? 'disabled' : ''}>
           ${cloud.avatar ? `<button class="btn-ghost" data-action="avatar-remove">${L.avatarRemove}</button>` : ''}
-        </div>` : supportLink('btn-ghost support-btn')}
+        </div>
+        <div class="profile-actions">
+          <label class="btn-ghost" for="bannerFile">${cloud.modBusy === 'banner' ? L.mod.checking : cloud.banner ? L.mod.bannerChange : L.mod.bannerAdd}</label>
+          <input id="bannerFile" type="file" accept="image/*" hidden ${cloud.modBusy ? 'disabled' : ''}>
+          ${cloud.banner ? `<button class="btn-ghost" data-action="banner-remove">${L.avatarRemove}</button>` : ''}
+        </div>
+        <span class="note">${L.mod.policy}</span>` : supportLink('btn-ghost support-btn')}
         <div class="id-row"><span class="note">${L.myId} :</span><code id="myId">${esc(u.uid)}</code><button class="chip" data-action="copy-id">${L.copy}</button></div>
         ${cloud.supporter ? '' : `<span class="note">${L.myIdHint}</span>`}
       </div>
@@ -1864,13 +1954,13 @@ async function renderFriend(uid) {
     view.innerHTML = `<div class="empty"><strong>${L.fr.loading}</strong></div>`;
     try {
       const [snap, name] = await Promise.all([fsx().getDoc(dref('users', uid)), friendName(uid)]);
-      let avatar = null;
-      try { const p = await fsx().getDoc(dref('profiles', uid)); avatar = p.exists() ? p.data().avatar : null; } catch { /* pas de photo */ }
+      let avatar = null, banner = null;
+      try { const p = await fsx().getDoc(dref('profiles', uid)); avatar = p.exists() ? p.data().avatar ?? null : null; banner = p.exists() ? p.data().banner ?? null : null; } catch { /* pas de photo */ }
       let decks = [];
       try { const ds = await fsx().getDoc(dref('decks', uid)); if (ds.exists()) decks = ds.data().list ?? []; } catch { /* pas de decks ou règles pas à jour */ }
       let gd = { items: [], sales: {} };
       try { const gs = await fsx().getDoc(dref('graded', uid)); if (gs.exists()) gd = gFromCloud(gs.data()); } catch { /* pas de slabs ou règles pas à jour */ }
-      fr.view = { uid, decks, graded: gd.items, gsales: gd.sales, pseudo: name.pseudo, avatar, owned: migrateOwned({ ...(snap.exists() ? snap.data().owned ?? {} : {}) }), wish: snap.exists() ? snap.data().wish ?? [] : [] };
+      fr.view = { uid, banner, decks, graded: gd.items, gsales: gd.sales, pseudo: name.pseudo, avatar, owned: migrateOwned({ ...(snap.exists() ? snap.data().owned ?? {} : {}) }), wish: snap.exists() ? snap.data().wish ?? [] : [] };
     } catch (e) {
       view.innerHTML = `<div class="empty"><strong>${L.fr.cantSee}</strong>${L.fr.cantSeeHint}<a class="btn-ghost" href="#friends" style="text-decoration:none">${L.back}</a></div>`;
       return;
@@ -1897,6 +1987,7 @@ async function renderFriend(uid) {
       <div class="stat"><small>${L.kUnique}</small><b class="num">${theirs.length}</b></div>
       <div class="stat"><small>${L.kValue}</small><b class="num">${eur(value)}</b></div>
     </div>
+    ${v.banner || v.avatar ? `<div class="friend-hero ${v.banner ? '' : 'no-banner'}">${v.banner ? `<img class="fh-banner" src="${esc(v.banner)}" alt="">` : ''}<span class="fh-avatar">${v.avatar ? `<img src="${esc(v.avatar)}" alt="">` : esc(v.pseudo[0]?.toUpperCase() ?? '?')}</span><b>@${esc(v.pseudo)}</b></div>` : ''}
     <div class="chips">${[['all', L.fr.fAll], ['trade', L.fr.fTrade], ['give', L.fr.fGive], ['wish', L.fr.fWish]].map(([k, l]) => `<button class="chip" data-frf="${k}" aria-pressed="${fr.filter === k}">${l} · ${lists[k].length}</button>`).join('')}</div>
     ${v.decks?.length && fr.filter === 'all' ? `<h2 class="section-title">${L.sh.friendDecks} · ${v.decks.length}</h2><div class="deck-list">${v.decks.map((dk) => { const ck = deckCheck({ ...dk, side: dk.side ?? {} }); const legs = (dk.legends ?? []).map((id) => cardsById.get(id)); return `<button class="deck-tile" data-frdeck="${esc(dk.d)}"><span class="deck-legs">${[0, 1, 2].map((i) => (legs[i] ? `<img src="${esc(imageOf(legs[i]) || placeholderArt(legs[i]))}" alt="" loading="lazy">` : '<span class="leg-empty"></span>')).join('')}</span><span class="deck-meta"><b>${esc(dk.name || L.dk.untitled)}</b><span class="note num">${COLORS.filter((k) => ck.ram[k]).map(colorDot).join('')} ${L.dk.cards(ck.count)}</span><span class="dbadge ${ck.valid ? 'ok' : 'ko'}">${ck.valid ? `✓ ${L.dk.legal}` : L.dk.notLegal}</span></span></button>`; }).join('')}</div>` : ''}
     ${v.graded?.length && fr.filter === 'all' ? `<h2 class="section-title">${L.gr.tab} · ${v.graded.length}</h2><div class="slabs">${v.graded.filter((e) => cardsById.has(e.id)).map((e) => slabTile(e, { friend: uid })).join('')}</div><h2 class="section-title">${L.gr.tabCards}</h2>` : ''}
@@ -2225,9 +2316,8 @@ document.addEventListener('click', async (e) => {
     const id = cloud.user?.uid ?? '';
     try { await navigator.clipboard.writeText(id); toast(L.copiedId); }
     catch { const el = document.getElementById('myId'); if (el) { const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); } }
-  } else if (d.action === 'avatar-remove') {
-    try { await cloud.api.fsM.deleteDoc(cloud.api.fsM.doc(cloud.api.db, 'profiles', cloud.user.uid)); cloud.avatar = null; toast(L.avatarRemoved); } catch { toast(L.avatarErr); }
-    refreshAccount();
+  } else if (d.action === 'avatar-remove') { removeProfileImage('avatar');
+  } else if (d.action === 'banner-remove') { removeProfileImage('banner');
   }
   else if (d.action === 'next') navStep(1);
   else if (d.action === 'google') signInGoogle();
@@ -2262,6 +2352,7 @@ document.addEventListener('click', async (e) => {
 });
 document.addEventListener('change', (e) => {
   if (e.target.id === 'avatarFile' && e.target.files?.[0] && cloud.user) saveAvatar(e.target.files[0]);
+  if (e.target.id === 'bannerFile' && e.target.files?.[0] && cloud.user) saveProfileImage(e.target.files[0], 'banner');
 });
 document.addEventListener('change', async (e) => {
   if (e.target.id !== 'importFile') return;
