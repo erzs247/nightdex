@@ -394,7 +394,16 @@ const typeLabel = (t) => L.type[t] ?? t;
 const colorLabel = (c) => L.color[c] ?? c;
 const cardName = (c) => (cardLang === 'en' ? c.nameEn ?? c.name : c.name);
 // la carte existe-t-elle dans la langue choisie ? (le scellé est affiché dans les deux)
-const inCardLang = (c) => isSealed(c) || !c.languages || c.languages.includes(cardLang);
+const inCardLang = (c) => (isSealed(c) ? sealedLangs(c).includes(cardLang) : !c.languages || c.languages.includes(cardLang));
+// langues d'un produit scellé : indiquées dans sealed.json, sinon celles des cartes de sa série (ex. bêta = anglais seulement)
+const setLangCache = new Map();
+function sealedLangs(it) {
+  if (it.languages) return it.languages;
+  if (!it.set) return ['fr', 'en'];
+  if (!setLangCache.has(it.set)) setLangCache.set(it.set, [...new Set((cardsBySet.get(it.set) ?? []).flatMap((c) => c.languages ?? ['fr', 'en']))]);
+  const l = setLangCache.get(it.set);
+  return l.length ? l : ['fr', 'en'];
+}
 const setCards = (code) => (cardsBySet.get(code) ?? []).filter(inCardLang);
 const setName = (s) => (cardLang === 'en' ? s.nameEn ?? s.name : s.name);
 const blockName = (b) => L.blocks[b] ?? b;
@@ -653,7 +662,7 @@ function renderSealed() {
   const cats = ['booster', 'box', 'case', 'deck', 'kit'];
   view.innerHTML = `<div class="stack">
     ${homeTabs('sealed')}
-    ${cats.map((cat) => { const list = sealed.filter((s) => s.category === cat).sort((a, b) => a.order - b.order); return list.length ? `<h2 class="section-title">${L.cats[cat]}</h2><div class="sealed-grid">${list.map(sealedTile).join('')}</div>` : ''; }).join('')}
+    ${cats.map((cat) => { const list = sealed.filter((s) => s.category === cat && inCardLang(s)).sort((a, b) => a.order - b.order); return list.length ? `<h2 class="section-title">${L.cats[cat]}</h2><div class="sealed-grid">${list.map(sealedTile).join('')}</div>` : ''; }).join('')}
     <p class="note">${L.sealedNote(updated)}</p>
   </div>`;
 }
@@ -763,7 +772,7 @@ let colSet = '';
 function renderCollection() {
   setTopbar(`<h1>${L.myCollection}</h1>${langBtn()}${cloud.enabled ? `<a class="chip friends-chip" href="#friends">${L.fr.title}<span class="fbadge" data-friends-badge ${fr.requests.length ? '' : 'hidden'}>${fr.requests.length || ''}</span></a>` : ''}`);
   const owned = [...catalog.cards, ...extras.filter(inCardLang)].filter((c) => qty(c.id) > 0);
-  const ownedSealed = sealed.filter((s) => qty(s.id) > 0);
+  const ownedSealed = sealed.filter((s) => qty(s.id) > 0 && inCardLang(s));
   if (!owned.length && !ownedSealed.length) {
     view.innerHTML = `<div class="stack">${colTabs('collection')}<div class="empty"><strong>${L.emptyCol}</strong>${L.emptyColHint}<a class="btn-ghost" href="#home" style="text-decoration:none">${L.browseSets}</a></div></div>`;
     return;
