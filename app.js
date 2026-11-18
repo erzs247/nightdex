@@ -61,12 +61,16 @@ const TEXT = {
       needPseudo: 'Choisis d\'abord un pseudo dans', joined: 'Tu apparais dans le classement mondial', left: 'Tu n\'apparais plus dans le classement mondial',
       emptyWorld: 'Personne dans le classement mondial pour l\'instant. Inscris-toi avec la case ci-dessus !', emptyFriends: 'Ajoute des amis pour vous comparer.',
       mySets: 'Mes séries complètes', verifiedCount: (v, n) => `${v}/${n} vérifiée${v > 1 ? 's' : ''}`, verify: 'Vérifier', allVerified: 'Toutes tes séries complètes sont vérifiées ✓', noneComplete: 'Aucune série complète pour l\'instant.',
-      rule: 'Anti-triche : une série complète ne compte dans « Séries vérifiées » qu\'avec une photo prise en direct de sa carte la plus chère, reconnue par l\'appli. Les photos sont visibles par les autres joueurs (touche un pseudo).',
+      rule: 'Une série complète ne compte dans « Séries vérifiées » qu\'avec une photo prise en direct de sa carte la plus chère, reconnue par l\'appli. Les photos sont visibles par les autres joueurs (touche un pseudo).',
       setDone: 'Série complète !', setVerified: ' Vérifiée ✓', setToVerify: ' Vérifie-la avec une photo de sa carte la plus chère pour qu\'elle compte au classement.',
       notComplete: 'Cette série n\'est pas encore complète.', camTitle: 'Photo de vérification', camHint: (s) => `Carte la plus chère de ${s} : tiens-la bien en face, dans le cadre.`,
       aim: 'Place la carte dans le cadre : la photo se prend toute seule quand elle est reconnue.', shoot: 'Prendre la photo', noCamera: 'Caméra indisponible : la vérification demande une photo prise en direct avec le téléphone.',
       notRecognised: 'Carte pas reconnue : rapproche-toi, évite les reflets, mets-la bien droite.', wrongCard: (n) => `Ce n'est pas la bonne carte (${n}).`,
       verified: (s) => `${s} : série vérifiée ✓`, proofsIntro: 'Photos prises en direct des cartes les plus chères de ses séries complètes.', noProofs: 'Aucune série vérifiée.',
+      myCards: (m) => `Mes cartes de plus de ${m} € à vérifier`, pending: (v) => `${v} pas encore compté`, cardsAllOk: 'Toutes tes cartes chères sont vérifiées ✓ (ou tu n\'en as pas).',
+      cardRule: (m) => `Anti-triche : une carte qui vaut ${m} € ou plus ne compte dans la valeur du classement qu'après une photo prise en direct, reconnue par l'appli. Les autres cartes comptent directement.`,
+      cardOk: 'Vérifiée ✓ : elle compte dans ta valeur au classement', cardNeeds: (m) => `Plus de ${m} € : vérifie-la par photo pour qu'elle compte au classement`,
+      camHintCard: 'Tiens la carte bien en face, dans le cadre.', cardVerified: (n) => `${n} : carte vérifiée ✓`, verifiedCards: 'Cartes vérifiées',
       adminRemove: 'Retirer du classement', adminDone: 'Compte retiré du classement (et ses photos de vérification)',
     },
     wl: {
@@ -277,6 +281,10 @@ const TEXT = {
       aim: 'Put the card in the frame: the photo is taken automatically once it is recognised.', shoot: 'Take photo', noCamera: 'Camera unavailable: verification needs a live photo taken with the phone.',
       notRecognised: 'Card not recognised: get closer, avoid glare, hold it straight.', wrongCard: (n) => `That is not the right card (${n}).`,
       verified: (s) => `${s}: set verified ✓`, proofsIntro: 'Live photos of the most expensive cards of their complete sets.', noProofs: 'No verified set.',
+      myCards: (m) => `My cards worth over ${m} € to verify`, pending: (v) => `${v} not counted yet`, cardsAllOk: 'All your expensive cards are verified ✓ (or you have none).',
+      cardRule: (m) => `Anti-cheat: a card worth ${m} € or more only counts in the leaderboard value after a live photo recognised by the app. Other cards count straight away.`,
+      cardOk: 'Verified ✓: it counts in your leaderboard value', cardNeeds: (m) => `Over ${m} €: verify it with a photo so it counts in the leaderboard`,
+      camHintCard: 'Hold the card straight, inside the frame.', cardVerified: (n) => `${n}: card verified ✓`, verifiedCards: 'Verified cards',
       adminRemove: 'Remove from leaderboard', adminDone: 'Account removed from the leaderboard (and its verification photos)',
     },
     wl: {
@@ -1231,6 +1239,7 @@ function openCard(id, keepNav) {
       </section>` : ''}
       ${wish.has(id) ? wlChips(id) : ''}
       ${wish.has(id) && !sealedItem ? alertLine(id) : ''}
+      ${cloud.enabled && qtyAll(id) > 0 && needsProof(id) ? `<div class="verify-line ${cardVerified(id) ? 'ok' : ''}">${I.trophy}<span>${cardVerified(id) ? L.lb.cardOk : L.lb.cardNeeds(VERIFY_MIN())}</span>${cardVerified(id) ? '' : `<button class="chip" data-proof-card="${esc(id)}">${I.camera}<span>${L.lb.verify}</span></button>`}</div>` : ''}
       ${q > 0 ? `<div class="paid-line">
         <label for="cardPaid">${L.paidLabel}</label>
         <input id="cardPaid" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0,00" value="${paidOf(id) ?? ''}" data-paid-id="${esc(id)}">
@@ -1448,8 +1457,10 @@ document.addEventListener('submit', async (e) => {
   if (!/^[A-Za-z0-9]{20,40}$/.test(uid)) { toast(L.adm.badId); return; }
   try {
     await fsx().deleteDoc(dref('leaderboard', uid));
-    const ps = await fsx().getDocs(cref('proofs', uid, 'sets')).catch(() => null);
-    for (const d of ps?.docs ?? []) await fsx().deleteDoc(d.ref).catch(() => {});
+    for (const sub of ['sets', 'cards']) {
+      const ps = await fsx().getDocs(cref('proofs', uid, sub)).catch(() => null);
+      for (const d of ps?.docs ?? []) await fsx().deleteDoc(d.ref).catch(() => {});
+    }
     toast(L.lb.adminDone);
   } catch (er) { toast(er?.code === 'permission-denied' ? L.adm.denied : L.fr.error); }
 });
@@ -2556,7 +2567,7 @@ function gValue(e, sales = gSales(e)) {
   const last = sales.slice(-3).map(([, p]) => p).sort((a, b) => a - b);
   return last[Math.floor(last.length / 2)];
 }
-const gSig = () => JSON.stringify([user.graded, Object.entries(user.gsales).sort(), Object.entries(user.paid).sort(), Object.entries(user.copies ?? {}).sort(), Object.entries(user.alerts ?? {}).sort(), user.wlists ?? [], Object.keys(user.proofs ?? {}).sort()]);
+const gSig = () => JSON.stringify([user.graded, Object.entries(user.gsales).sort(), Object.entries(user.paid).sort(), Object.entries(user.copies ?? {}).sort(), Object.entries(user.alerts ?? {}).sort(), user.wlists ?? [], Object.keys(user.proofs ?? {}).sort(), Object.keys(user.cardProofs ?? {}).sort()]);
 let gLastSig = gSig();
 function gSave() {
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* stockage indisponible */ }
@@ -2651,13 +2662,13 @@ function gMerge(a, b) {
     const seen = new Set((sales[k] ?? []).map((s) => s.join('|')));
     sales[k] = [...(sales[k] ?? []), ...list.filter((s) => !seen.has(s.join('|')))];
   }
-  return { items: [...items.values()], sales, paid: { ...(a?.paid ?? {}), ...(b?.paid ?? {}) }, copies: { ...(a?.copies ?? {}), ...(b?.copies ?? {}) }, alerts: { ...(a?.alerts ?? {}), ...(b?.alerts ?? {}) }, wlists: [...new Map([...(a?.wlists ?? []), ...(b?.wlists ?? [])].map((l) => [l.k, l])).values()], proofs: { ...(a?.proofs ?? {}), ...(b?.proofs ?? {}) } };
+  return { items: [...items.values()], sales, paid: { ...(a?.paid ?? {}), ...(b?.paid ?? {}) }, copies: { ...(a?.copies ?? {}), ...(b?.copies ?? {}) }, alerts: { ...(a?.alerts ?? {}), ...(b?.alerts ?? {}) }, wlists: [...new Map([...(a?.wlists ?? []), ...(b?.wlists ?? [])].map((l) => [l.k, l])).values()], proofs: { ...(a?.proofs ?? {}), ...(b?.proofs ?? {}) }, cardProofs: { ...(a?.cardProofs ?? {}), ...(b?.cardProofs ?? {}) } };
 }
 // Firestore n'accepte pas les tableaux de tableaux : ventes envoyées sous forme { d, p }
-const gToCloud = () => ({ items: user.graded, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [], proofs: user.proofs ?? {}, sales: Object.fromEntries(Object.entries(user.gsales).map(([k, l]) => [k, l.map(([d, p]) => ({ d, p }))])) });
-const gFromCloud = (d) => ({ items: d?.items ?? [], paid: d?.paid ?? {}, copies: d?.copies ?? {}, alerts: d?.alerts ?? {}, wlists: d?.wlists ?? [], proofs: d?.proofs ?? {}, sales: Object.fromEntries(Object.entries(d?.sales ?? {}).map(([k, l]) => [k, l.map((s) => [s.d, s.p])])) });
+const gToCloud = () => ({ items: user.graded, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [], proofs: user.proofs ?? {}, cardProofs: user.cardProofs ?? {}, sales: Object.fromEntries(Object.entries(user.gsales).map(([k, l]) => [k, l.map(([d, p]) => ({ d, p }))])) });
+const gFromCloud = (d) => ({ items: d?.items ?? [], paid: d?.paid ?? {}, copies: d?.copies ?? {}, alerts: d?.alerts ?? {}, wlists: d?.wlists ?? [], proofs: d?.proofs ?? {}, cardProofs: d?.cardProofs ?? {}, sales: Object.fromEntries(Object.entries(d?.sales ?? {}).map(([k, l]) => [k, l.map((s) => [s.d, s.p])])) });
 function gApply(d) {
-  user.graded = d.items; user.gsales = d.sales; user.paid = d.paid ?? {}; user.copies = d.copies ?? {}; user.alerts = d.alerts ?? {}; user.wlists = d.wlists ?? []; user.proofs = d.proofs ?? {};
+  user.graded = d.items; user.gsales = d.sales; user.paid = d.paid ?? {}; user.copies = d.copies ?? {}; user.alerts = d.alerts ?? {}; user.wlists = d.wlists ?? []; user.proofs = d.proofs ?? {}; user.cardProofs = d.cardProofs ?? {};
   if (typeof alertsMirror === 'function') alertsMirror();
   gLastSig = gSig();
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* */ }
@@ -2686,7 +2697,7 @@ function gOnUser(u) {
   gCloud.unsub = cloud.api.fsM.onSnapshot(gRef(u.uid), async (snap) => {
     if (snap.metadata.hasPendingWrites) return;
     const remote = snap.exists() ? gFromCloud(snap.data()) : null;
-    const local = { items: user.graded, sales: user.gsales, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [], proofs: user.proofs ?? {} };
+    const local = { items: user.graded, sales: user.gsales, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [], proofs: user.proofs ?? {}, cardProofs: user.cardProofs ?? {} };
     if (first) {
       first = false;
       const next = !remote ? local : (user.gSyncedUid !== u.uid || user.gPending) ? gMerge(remote, local) : remote;
@@ -3885,6 +3896,12 @@ document.addEventListener('click', (e) => {
 // Séries vérifiées : une série complète ne compte qu'avec une photo prise en direct de sa carte la plus chère,
 // reconnue par le scanner de l'appli (proofs/<uid>/sets/<série>).
 if (!user.proofs || typeof user.proofs !== 'object') user.proofs = {};
+// cartes chères : elles ne comptent dans la valeur du classement qu'une fois vérifiées par photo en direct
+if (!user.cardProofs || typeof user.cardProofs !== 'object') user.cardProofs = {};
+const VERIFY_MIN = () => config.leaderboard?.verifyMin ?? 30;
+const needsProof = (id) => !isSealed(cardsById.get(id) ?? {}) && (price(id) ?? 0) >= VERIFY_MIN();
+const cardVerified = (id, proofs = user.cardProofs) => !!proofs?.[id.replace(/@en$/, '')];
+const toVerifyCards = () => [...catalog.cards, ...extras].filter((c) => qtyAll(c.id) > 0 && needsProof(c.id) && !cardVerified(c.id)).sort((a, b) => (price(b.id) ?? 0) - (price(a.id) ?? 0));
 const lb = { tab: 'friends', metric: 'value', rows: null, loading: false, msg: '', timer: 0 };
 const setIsComplete = (code) => { const all = cardsBySet.get(code) ?? []; return all.length > 0 && all.every((c) => qtyAll(c.id) > 0); };
 const setTopCard = (code) => [...(cardsBySet.get(code) ?? [])].sort((a, b) => (price(b.id) ?? -1) - (price(a.id) ?? -1))[0];
@@ -3892,24 +3909,26 @@ const verifiedSets = () => Object.keys(user.proofs).filter((code) => setOf(code)
 function myStats() {
   let cards = 0, unique = 0, value = 0;
   for (const c of [...catalog.cards, ...extras]) { const n = qtyAll(c.id); if (n) { cards += n; unique++; } }
-  for (const c of allItems()) value += valueAll(c.id);
-  return { cards, unique, value: Math.round(value * 100) / 100, sets: catalog.sets.filter((s) => setIsComplete(s.code)).length, verified: verifiedSets() };
+  let pending = 0;
+  for (const c of allItems()) { const v = valueAll(c.id); if (v && needsProof(c.id) && !cardVerified(c.id)) pending += v; else value += v; }
+  return { cards, unique, value: Math.round(value * 100) / 100, pending: Math.round(pending * 100) / 100, sets: catalog.sets.filter((s) => setIsComplete(s.code)).length, verified: verifiedSets() };
 }
 // collection d'un ami (sa carte « owned ») → mêmes chiffres, avec nos prix du jour
-function statsOf(owned) {
+function statsOf(owned, cardProofs = {}) {
   let cards = 0, unique = 0, value = 0;
   const seen = new Set();
   for (const [k, n] of Object.entries(owned ?? {})) {
     if (!(n > 0)) continue;
     const id = k.replace(/@en$/, ''), c = cardsById.get(id);
     if (!c) continue;
-    value += n * (price(id) ?? 0);
+    if (!(needsProof(id) && !cardVerified(id, cardProofs))) value += n * (price(id) ?? 0);
     if (!isSealed(c)) { cards += n; if (!seen.has(id)) { seen.add(id); unique++; } }
   }
   return { cards, unique, value: Math.round(value * 100) / 100 };
 }
 const lbRef = (uid) => cloud.api.fsM.doc(cloud.api.db, 'leaderboard', uid);
 const proofRef = (uid, code) => cloud.api.fsM.doc(cloud.api.db, 'proofs', uid, 'sets', code);
+const cardProofRef = (uid, id) => cloud.api.fsM.doc(cloud.api.db, 'proofs', uid, 'cards', id);
 async function lbPush() {
   if (!cloud.user || !user.prefs.lbPublic || !fr.me?.pseudo) return;
   const s = myStats();
@@ -3928,9 +3947,11 @@ async function lbLoad() {
       const rows = [{ uid: cloud.user.uid, pseudo: fr.me?.pseudo ?? L.lb.me, me: true, cards: me.cards, unique: me.unique, value: me.value, verified: me.verified.length }];
       await Promise.all(fr.list.map(async (f) => {
         try {
-          const [u, b] = await Promise.all([fsM.getDoc(dref('users', f.uid)), fsM.getDoc(lbRef(f.uid)).catch(() => null)]);
-          const st = statsOf(migrateOwned({ ...(u.exists() ? u.data().owned ?? {} : {}) }));
-          rows.push({ uid: f.uid, pseudo: f.pseudo, ...st, verified: b?.exists() ? (b.data().verified ?? []).length : 0 });
+          const [u, b, g] = await Promise.all([fsM.getDoc(dref('users', f.uid)), fsM.getDoc(lbRef(f.uid)).catch(() => null), fsM.getDoc(dref('graded', f.uid)).catch(() => null)]);
+          const gd = g?.exists() ? g.data() : {};
+          const st = statsOf(migrateOwned({ ...(u.exists() ? u.data().owned ?? {} : {}) }), gd.cardProofs ?? {});
+          const vsets = Object.keys(gd.proofs ?? {}).length || (b?.exists() ? (b.data().verified ?? []).length : 0);
+          rows.push({ uid: f.uid, pseudo: f.pseudo, ...st, verified: vsets });
         } catch { /* collection pas visible */ }
       }));
       lb.rows = rows;
@@ -3962,6 +3983,10 @@ function renderLeaderboard() {
         <button class="lb-name" data-lb-proofs="${esc(r.uid)}" data-pseudo="${esc(r.pseudo)}"><b>@${esc(r.pseudo)}</b><span class="note num">${L.lb.line(r.cards, r.unique, r.verified)}</span></button>
         <span class="lb-val num">${lb.metric === 'cards' ? `${r.cards}` : lb.metric === 'sets' ? `${r.verified} ✓` : eur(r.value)}</span>
       </li>`).join('')}</ol>` : `<div class="empty"><strong>${lb.tab === 'world' ? L.lb.emptyWorld : L.lb.emptyFriends}</strong></div>`}
+    <section class="panel"><h3>${L.lb.myCards(VERIFY_MIN())}<small class="num">${mine.pending ? L.lb.pending(eur(mine.pending)) : ''}</small></h3>
+      ${toVerifyCards().length ? `${toVerifyCards().slice(0, 30).map((c) => `<div class="lb-verify"><span><b class="num">${eur(price(c.id))}</b>${esc(cardName(c))}</span><button class="chip" data-proof-card="${esc(c.id)}">${I.camera}<span>${L.lb.verify}</span></button></div>`).join('')}` : `<p class="note" style="margin:0">${L.lb.cardsAllOk}</p>`}
+      <p class="note" style="margin:0">${L.lb.cardRule(VERIFY_MIN())}</p>
+    </section>
     <section class="panel"><h3>${L.lb.mySets}<small>${L.lb.verifiedCount(mine.verified.length, mine.sets)}</small></h3>
       ${toVerify.length ? toVerify.map((s) => `<div class="lb-verify"><span><b class="title-code">${esc(s.print ?? s.code)}</b>${esc(setName(s))}</span><button class="chip" data-proof="${esc(s.code)}">${I.camera}<span>${L.lb.verify}</span></button></div>`).join('') : `<p class="note" style="margin:0">${mine.sets ? L.lb.allVerified : L.lb.noneComplete}</p>`}
       <p class="note" style="margin:0">${L.lb.rule}</p>
@@ -3974,23 +3999,28 @@ async function openProofs(uid, pseudo) {
   sheetPanel.innerHTML = `${sheetTop()}<div class="stack"><h2 id="sheetTitle" style="margin:0;font:700 22px var(--font-display)">@${esc(pseudo)}</h2><p class="note">${L.fr.loading}</p></div>`;
   sheet.hidden = false; document.body.style.overflow = 'hidden';
   let items = [];
+  let cardsP = [];
   try { const snap = await cloud.api.fsM.getDocs(cloud.api.fsM.collection(cloud.api.db, 'proofs', uid, 'sets')); items = snap.docs.map((d) => ({ code: d.id, ...d.data() })); } catch { /* */ }
+  try { const snap = await cloud.api.fsM.getDocs(cloud.api.fsM.collection(cloud.api.db, 'proofs', uid, 'cards')); cardsP = snap.docs.map((d) => ({ id: d.id, ...d.data() })); } catch { /* */ }
   if (sheetMode !== 'proofs') return;
   sheetPanel.innerHTML = `${sheetTop()}<div class="stack">
     <h2 id="sheetTitle" style="margin:0;font:700 22px var(--font-display)">@${esc(pseudo)}</h2>
     <p class="note" style="margin:0">${L.lb.proofsIntro}</p>
-    ${items.length ? `<div class="proofs">${items.map((p) => { const s = setOf(p.code), c = cardsById.get(p.card); return `<figure class="proof"><img src="${esc(p.img)}" alt=""><figcaption><b class="title-code">${esc(s?.print ?? p.code)}</b>${esc(c ? cardName(c) : '')}</figcaption></figure>`; }).join('')}</div>` : `<div class="empty"><strong>${L.lb.noProofs}</strong></div>`}
+    ${items.length ? `<h3 class="deck-group">${L.lb.mSets}</h3><div class="proofs">${items.map((p) => { const s = setOf(p.code), c = cardsById.get(p.card); return `<figure class="proof"><img src="${esc(p.img)}" alt=""><figcaption><b class="title-code">${esc(s?.print ?? p.code)}</b>${esc(c ? cardName(c) : '')}</figcaption></figure>`; }).join('')}</div>` : ''}
+    ${cardsP.length ? `<h3 class="deck-group">${L.lb.verifiedCards}</h3><div class="proofs">${cardsP.map((p) => { const c = cardsById.get(p.card ?? p.id); return `<figure class="proof"><img src="${esc(p.img)}" alt=""><figcaption>${esc(c ? cardName(c) : '')}${c && price(c.id) != null ? ` · ${eur(price(c.id))}` : ''}</figcaption></figure>`; }).join('')}</div>` : ''}
+    ${!items.length && !cardsP.length ? `<div class="empty"><strong>${L.lb.noProofs}</strong></div>` : ''}
   </div>`;
 }
 
 // --- photo en direct de la carte la plus chère d'une série complète ---
 const proof = { code: '', target: null, stream: null, timer: 0, hits: 0, busy: false };
-async function openProofCamera(code) {
+async function openProofCamera(code, cardId) {
   if (!cloud.user) { toast(L.lb.signIn); return; }
-  if (!setIsComplete(code)) { toast(L.lb.notComplete); return; }
+  if (!cardId && !setIsComplete(code)) { toast(L.lb.notComplete); return; }
   closeProofCamera();
-  const target = setTopCard(code);
-  Object.assign(proof, { code, target, hits: 0, busy: false });
+  const target = cardId ? cardsById.get(cardId) : setTopCard(code);
+  if (!target) return;
+  Object.assign(proof, { code: cardId ? '' : code, cardId: cardId ?? '', target, hits: 0, busy: false });
   const el = document.createElement('div');
   el.className = 'scanner'; el.id = 'proofCam';
   el.innerHTML = `<video id="proofVideo" playsinline muted autoplay></video>
@@ -3998,7 +4028,7 @@ async function openProofCamera(code) {
     <div class="scan-guide" id="proofGuide"><i></i><i></i><i></i><i></i></div>
     <div class="scan-top"><button class="icon-btn" data-proofcam="close" aria-label="${L.close}">${I.x}</button><strong>${L.lb.camTitle}</strong><span></span></div>
     <div class="scan-panel" id="proofPanel">
-      <div class="proof-target"><img src="${esc(imageOf(target) || placeholderArt(target))}" alt=""><span><b>${esc(cardName(target))}</b><small>${L.lb.camHint(esc(setName(setOf(code))))}</small></span></div>
+      <div class="proof-target"><img src="${esc(imageOf(target) || placeholderArt(target))}" alt=""><span><b>${esc(cardName(target))}</b><small>${cardId ? L.lb.camHintCard : L.lb.camHint(esc(setName(setOf(code))))}</small></span></div>
       <p class="scan-status" id="proofStatus">${L.scan.starting}</p>
       <button class="cta" data-proofcam="shot">${I.camera}<span>${L.lb.shoot}</span></button>
     </div>`;
@@ -4046,12 +4076,19 @@ async function proofSave() {
   proofStatus(L.mod.checking);
   try {
     await moderateImage(img);   // la photo est visible par les autres joueurs
-    await cloud.api.fsM.setDoc(proofRef(cloud.user.uid, proof.code), { img, card: proof.target.id, at: cloud.api.fsM.serverTimestamp() });
-    user.proofs[proof.code] = { card: proof.target.id, at: new Date().toISOString().slice(0, 10) };
+    const today = new Date().toISOString().slice(0, 10);
+    if (proof.cardId) {
+      await cloud.api.fsM.setDoc(cardProofRef(cloud.user.uid, proof.cardId), { img, card: proof.cardId, at: cloud.api.fsM.serverTimestamp() });
+      user.cardProofs[proof.cardId] = { at: today };
+    } else {
+      await cloud.api.fsM.setDoc(proofRef(cloud.user.uid, proof.code), { img, card: proof.target.id, at: cloud.api.fsM.serverTimestamp() });
+      user.proofs[proof.code] = { card: proof.target.id, at: today };
+    }
     gSave(); save(); lbPush();
-    const code = proof.code;
+    const { code, cardId } = proof;
     closeProofCamera();
-    toast(L.lb.verified(setName(setOf(code))));
+    toast(cardId ? L.lb.cardVerified(cardName(cardsById.get(cardId))) : L.lb.verified(setName(setOf(code))));
+    if (openId && !sheet.hidden) openCard(openId, true);
     if (currentRender) currentRender();
   } catch (e) {
     proofStatus(e?.userMsg ?? (e?.code === 'permission-denied' ? L.lb.rulesNeeded : L.fr.error));
@@ -4067,13 +4104,14 @@ function closeProofCamera() {
   if (sheet.hidden) document.body.style.overflow = '';
 }
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('[data-lb-tab],[data-lb-metric],[data-lb-proofs],[data-proof],[data-proofcam]');
+  const t = e.target.closest('[data-lb-tab],[data-lb-metric],[data-lb-proofs],[data-proof],[data-proof-card],[data-proofcam]');
   if (!t) return;
   const d = t.dataset;
   if (d.lbTab) { lb.tab = d.lbTab; lb.rows = null; renderLeaderboard(); }
   else if (d.lbMetric) { lb.metric = d.lbMetric; if (lb.tab === 'world') lb.rows = null; renderLeaderboard(); }
   else if (d.lbProofs) openProofs(d.lbProofs, d.pseudo);
   else if (d.proof) openProofCamera(d.proof);
+  else if (d.proofCard) openProofCamera('', d.proofCard);
   else if (d.proofcam === 'close') closeProofCamera();
   else if (d.proofcam === 'shot' && !proof.busy && document.getElementById('proofVideo')?.videoWidth) proofCheck(true);
 });

@@ -25,7 +25,7 @@ service cloud.firestore {
       allow read: if isMe(uid) || isFriendOf(uid);
       allow delete: if isMe(uid);
       allow create, update: if isMe(uid)
-        && request.resource.data.keys().hasOnly(['items', 'sales', 'paid', 'copies', 'alerts', 'wlists', 'proofs', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['items', 'sales', 'paid', 'copies', 'alerts', 'wlists', 'proofs', 'cardProofs', 'updatedAt'])
         && request.resource.data.items is list
         && request.resource.data.items.size() <= 2000
         && request.resource.data.sales is map;
@@ -75,6 +75,13 @@ service cloud.firestore {
         && request.resource.data.vsets == request.resource.data.verified.size();
     }
     // photos de vérification des séries complètes (carte la plus chère, prise en direct)
+    match /proofs/{uid}/cards/{card} {
+      allow read: if signedIn();
+      allow delete: if isMe(uid) || isAdmin();
+      allow create, update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['img', 'card', 'at'])
+        && request.resource.data.img is string && request.resource.data.img.size() < 150000;
+    }
     match /proofs/{uid}/sets/{code} {
       allow read: if signedIn();
       allow delete: if isMe(uid) || isAdmin();

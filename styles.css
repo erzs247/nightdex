@@ -1037,3 +1037,8 @@ button.deck-tile { text-align: left; width: 100%; }
 .proof-target img { width: 46px; aspect-ratio: 63/88; object-fit: cover; border-radius: 4px; }
 .proof-target small { display: block; color: #fffb; font-size: 12.5px; }
 #proofPanel .cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.verify-line { display: grid; grid-template-columns: 20px 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border: 1px solid #f5c542; border-radius: 12px; background: color-mix(in srgb, #f5c542 9%, transparent); font-size: 13.5px; }
+.verify-line svg { width: 18px; height: 18px; fill: none; stroke: #f5c542; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.verify-line .chip { display: inline-flex; align-items: center; gap: 6px; } .verify-line .chip svg { stroke: currentColor; }
+.verify-line.ok { border-color: #2fd88a; background: color-mix(in srgb, #2fd88a 9%, transparent); } .verify-line.ok svg { stroke: #2fd88a; }
+.lb-verify span b.num { color: var(--accent); }
