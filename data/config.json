@@ -90,5 +90,9 @@
     "_aide": "Images du dos des cartes pour la vue 3D (Légendes et autres cartes). Vide = dos neutre NightDex.",
     "legend": "images/backs/legend.webp",
     "normal": "images/backs/normal.webp"
+  },
+  "leaderboard": {
+    "_aide": "Classement : prix (en €) à partir duquel une carte doit être vérifiée par photo pour compter dans la valeur.",
+    "verifyMin": 20
   }
 }

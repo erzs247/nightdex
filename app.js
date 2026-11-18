@@ -3898,7 +3898,7 @@ document.addEventListener('click', (e) => {
 if (!user.proofs || typeof user.proofs !== 'object') user.proofs = {};
 // cartes chères : elles ne comptent dans la valeur du classement qu'une fois vérifiées par photo en direct
 if (!user.cardProofs || typeof user.cardProofs !== 'object') user.cardProofs = {};
-const VERIFY_MIN = () => config.leaderboard?.verifyMin ?? 30;
+const VERIFY_MIN = () => config.leaderboard?.verifyMin ?? 20;
 const needsProof = (id) => !isSealed(cardsById.get(id) ?? {}) && (price(id) ?? 0) >= VERIFY_MIN();
 const cardVerified = (id, proofs = user.cardProofs) => !!proofs?.[id.replace(/@en$/, '')];
 const toVerifyCards = () => [...catalog.cards, ...extras].filter((c) => qtyAll(c.id) > 0 && needsProof(c.id) && !cardVerified(c.id)).sort((a, b) => (price(b.id) ?? 0) - (price(a.id) ?? 0));
