@@ -363,7 +363,9 @@ main { padding: 0 var(--gutter-r) 0 var(--gutter-l); outline: none; }
   position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1 / 1; padding: 6px; border: 0; border-radius: 10px;
   background: radial-gradient(circle at 50% 40%, var(--surface-2), var(--bg) 75%);
 }
-.sealed-img img, .detail-top.is-sealed .card-img img { width: 100%; height: 100%; object-fit: contain; }
+.sealed-img, .detail-top.is-sealed .card-img { overflow: hidden; }
+/* image posée en absolu : Firefox ne calcule pas « height: 100% » dans un bouton grille à aspect-ratio */
+.sealed-img img, .detail-top.is-sealed .card-img img { position: absolute; inset: 6px; width: calc(100% - 12px); height: calc(100% - 12px); object-fit: contain; }
 .detail-top.is-sealed .card-img { box-shadow: none; }
 .pack-badge {
   position: absolute; top: 8px; right: 8px; padding: 3px 8px; border-radius: 99px;
@@ -765,8 +767,8 @@ button:disabled { opacity: .5; cursor: default; }
 .slab-txt small { display: block; font-weight: 500; font-size: 9px; color: #4a4f5c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .slab-grade { font: 800 20px/1 var(--font-display); color: var(--gc); display: flex; align-items: flex-start; }
 .slab-grade i { font-style: normal; font-size: 10px; margin-left: 1px; color: #b8860b; }
-.slab-win { flex: 1; min-height: 0; display: grid; place-items: center; padding: 6px; border-radius: 5px; background: #05060a99; box-shadow: inset 0 0 0 1px #ffffff1f; }
-.slab-win img { max-width: 100%; max-height: 100%; aspect-ratio: 63/88; object-fit: contain; border-radius: 4px; }
+.slab-win { position: relative; flex: 1; min-height: 0; padding: 6px; border-radius: 5px; background: #05060a99; box-shadow: inset 0 0 0 1px #ffffff1f; overflow: hidden; }
+.slab-win img { position: absolute; inset: 6px; width: calc(100% - 12px); height: calc(100% - 12px); object-fit: contain; border-radius: 4px; }
 .slab-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: var(--surface); opacity: 0; transition: opacity .2s; }
 .slab.has-photo .slab-photo { opacity: 1; }
 .slab.has-photo { padding: 0; }
