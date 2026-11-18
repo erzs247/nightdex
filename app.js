@@ -53,6 +53,22 @@ const TEXT = {
     chartWait: 'Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.', chartNone: 'Pas de prix Cardmarket pour cette carte pour l\'instant.',
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue de l\'appli', langToast: 'Appli en français',
+    lb: {
+      title: 'Classement', friends: 'Amis', world: 'Monde', mValue: 'Valeur', mCards: 'Cartes', mSets: 'Séries vérifiées', me: 'moi',
+      signIn: 'Connecte-toi à ton compte NightDex pour voir le classement.', rulesNeeded: 'Classement indisponible : mets à jour les règles Firestore.',
+      line: (c, u, v) => `${c} carte${c > 1 ? 's' : ''} · ${u} différente${u > 1 ? 's' : ''} · ${v} série${v > 1 ? 's' : ''} ✓`,
+      optin: 'Apparaître dans le classement mondial (ton pseudo, ton nombre de cartes, la valeur et tes séries vérifiées)',
+      needPseudo: 'Choisis d\'abord un pseudo dans', joined: 'Tu apparais dans le classement mondial', left: 'Tu n\'apparais plus dans le classement mondial',
+      emptyWorld: 'Personne dans le classement mondial pour l\'instant. Inscris-toi avec la case ci-dessus !', emptyFriends: 'Ajoute des amis pour vous comparer.',
+      mySets: 'Mes séries complètes', verifiedCount: (v, n) => `${v}/${n} vérifiée${v > 1 ? 's' : ''}`, verify: 'Vérifier', allVerified: 'Toutes tes séries complètes sont vérifiées ✓', noneComplete: 'Aucune série complète pour l\'instant.',
+      rule: 'Anti-triche : une série complète ne compte dans « Séries vérifiées » qu\'avec une photo prise en direct de sa carte la plus chère, reconnue par l\'appli. Les photos sont visibles par les autres joueurs (touche un pseudo).',
+      setDone: 'Série complète !', setVerified: ' Vérifiée ✓', setToVerify: ' Vérifie-la avec une photo de sa carte la plus chère pour qu\'elle compte au classement.',
+      notComplete: 'Cette série n\'est pas encore complète.', camTitle: 'Photo de vérification', camHint: (s) => `Carte la plus chère de ${s} : tiens-la bien en face, dans le cadre.`,
+      aim: 'Place la carte dans le cadre : la photo se prend toute seule quand elle est reconnue.', shoot: 'Prendre la photo', noCamera: 'Caméra indisponible : la vérification demande une photo prise en direct avec le téléphone.',
+      notRecognised: 'Carte pas reconnue : rapproche-toi, évite les reflets, mets-la bien droite.', wrongCard: (n) => `Ce n'est pas la bonne carte (${n}).`,
+      verified: (s) => `${s} : série vérifiée ✓`, proofsIntro: 'Photos prises en direct des cartes les plus chères de ses séries complètes.', noProofs: 'Aucune série vérifiée.',
+      adminRemove: 'Retirer du classement', adminDone: 'Compte retiré du classement (et ses photos de vérification)',
+    },
     wl: {
       new: 'Nouvelle liste', lists: 'Mes listes :', rename: 'Renommer', del: 'Supprimer la liste', namePrompt: 'Nom de la liste (ex. Johnny, Deck rouge, Cadeaux…)',
       created: (n) => `Liste « ${n} » créée`, deleted: 'Liste supprimée (les cartes restent dans tes souhaits)', delConfirm: (n) => `Supprimer la liste « ${n} » ? Les cartes restent dans tes souhaits.`,
@@ -247,6 +263,22 @@ const TEXT = {
     chartWait: 'Not enough history to draw a curve yet. Prices are recorded every day.', chartNone: 'No Cardmarket price for this card yet.',
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'App language', langToast: 'App in English',
+    lb: {
+      title: 'Leaderboard', friends: 'Friends', world: 'World', mValue: 'Value', mCards: 'Cards', mSets: 'Verified sets', me: 'me',
+      signIn: 'Sign in to your NightDex account to see the leaderboard.', rulesNeeded: 'Leaderboard unavailable: update the Firestore rules.',
+      line: (c, u, v) => `${c} card${c > 1 ? 's' : ''} · ${u} unique · ${v} set${v > 1 ? 's' : ''} ✓`,
+      optin: 'Appear in the world leaderboard (your username, card count, value and verified sets)',
+      needPseudo: 'First choose a username in', joined: 'You now appear in the world leaderboard', left: 'You no longer appear in the world leaderboard',
+      emptyWorld: 'Nobody in the world leaderboard yet. Join with the box above!', emptyFriends: 'Add friends to compare collections.',
+      mySets: 'My complete sets', verifiedCount: (v, n) => `${v}/${n} verified`, verify: 'Verify', allVerified: 'All your complete sets are verified ✓', noneComplete: 'No complete set yet.',
+      rule: 'Anti-cheat: a complete set only counts in “Verified sets” with a live photo of its most expensive card, recognised by the app. Photos are visible to other players (tap a username).',
+      setDone: 'Set complete!', setVerified: ' Verified ✓', setToVerify: ' Verify it with a photo of its most expensive card so it counts in the leaderboard.',
+      notComplete: 'This set is not complete yet.', camTitle: 'Verification photo', camHint: (s) => `Most expensive card of ${s}: hold it straight, inside the frame.`,
+      aim: 'Put the card in the frame: the photo is taken automatically once it is recognised.', shoot: 'Take photo', noCamera: 'Camera unavailable: verification needs a live photo taken with the phone.',
+      notRecognised: 'Card not recognised: get closer, avoid glare, hold it straight.', wrongCard: (n) => `That is not the right card (${n}).`,
+      verified: (s) => `${s}: set verified ✓`, proofsIntro: 'Live photos of the most expensive cards of their complete sets.', noProofs: 'No verified set.',
+      adminRemove: 'Remove from leaderboard', adminDone: 'Account removed from the leaderboard (and its verification photos)',
+    },
     wl: {
       new: 'New list', lists: 'My lists:', rename: 'Rename', del: 'Delete list', namePrompt: 'List name (e.g. Johnny, Red deck, Gifts…)',
       created: (n) => `List “${n}” created`, deleted: 'List deleted (cards stay in your wishlist)', delConfirm: (n) => `Delete the list “${n}”? The cards stay in your wishlist.`,
@@ -418,6 +450,7 @@ const I = {
   bolt: '<svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
   slab: '<svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M5 7.5h14"/><rect x="8" y="10" width="8" height="9" rx="1"/></svg>',
   bell: '<svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>',
+  trophy: '<svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4M8.5 20h7M10 17h4v3h-4z"/></svg>',
   copy: '<svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>',
   share: '<svg viewBox="0 0 24 24"><circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1"/></svg>',
   cart: '<svg viewBox="0 0 24 24"><path d="M3 4h2.5l2.2 11h10.6l2-8H6.6"/><circle cx="9.5" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>',
@@ -460,10 +493,11 @@ const fav = new Set(user.fav);
 // signature de ce qui est synchronisé avec le compte (collection, souhaits, favoris ; pas les préférences d'affichage)
 const collectionSig = () => JSON.stringify([Object.entries(user.owned).filter(([, q]) => q > 0).sort(), [...wish].sort(), [...fav].sort()]);
 let lastSig = collectionSig();
+let onCollectionChange = null;   // branché par le classement (mise à jour de ma ligne publique)
 function save() {
   user.wish = [...wish]; user.fav = [...fav];
   const sig = collectionSig();
-  if (sig !== lastSig) { lastSig = sig; cloudChanged(); }
+  if (sig !== lastSig) { lastSig = sig; cloudChanged(); onCollectionChange?.(); }
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* stockage indisponible */ }
 }
 
@@ -874,6 +908,7 @@ function renderSet(code) {
   view.innerHTML = `<div class="stack">
     ${seg('setMode', user.prefs.setMode, [['cards', L.cards], ['list', L.list], ['grid', L.grid]])}
     ${showFilters ? filtersPanel(all) : ''}
+    ${setIsComplete(code) ? `<div class="set-done ${user.proofs[code] ? 'ok' : ''}">${I.trophy}<span><b>${L.lb.setDone}</b>${user.proofs[code] ? L.lb.setVerified : L.lb.setToVerify}</span>${user.proofs[code] ? '' : `<button class="chip" data-proof="${esc(code)}">${I.camera}<span>${L.lb.verify}</span></button>`}</div>` : ''}
     <input class="search" id="setCardSearch" type="search" placeholder="${L.searchInSet}" value="${esc(setQuery)}" autocomplete="off" enterkeyhint="search">
     <div class="toolbar num">
       <span>${L.owned(ownedIn(code), setTotal(s))}</span><span class="grow"></span>
@@ -887,7 +922,7 @@ function renderSet(code) {
 
 let colSet = '';
 function renderCollection() {
-  setTopbar(`<h1>${L.myCollection}</h1>${langBtn()}${cloud.enabled ? `<a class="chip friends-chip" href="#friends">${L.fr.title}<span class="fbadge" data-friends-badge ${fr.requests.length ? '' : 'hidden'}>${fr.requests.length || ''}</span></a>` : ''}`);
+  setTopbar(`<h1>${L.myCollection}</h1>${langBtn()}${cloud.enabled ? `<a class="icon-btn" href="#leaderboard" aria-label="${L.lb.title}" title="${L.lb.title}">${I.trophy}</a>` : ''}${cloud.enabled ? `<a class="chip friends-chip" href="#friends">${L.fr.title}<span class="fbadge" data-friends-badge ${fr.requests.length ? '' : 'hidden'}>${fr.requests.length || ''}</span></a>` : ''}`);
   const owned = [...catalog.cards, ...extras.filter(inCardLang)].filter((c) => qty(c.id) > 0);
   const ownedSealed = sealed.filter((s) => qty(s.id) > 0 && inCardLang(s));
   if (!owned.length && !ownedSealed.length) {
@@ -1401,10 +1436,23 @@ function adminPanel() {
     ${admin.msg ? `<p class="form-err">${esc(admin.msg)}</p>` : ''}
     <span class="note">${L.adm.listTitle} (${admin.list.length})</span>
     <span class="note">${L.mod.adminTitle}</span>
+    <form class="inline-form" id="adminLbForm"><input class="search" id="adminLbId" autocomplete="off" placeholder="${L.adm.idPh}"><button class="btn-ghost">${L.lb.adminRemove}</button></form>
     <form class="inline-form" id="adminModForm"><input class="search" id="adminModId" autocomplete="off" placeholder="${L.adm.idPh}"><button class="btn-ghost">${L.mod.adminRemove}</button></form>
     ${admin.list.map((a) => `<div class="id-row"><b>${a.pseudo !== '?' ? '@' + esc(a.pseudo) : '—'}</b><code>${esc(a.uid)}</code><button class="chip" data-admin-off="${esc(a.uid)}">${L.adm.remove}</button></div>`).join('') || `<span class="note">${L.adm.none}</span>`}
   </div>`;
 }
+document.addEventListener('submit', async (e) => {
+  if (e.target.id !== 'adminLbForm') return;
+  e.preventDefault();
+  const uid = document.getElementById('adminLbId').value.trim();
+  if (!/^[A-Za-z0-9]{20,40}$/.test(uid)) { toast(L.adm.badId); return; }
+  try {
+    await fsx().deleteDoc(dref('leaderboard', uid));
+    const ps = await fsx().getDocs(cref('proofs', uid, 'sets')).catch(() => null);
+    for (const d of ps?.docs ?? []) await fsx().deleteDoc(d.ref).catch(() => {});
+    toast(L.lb.adminDone);
+  } catch (er) { toast(er?.code === 'permission-denied' ? L.adm.denied : L.fr.error); }
+});
 document.addEventListener('submit', async (e) => {
   if (e.target.id !== 'adminModForm') return;
   e.preventDefault();
@@ -2508,7 +2556,7 @@ function gValue(e, sales = gSales(e)) {
   const last = sales.slice(-3).map(([, p]) => p).sort((a, b) => a - b);
   return last[Math.floor(last.length / 2)];
 }
-const gSig = () => JSON.stringify([user.graded, Object.entries(user.gsales).sort(), Object.entries(user.paid).sort(), Object.entries(user.copies ?? {}).sort(), Object.entries(user.alerts ?? {}).sort(), user.wlists ?? []]);
+const gSig = () => JSON.stringify([user.graded, Object.entries(user.gsales).sort(), Object.entries(user.paid).sort(), Object.entries(user.copies ?? {}).sort(), Object.entries(user.alerts ?? {}).sort(), user.wlists ?? [], Object.keys(user.proofs ?? {}).sort()]);
 let gLastSig = gSig();
 function gSave() {
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* stockage indisponible */ }
@@ -2603,13 +2651,13 @@ function gMerge(a, b) {
     const seen = new Set((sales[k] ?? []).map((s) => s.join('|')));
     sales[k] = [...(sales[k] ?? []), ...list.filter((s) => !seen.has(s.join('|')))];
   }
-  return { items: [...items.values()], sales, paid: { ...(a?.paid ?? {}), ...(b?.paid ?? {}) }, copies: { ...(a?.copies ?? {}), ...(b?.copies ?? {}) }, alerts: { ...(a?.alerts ?? {}), ...(b?.alerts ?? {}) }, wlists: [...new Map([...(a?.wlists ?? []), ...(b?.wlists ?? [])].map((l) => [l.k, l])).values()] };
+  return { items: [...items.values()], sales, paid: { ...(a?.paid ?? {}), ...(b?.paid ?? {}) }, copies: { ...(a?.copies ?? {}), ...(b?.copies ?? {}) }, alerts: { ...(a?.alerts ?? {}), ...(b?.alerts ?? {}) }, wlists: [...new Map([...(a?.wlists ?? []), ...(b?.wlists ?? [])].map((l) => [l.k, l])).values()], proofs: { ...(a?.proofs ?? {}), ...(b?.proofs ?? {}) } };
 }
 // Firestore n'accepte pas les tableaux de tableaux : ventes envoyées sous forme { d, p }
-const gToCloud = () => ({ items: user.graded, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [], sales: Object.fromEntries(Object.entries(user.gsales).map(([k, l]) => [k, l.map(([d, p]) => ({ d, p }))])) });
-const gFromCloud = (d) => ({ items: d?.items ?? [], paid: d?.paid ?? {}, copies: d?.copies ?? {}, alerts: d?.alerts ?? {}, wlists: d?.wlists ?? [], sales: Object.fromEntries(Object.entries(d?.sales ?? {}).map(([k, l]) => [k, l.map((s) => [s.d, s.p])])) });
+const gToCloud = () => ({ items: user.graded, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [], proofs: user.proofs ?? {}, sales: Object.fromEntries(Object.entries(user.gsales).map(([k, l]) => [k, l.map(([d, p]) => ({ d, p }))])) });
+const gFromCloud = (d) => ({ items: d?.items ?? [], paid: d?.paid ?? {}, copies: d?.copies ?? {}, alerts: d?.alerts ?? {}, wlists: d?.wlists ?? [], proofs: d?.proofs ?? {}, sales: Object.fromEntries(Object.entries(d?.sales ?? {}).map(([k, l]) => [k, l.map((s) => [s.d, s.p])])) });
 function gApply(d) {
-  user.graded = d.items; user.gsales = d.sales; user.paid = d.paid ?? {}; user.copies = d.copies ?? {}; user.alerts = d.alerts ?? {}; user.wlists = d.wlists ?? [];
+  user.graded = d.items; user.gsales = d.sales; user.paid = d.paid ?? {}; user.copies = d.copies ?? {}; user.alerts = d.alerts ?? {}; user.wlists = d.wlists ?? []; user.proofs = d.proofs ?? {};
   if (typeof alertsMirror === 'function') alertsMirror();
   gLastSig = gSig();
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* */ }
@@ -2638,7 +2686,7 @@ function gOnUser(u) {
   gCloud.unsub = cloud.api.fsM.onSnapshot(gRef(u.uid), async (snap) => {
     if (snap.metadata.hasPendingWrites) return;
     const remote = snap.exists() ? gFromCloud(snap.data()) : null;
-    const local = { items: user.graded, sales: user.gsales, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [] };
+    const local = { items: user.graded, sales: user.gsales, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [], proofs: user.proofs ?? {} };
     if (first) {
       first = false;
       const next = !remote ? local : (user.gSyncedUid !== u.uid || user.gPending) ? gMerge(remote, local) : remote;
@@ -3833,6 +3881,212 @@ document.addEventListener('click', (e) => {
   else openAccount();
 });
 
+// ---------- Classement : amis (calculé depuis leurs collections) et monde (leaderboard/<uid>, sur inscription) ----------
+// Séries vérifiées : une série complète ne compte qu'avec une photo prise en direct de sa carte la plus chère,
+// reconnue par le scanner de l'appli (proofs/<uid>/sets/<série>).
+if (!user.proofs || typeof user.proofs !== 'object') user.proofs = {};
+const lb = { tab: 'friends', metric: 'value', rows: null, loading: false, msg: '', timer: 0 };
+const setIsComplete = (code) => { const all = cardsBySet.get(code) ?? []; return all.length > 0 && all.every((c) => qtyAll(c.id) > 0); };
+const setTopCard = (code) => [...(cardsBySet.get(code) ?? [])].sort((a, b) => (price(b.id) ?? -1) - (price(a.id) ?? -1))[0];
+const verifiedSets = () => Object.keys(user.proofs).filter((code) => setOf(code) && setIsComplete(code));
+function myStats() {
+  let cards = 0, unique = 0, value = 0;
+  for (const c of [...catalog.cards, ...extras]) { const n = qtyAll(c.id); if (n) { cards += n; unique++; } }
+  for (const c of allItems()) value += valueAll(c.id);
+  return { cards, unique, value: Math.round(value * 100) / 100, sets: catalog.sets.filter((s) => setIsComplete(s.code)).length, verified: verifiedSets() };
+}
+// collection d'un ami (sa carte « owned ») → mêmes chiffres, avec nos prix du jour
+function statsOf(owned) {
+  let cards = 0, unique = 0, value = 0;
+  const seen = new Set();
+  for (const [k, n] of Object.entries(owned ?? {})) {
+    if (!(n > 0)) continue;
+    const id = k.replace(/@en$/, ''), c = cardsById.get(id);
+    if (!c) continue;
+    value += n * (price(id) ?? 0);
+    if (!isSealed(c)) { cards += n; if (!seen.has(id)) { seen.add(id); unique++; } }
+  }
+  return { cards, unique, value: Math.round(value * 100) / 100 };
+}
+const lbRef = (uid) => cloud.api.fsM.doc(cloud.api.db, 'leaderboard', uid);
+const proofRef = (uid, code) => cloud.api.fsM.doc(cloud.api.db, 'proofs', uid, 'sets', code);
+async function lbPush() {
+  if (!cloud.user || !user.prefs.lbPublic || !fr.me?.pseudo) return;
+  const s = myStats();
+  try { await cloud.api.fsM.setDoc(lbRef(cloud.user.uid), { pseudo: fr.me.pseudo, cards: s.cards, unique: s.unique, value: s.value, sets: s.sets, verified: s.verified, vsets: s.verified.length, updatedAt: cloud.api.fsM.serverTimestamp() }); }
+  catch (e) { if (e?.code === 'permission-denied') lb.msg = L.lb.rulesNeeded; }
+}
+const lbSoon = () => { clearTimeout(lb.timer); lb.timer = setTimeout(lbPush, 4000); };
+async function lbLoad() {
+  if (!cloud.user || !cloud.api) return;
+  lb.loading = true; lb.msg = ''; lb.rows = null;
+  if (currentRender === renderLeaderboard) renderLeaderboard();
+  const { fsM, db } = cloud.api;
+  try {
+    if (lb.tab === 'friends') {
+      const me = myStats();
+      const rows = [{ uid: cloud.user.uid, pseudo: fr.me?.pseudo ?? L.lb.me, me: true, cards: me.cards, unique: me.unique, value: me.value, verified: me.verified.length }];
+      await Promise.all(fr.list.map(async (f) => {
+        try {
+          const [u, b] = await Promise.all([fsM.getDoc(dref('users', f.uid)), fsM.getDoc(lbRef(f.uid)).catch(() => null)]);
+          const st = statsOf(migrateOwned({ ...(u.exists() ? u.data().owned ?? {} : {}) }));
+          rows.push({ uid: f.uid, pseudo: f.pseudo, ...st, verified: b?.exists() ? (b.data().verified ?? []).length : 0 });
+        } catch { /* collection pas visible */ }
+      }));
+      lb.rows = rows;
+    } else {
+      if (user.prefs.lbPublic) await lbPush();
+      const field = lb.metric === 'sets' ? 'vsets' : lb.metric;
+      const snap = await fsM.getDocs(fsM.query(fsM.collection(db, 'leaderboard'), fsM.orderBy(field, 'desc'), fsM.limit(50)));
+      lb.rows = snap.docs.map((d) => { const x = d.data(); return { uid: d.id, pseudo: x.pseudo, cards: x.cards ?? 0, unique: x.unique ?? 0, value: x.value ?? 0, verified: (x.verified ?? []).length, me: d.id === cloud.user.uid }; });
+    }
+  } catch (e) { lb.rows = []; lb.msg = e?.code === 'permission-denied' ? L.lb.rulesNeeded : L.fr.error; }
+  lb.loading = false;
+  if (currentRender === renderLeaderboard) renderLeaderboard();
+}
+function renderLeaderboard() {
+  setTopbar(`<a class="icon-btn" href="#collection" aria-label="${L.back}">${I.back}</a><h1 class="small">${L.lb.title}</h1>`);
+  if (!cloud.user) { view.innerHTML = `<div class="empty"><strong>${L.lb.signIn}</strong><button class="btn-ghost" data-action="account">${L.account}</button></div>`; return; }
+  if (lb.rows === null && !lb.loading) { lbLoad(); return; }
+  const key = lb.metric === 'cards' ? 'cards' : lb.metric === 'sets' ? 'verified' : 'value';
+  const rows = [...(lb.rows ?? [])].sort((a, b) => b[key] - a[key] || b.value - a.value);
+  const mine = myStats();
+  const toVerify = catalog.sets.filter((s) => setIsComplete(s.code) && !user.proofs[s.code]);
+  view.innerHTML = `<div class="stack lb">
+    <div class="seg">${[['friends', L.lb.friends], ['world', L.lb.world]].map(([k, l]) => `<button data-lb-tab="${k}" aria-pressed="${lb.tab === k}">${l}</button>`).join('')}</div>
+    <div class="chips">${[['value', L.lb.mValue], ['cards', L.lb.mCards], ['sets', L.lb.mSets]].map(([k, l]) => `<button class="chip" data-lb-metric="${k}" aria-pressed="${lb.metric === k}">${l}</button>`).join('')}</div>
+    ${lb.tab === 'world' ? `<label class="lb-optin"><input type="checkbox" id="lbPublic" ${user.prefs.lbPublic ? 'checked' : ''}><span>${L.lb.optin}</span></label>${!fr.me?.pseudo ? `<p class="note">${L.lb.needPseudo} <a href="#friends">${L.fr.title}</a></p>` : ''}` : ''}
+    ${lb.msg ? `<p class="form-err">${esc(lb.msg)}</p>` : ''}
+    ${lb.loading ? `<div class="empty"><strong>${L.fr.loading}</strong></div>` : rows.length ? `<ol class="lb-list">${rows.map((r, i) => `<li class="lb-row ${r.me ? 'me' : ''}">
+        <span class="lb-rank num">${i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1}</span>
+        <button class="lb-name" data-lb-proofs="${esc(r.uid)}" data-pseudo="${esc(r.pseudo)}"><b>@${esc(r.pseudo)}</b><span class="note num">${L.lb.line(r.cards, r.unique, r.verified)}</span></button>
+        <span class="lb-val num">${lb.metric === 'cards' ? `${r.cards}` : lb.metric === 'sets' ? `${r.verified} ✓` : eur(r.value)}</span>
+      </li>`).join('')}</ol>` : `<div class="empty"><strong>${lb.tab === 'world' ? L.lb.emptyWorld : L.lb.emptyFriends}</strong></div>`}
+    <section class="panel"><h3>${L.lb.mySets}<small>${L.lb.verifiedCount(mine.verified.length, mine.sets)}</small></h3>
+      ${toVerify.length ? toVerify.map((s) => `<div class="lb-verify"><span><b class="title-code">${esc(s.print ?? s.code)}</b>${esc(setName(s))}</span><button class="chip" data-proof="${esc(s.code)}">${I.camera}<span>${L.lb.verify}</span></button></div>`).join('') : `<p class="note" style="margin:0">${mine.sets ? L.lb.allVerified : L.lb.noneComplete}</p>`}
+      <p class="note" style="margin:0">${L.lb.rule}</p>
+    </section>
+  </div>`;
+}
+// preuves d'un joueur (photos des cartes les plus chères de ses séries vérifiées)
+async function openProofs(uid, pseudo) {
+  openId = null; sheetMode = 'proofs';
+  sheetPanel.innerHTML = `${sheetTop()}<div class="stack"><h2 id="sheetTitle" style="margin:0;font:700 22px var(--font-display)">@${esc(pseudo)}</h2><p class="note">${L.fr.loading}</p></div>`;
+  sheet.hidden = false; document.body.style.overflow = 'hidden';
+  let items = [];
+  try { const snap = await cloud.api.fsM.getDocs(cloud.api.fsM.collection(cloud.api.db, 'proofs', uid, 'sets')); items = snap.docs.map((d) => ({ code: d.id, ...d.data() })); } catch { /* */ }
+  if (sheetMode !== 'proofs') return;
+  sheetPanel.innerHTML = `${sheetTop()}<div class="stack">
+    <h2 id="sheetTitle" style="margin:0;font:700 22px var(--font-display)">@${esc(pseudo)}</h2>
+    <p class="note" style="margin:0">${L.lb.proofsIntro}</p>
+    ${items.length ? `<div class="proofs">${items.map((p) => { const s = setOf(p.code), c = cardsById.get(p.card); return `<figure class="proof"><img src="${esc(p.img)}" alt=""><figcaption><b class="title-code">${esc(s?.print ?? p.code)}</b>${esc(c ? cardName(c) : '')}</figcaption></figure>`; }).join('')}</div>` : `<div class="empty"><strong>${L.lb.noProofs}</strong></div>`}
+  </div>`;
+}
+
+// --- photo en direct de la carte la plus chère d'une série complète ---
+const proof = { code: '', target: null, stream: null, timer: 0, hits: 0, busy: false };
+async function openProofCamera(code) {
+  if (!cloud.user) { toast(L.lb.signIn); return; }
+  if (!setIsComplete(code)) { toast(L.lb.notComplete); return; }
+  closeProofCamera();
+  const target = setTopCard(code);
+  Object.assign(proof, { code, target, hits: 0, busy: false });
+  const el = document.createElement('div');
+  el.className = 'scanner'; el.id = 'proofCam';
+  el.innerHTML = `<video id="proofVideo" playsinline muted autoplay></video>
+    <div class="scan-shade"></div>
+    <div class="scan-guide" id="proofGuide"><i></i><i></i><i></i><i></i></div>
+    <div class="scan-top"><button class="icon-btn" data-proofcam="close" aria-label="${L.close}">${I.x}</button><strong>${L.lb.camTitle}</strong><span></span></div>
+    <div class="scan-panel" id="proofPanel">
+      <div class="proof-target"><img src="${esc(imageOf(target) || placeholderArt(target))}" alt=""><span><b>${esc(cardName(target))}</b><small>${L.lb.camHint(esc(setName(setOf(code))))}</small></span></div>
+      <p class="scan-status" id="proofStatus">${L.scan.starting}</p>
+      <button class="cta" data-proofcam="shot">${I.camera}<span>${L.lb.shoot}</span></button>
+    </div>`;
+  document.body.appendChild(el); document.body.style.overflow = 'hidden';
+  try { await scanLoadIndex(); } catch { proofStatus(L.scan.indexErr); return; }
+  if (!navigator.mediaDevices?.getUserMedia) { proofStatus(L.lb.noCamera); return; }
+  try { proof.stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } }); }
+  catch (e) { proofStatus(e?.name === 'NotAllowedError' ? L.scan.denied : L.lb.noCamera); return; }
+  const video = document.getElementById('proofVideo');
+  if (!video) { closeProofCamera(); return; }
+  video.srcObject = proof.stream;
+  proofStatus(L.lb.aim);
+  // reconnaissance en continu : photo prise toute seule quand la bonne carte est tenue bien en face
+  proof.timer = setInterval(() => { if (!proof.busy && video.videoWidth) proofCheck(false); }, 400);
+}
+function proofStatus(t) { const s = document.getElementById('proofStatus'); if (s) s.textContent = t; }
+function proofGrab(w, h) {
+  const video = document.getElementById('proofVideo'), g = document.getElementById('proofGuide').getBoundingClientRect(), vr = video.getBoundingClientRect();
+  const k = Math.max(vr.width / video.videoWidth, vr.height / video.videoHeight);
+  const ox = (video.videoWidth * k - vr.width) / 2, oy = (video.videoHeight * k - vr.height) / 2;
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(video, (g.left - vr.left + ox) / k, (g.top - vr.top + oy) / k, g.width / k, g.height / k, 0, 0, w, h);
+  return { c, ctx };
+}
+const isTargetPrint = (id) => { const c = cardsById.get(id); return !!c && nameKey(c) === nameKey(proof.target); };
+async function proofCheck(manual) {
+  const { ctx } = proofGrab(SCAN.RW, SCAN.RH);
+  const res = scanMatch(ctx.getImageData(0, 0, SCAN.RW, SCAN.RH).data);
+  const hit = res.slice(0, 3).find(([id, sc]) => isTargetPrint(id) && sc >= SCAN.MIN);
+  if (!hit) {
+    proof.hits = 0;
+    if (manual) { proofStatus(res[0][1] >= SCAN.MIN && !isTargetPrint(res[0][0]) ? L.lb.wrongCard(cardName(cardsById.get(res[0][0]))) : L.lb.notRecognised); navigator.vibrate?.([30, 60, 30]); }
+    return;
+  }
+  if (!manual && ++proof.hits < 2) { proofStatus(L.scan.holding); return; }
+  proofSave();
+}
+async function proofSave() {
+  proof.busy = true; clearInterval(proof.timer);
+  navigator.vibrate?.(40);
+  const { c } = proofGrab(360, 503);
+  let img = c.toDataURL('image/webp', 0.8);
+  if (!img.startsWith('data:image/webp')) img = c.toDataURL('image/jpeg', 0.8);
+  proofStatus(L.mod.checking);
+  try {
+    await moderateImage(img);   // la photo est visible par les autres joueurs
+    await cloud.api.fsM.setDoc(proofRef(cloud.user.uid, proof.code), { img, card: proof.target.id, at: cloud.api.fsM.serverTimestamp() });
+    user.proofs[proof.code] = { card: proof.target.id, at: new Date().toISOString().slice(0, 10) };
+    gSave(); save(); lbPush();
+    const code = proof.code;
+    closeProofCamera();
+    toast(L.lb.verified(setName(setOf(code))));
+    if (currentRender) currentRender();
+  } catch (e) {
+    proofStatus(e?.userMsg ?? (e?.code === 'permission-denied' ? L.lb.rulesNeeded : L.fr.error));
+    proof.busy = false; proof.hits = 0;
+    const video = document.getElementById('proofVideo');
+    if (video) proof.timer = setInterval(() => { if (!proof.busy && video.videoWidth) proofCheck(false); }, 400);
+  }
+}
+function closeProofCamera() {
+  clearInterval(proof.timer);
+  proof.stream?.getTracks().forEach((t) => t.stop()); proof.stream = null;
+  document.getElementById('proofCam')?.remove();
+  if (sheet.hidden) document.body.style.overflow = '';
+}
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-lb-tab],[data-lb-metric],[data-lb-proofs],[data-proof],[data-proofcam]');
+  if (!t) return;
+  const d = t.dataset;
+  if (d.lbTab) { lb.tab = d.lbTab; lb.rows = null; renderLeaderboard(); }
+  else if (d.lbMetric) { lb.metric = d.lbMetric; if (lb.tab === 'world') lb.rows = null; renderLeaderboard(); }
+  else if (d.lbProofs) openProofs(d.lbProofs, d.pseudo);
+  else if (d.proof) openProofCamera(d.proof);
+  else if (d.proofcam === 'close') closeProofCamera();
+  else if (d.proofcam === 'shot' && !proof.busy && document.getElementById('proofVideo')?.videoWidth) proofCheck(true);
+});
+document.addEventListener('change', async (e) => {
+  if (e.target.id !== 'lbPublic') return;
+  user.prefs.lbPublic = e.target.checked; save();
+  if (user.prefs.lbPublic) { await lbPush(); toast(L.lb.joined); }
+  else { try { await cloud.api.fsM.deleteDoc(lbRef(cloud.user.uid)); } catch { /* */ } toast(L.lb.left); }
+  lb.rows = null; renderLeaderboard();
+});
+
+onCollectionChange = () => { if (user.prefs.lbPublic) lbSoon(); };
+
 // ---------- Navigation ----------
 let currentTab = 'home';
 function markTabs() {
@@ -3849,6 +4103,7 @@ function route() {
   if (h.startsWith('set-')) { tab = 'home'; currentRender = () => renderSet(h.slice(4)); }
   else if (h === 'collection') currentRender = renderCollection;
   else if (h === 'graded') { tab = 'collection'; currentRender = renderGraded; }
+  else if (h === 'leaderboard') { tab = 'collection'; lb.rows = null; currentRender = renderLeaderboard; }
   else if (h === 'decks') { tab = 'decks'; currentRender = renderDecks; }
   else if (h.startsWith('deckcode-')) { tab = 'decks'; const code = h.slice(9); currentRender = () => openDeckCode(code); }
   else if (h === 'deckview') { tab = 'decks'; currentRender = () => (previewDeck ? renderDeckPreview() : (location.hash = '#decks')); }
