@@ -53,6 +53,23 @@ const TEXT = {
     chartWait: 'Pas encore assez d\'historique pour tracer une courbe. Le prix est relevé chaque jour.', chartNone: 'Pas de prix Cardmarket pour cette carte pour l\'instant.',
     ranges: ['7 J', '1 M', '3 M', '1 A', 'Tout'], chartAria: (a, b, c, d) => `Courbe du prix du ${a} au ${b}, de ${c} à ${d}`,
     language: 'Langue de l\'appli', langToast: 'Appli en français',
+    ls: {
+      tab: 'Listes', fav: 'Liste favorite', intro: 'Toutes les cartes rangées par faction, rôle, type d\'équipement, personnage, couleur ou rareté, toutes séries confondues.',
+      groups: { fav: 'Favorites', collection: 'Collection', faction: 'Factions, corpos & gangs', role: 'Rôles', gear: 'Équipements & programmes', color: 'Couleurs', character: 'Personnages', artist: 'Artistes' },
+    },
+    bd: {
+      tab: 'Classeurs', layout: 'Format des pages', limit: 'Un classeur perso en version gratuite. Classeurs illimités avec le statut Soutien.', plusUnlimited: 'Classeurs illimités', plusMore: '… et d\'autres avantages (photo de profil, bannière, cadre doré)', plusBtn: 'Soutenir NightDex', plusHint: 'Après ton don, ton statut Soutien est activé sur ton compte (mets ton ID NightDex dans le message).',
+      value: (a, b) => `~${a} / ~${b}`, owned: (a, b) => `${a}/${b} carte${b > 1 ? 's' : ''} possédée${b > 1 ? 's' : ''}`, settings: 'Réglages du classeur', prices: 'Afficher les prix',
+      mine: 'Mes classeurs', master: 'Master Set des séries', new: 'Nouveau classeur', name: 'Nom du classeur', namePh: 'Mes Légendes, Mon classeur Arasaka…', color: 'Couverture', create: 'Créer',
+      pages: (n) => `${n} page${n > 1 ? 's' : ''}`, fill: 'Remplir avec…', fillList: 'une liste', fillOwned: 'mes cartes possédées', addPage: 'Ajouter une page',
+      rename: 'Renommer', del: 'Supprimer le classeur', delConfirm: 'Toucher encore pour supprimer', pick: 'Choisir une carte', pickPh: 'Nom ou numéro de carte', remove: 'Retirer',
+      none: 'Crée ton premier classeur pour ranger tes cartes comme dans un vrai classeur.', readOnly: 'Classeur automatique : la série dans l\'ordre, les cartes manquantes en gris.', created: 'Classeur créé', deleted: 'Classeur supprimé',
+    },
+    cd: {
+      mine: 'Mes decks', tourney: 'Tournois', community: 'Communauté', by: (a) => `par ${a}`, official: 'Voir sur le site officiel', none: 'Aucun deck pour l\'instant.', updated: (d) => `mis à jour le ${d}`,
+      communityHint: 'Les decks publics les plus appréciés du créateur de decks officiel (cyberpunktcg.com/decks), relevés chaque jour.',
+      tourneyHint: 'Les decks publics qui annoncent un résultat de tournoi (Showdown, Brawl, Top 8, 1re place…), en attendant les decks de tournoi officiels.',
+    },
     lb: {
       title: 'Classement', friends: 'Amis', world: 'Monde', mValue: 'Valeur', mCards: 'Cartes', mSets: 'Séries vérifiées', me: 'moi',
       signIn: 'Connecte-toi à ton compte NightDex pour voir le classement.', rulesNeeded: 'Classement indisponible : mets à jour les règles Firestore.',
@@ -267,6 +284,23 @@ const TEXT = {
     chartWait: 'Not enough history to draw a curve yet. Prices are recorded every day.', chartNone: 'No Cardmarket price for this card yet.',
     ranges: ['7D', '1M', '3M', '1Y', 'All'], chartAria: (a, b, c, d) => `Price from ${a} to ${b}, from ${c} to ${d}`,
     language: 'App language', langToast: 'App in English',
+    ls: {
+      tab: 'Lists', fav: 'Favourite list', intro: 'Every card sorted by faction, role, gear type, character, colour or rarity, across all sets.',
+      groups: { fav: 'Favourites', collection: 'Collection', faction: 'Factions, corps & gangs', role: 'Roles', gear: 'Gear & programs', color: 'Colours', character: 'Characters', artist: 'Artists' },
+    },
+    bd: {
+      tab: 'Binders', layout: 'Page layout', limit: 'One custom binder in the free version. Unlimited binders with the Supporter status.', plusUnlimited: 'Unlimited binders', plusMore: '… and other perks (profile picture, banner, gold frame)', plusBtn: 'Support NightDex', plusHint: 'After your donation, the Supporter status is turned on for your account (put your NightDex ID in the message).',
+      value: (a, b) => `~${a} / ~${b}`, owned: (a, b) => `${a}/${b} card${b > 1 ? 's' : ''} owned`, settings: 'Binder settings', prices: 'Show prices',
+      mine: 'My binders', master: 'Master Set binders', new: 'New binder', name: 'Binder name', namePh: 'My Legends, Arasaka binder…', color: 'Cover', create: 'Create',
+      pages: (n) => `${n} page${n > 1 ? 's' : ''}`, fill: 'Fill with…', fillList: 'a list', fillOwned: 'my owned cards', addPage: 'Add a page',
+      rename: 'Rename', del: 'Delete binder', delConfirm: 'Tap again to delete', pick: 'Choose a card', pickPh: 'Card name or number', remove: 'Remove',
+      none: 'Create your first binder to store your cards like in a real binder.', readOnly: 'Automatic binder: the set in order, missing cards in grey.', created: 'Binder created', deleted: 'Binder deleted',
+    },
+    cd: {
+      mine: 'My decks', tourney: 'Tournaments', community: 'Community', by: (a) => `by ${a}`, official: 'See on the official site', none: 'No decks yet.', updated: (d) => `updated ${d}`,
+      communityHint: 'The most liked public decks from the official deck builder (cyberpunktcg.com/decks), collected every day.',
+      tourneyHint: 'Public decks that announce a tournament result (Showdown, Brawl, Top 8, 1st place…), until official tournament decks are published.',
+    },
     lb: {
       title: 'Leaderboard', friends: 'Friends', world: 'World', mValue: 'Value', mCards: 'Cards', mSets: 'Verified sets', me: 'me',
       signIn: 'Sign in to your NightDex account to see the leaderboard.', rulesNeeded: 'Leaderboard unavailable: update the Firestore rules.',
@@ -813,7 +847,7 @@ function homeTopbar(withMode) {
   const mode = user.prefs.homeMode;
   setTopbar(`<h1>${L.home}</h1>${withMode ? `<button class="icon-btn" data-action="home-mode" aria-label="${L.toggleView}">${mode === 'grid' ? I.listIcon : I.gridIcon}</button>` : ''}${langBtn()}${newsBtn()}${globeBtn()}<a class="icon-btn capri-btn" href="#capri" aria-label="Capri"><img src="images/capri/avatar.webp" alt=""></a>${accountBtn()}<button class="icon-btn" data-action="settings" aria-label="${L.settings}">${I.gear}</button>`);
 }
-const homeTabs = (active) => `<div class="seg" role="tablist">${[['home', L.setsTab], ['sealed', L.sealed], ...(extras.some(inCardLang) ? [['extra', L.ex.tab]] : [])].map(([h, l]) => `<button data-nav="${h}" aria-pressed="${active === h}">${l}</button>`).join('')}</div>`;
+const homeTabs = (active) => `<div class="seg" role="tablist">${[['home', L.setsTab], ['sealed', L.sealed], ['lists', L.ls.tab], ...(extras.some(inCardLang) ? [['extra', L.ex.tab]] : [])].map(([h, l]) => `<button data-nav="${h}" aria-pressed="${active === h}">${l}</button>`).join('')}</div>`;
 function renderSealed() {
   homeTopbar(false);
   const updated = priceFile.updatedAt ? fmt.date.format(parseDay(priceFile.updatedAt)) : '';
@@ -2567,7 +2601,7 @@ function gValue(e, sales = gSales(e)) {
   const last = sales.slice(-3).map(([, p]) => p).sort((a, b) => a - b);
   return last[Math.floor(last.length / 2)];
 }
-const gSig = () => JSON.stringify([user.graded, Object.entries(user.gsales).sort(), Object.entries(user.paid).sort(), Object.entries(user.copies ?? {}).sort(), Object.entries(user.alerts ?? {}).sort(), user.wlists ?? [], Object.keys(user.proofs ?? {}).sort(), Object.keys(user.cardProofs ?? {}).sort()]);
+const gSig = () => JSON.stringify([user.graded, Object.entries(user.gsales).sort(), Object.entries(user.paid).sort(), Object.entries(user.copies ?? {}).sort(), Object.entries(user.alerts ?? {}).sort(), user.wlists ?? [], Object.keys(user.proofs ?? {}).sort(), Object.keys(user.cardProofs ?? {}).sort(), user.binders ?? []]);
 let gLastSig = gSig();
 function gSave() {
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* stockage indisponible */ }
@@ -2662,13 +2696,13 @@ function gMerge(a, b) {
     const seen = new Set((sales[k] ?? []).map((s) => s.join('|')));
     sales[k] = [...(sales[k] ?? []), ...list.filter((s) => !seen.has(s.join('|')))];
   }
-  return { items: [...items.values()], sales, paid: { ...(a?.paid ?? {}), ...(b?.paid ?? {}) }, copies: { ...(a?.copies ?? {}), ...(b?.copies ?? {}) }, alerts: { ...(a?.alerts ?? {}), ...(b?.alerts ?? {}) }, wlists: [...new Map([...(a?.wlists ?? []), ...(b?.wlists ?? [])].map((l) => [l.k, l])).values()], proofs: { ...(a?.proofs ?? {}), ...(b?.proofs ?? {}) }, cardProofs: { ...(a?.cardProofs ?? {}), ...(b?.cardProofs ?? {}) } };
+  return { items: [...items.values()], sales, paid: { ...(a?.paid ?? {}), ...(b?.paid ?? {}) }, copies: { ...(a?.copies ?? {}), ...(b?.copies ?? {}) }, alerts: { ...(a?.alerts ?? {}), ...(b?.alerts ?? {}) }, wlists: [...new Map([...(a?.wlists ?? []), ...(b?.wlists ?? [])].map((l) => [l.k, l])).values()], proofs: { ...(a?.proofs ?? {}), ...(b?.proofs ?? {}) }, cardProofs: { ...(a?.cardProofs ?? {}), ...(b?.cardProofs ?? {}) }, binders: [...new Map([...(a?.binders ?? []), ...(b?.binders ?? [])].map((x) => [x.id, x])).values()] };
 }
 // Firestore n'accepte pas les tableaux de tableaux : ventes envoyées sous forme { d, p }
-const gToCloud = () => ({ items: user.graded, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [], proofs: user.proofs ?? {}, cardProofs: user.cardProofs ?? {}, sales: Object.fromEntries(Object.entries(user.gsales).map(([k, l]) => [k, l.map(([d, p]) => ({ d, p }))])) });
-const gFromCloud = (d) => ({ items: d?.items ?? [], paid: d?.paid ?? {}, copies: d?.copies ?? {}, alerts: d?.alerts ?? {}, wlists: d?.wlists ?? [], proofs: d?.proofs ?? {}, cardProofs: d?.cardProofs ?? {}, sales: Object.fromEntries(Object.entries(d?.sales ?? {}).map(([k, l]) => [k, l.map((s) => [s.d, s.p])])) });
+const gToCloud = () => ({ items: user.graded, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [], proofs: user.proofs ?? {}, cardProofs: user.cardProofs ?? {}, binders: user.binders ?? [], sales: Object.fromEntries(Object.entries(user.gsales).map(([k, l]) => [k, l.map(([d, p]) => ({ d, p }))])) });
+const gFromCloud = (d) => ({ items: d?.items ?? [], paid: d?.paid ?? {}, copies: d?.copies ?? {}, alerts: d?.alerts ?? {}, wlists: d?.wlists ?? [], proofs: d?.proofs ?? {}, cardProofs: d?.cardProofs ?? {}, binders: d?.binders ?? [], sales: Object.fromEntries(Object.entries(d?.sales ?? {}).map(([k, l]) => [k, l.map((s) => [s.d, s.p])])) });
 function gApply(d) {
-  user.graded = d.items; user.gsales = d.sales; user.paid = d.paid ?? {}; user.copies = d.copies ?? {}; user.alerts = d.alerts ?? {}; user.wlists = d.wlists ?? []; user.proofs = d.proofs ?? {}; user.cardProofs = d.cardProofs ?? {};
+  user.graded = d.items; user.gsales = d.sales; user.paid = d.paid ?? {}; user.copies = d.copies ?? {}; user.alerts = d.alerts ?? {}; user.wlists = d.wlists ?? []; user.proofs = d.proofs ?? {}; user.cardProofs = d.cardProofs ?? {}; user.binders = d.binders ?? [];
   if (typeof alertsMirror === 'function') alertsMirror();
   gLastSig = gSig();
   try { localStorage.setItem(KEY, JSON.stringify(user)); } catch { /* */ }
@@ -2697,7 +2731,7 @@ function gOnUser(u) {
   gCloud.unsub = cloud.api.fsM.onSnapshot(gRef(u.uid), async (snap) => {
     if (snap.metadata.hasPendingWrites) return;
     const remote = snap.exists() ? gFromCloud(snap.data()) : null;
-    const local = { items: user.graded, sales: user.gsales, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [], proofs: user.proofs ?? {}, cardProofs: user.cardProofs ?? {} };
+    const local = { items: user.graded, sales: user.gsales, paid: user.paid, copies: user.copies ?? {}, alerts: user.alerts ?? {}, wlists: user.wlists ?? [], proofs: user.proofs ?? {}, cardProofs: user.cardProofs ?? {}, binders: user.binders ?? [] };
     if (first) {
       first = false;
       const next = !remote ? local : (user.gSyncedUid !== u.uid || user.gPending) ? gMerge(remote, local) : remote;
@@ -2725,7 +2759,7 @@ function gOnUser(u) {
 }
 
 // --- affichage ---
-const colTabs = (active) => `<div class="seg" role="tablist">${[['collection', L.gr.tabCards], ['graded', L.gr.tab], ['decks', L.dk.title]].map(([k, l]) => `<button data-nav="${k}" aria-pressed="${active === k}">${l}</button>`).join('')}</div>`;
+const colTabs = (active) => `<div class="seg" role="tablist">${[['collection', L.gr.tabCards], ['binders', L.bd.tab], ['graded', L.gr.tab], ['decks', L.dk.title]].map(([k, l]) => `<button data-nav="${k}" aria-pressed="${active === k}">${l}</button>`).join('')}</div>`;
 // slab dessiné : étiquette de la société + carte ; remplacé par la photo du vrai slab si l'utilisateur en a mis une
 function slabTile(e, opts = {}) {
   const c = cardsById.get(e.id);
@@ -3046,8 +3080,15 @@ function deckValue(dk) {
 function renderDecks() {
   setTopbar(`<h1>${L.dk.title}</h1>${langBtn()}<button class="chip" data-dact="new">+ ${L.dk.new}</button>`);
   const list = [...user.decks].sort((a, b) => (b.upd ?? 0) - (a.upd ?? 0));
+  const tabsHtml = `<div class="chips deck-tabs">${[['mine', L.cd.mine], ['tourney', L.cd.tourney], ['community', L.cd.community]].map(([k, l]) => `<button class="chip" data-decktab="${k}" aria-pressed="${deckTab() === k}">${l}</button>`).join('')}</div>`;
+  if (deckTab() !== 'mine') {
+    view.innerHTML = `<div class="stack">${colTabs('decks')}${tabsHtml}<div id="communityBox" class="stack"><div class="empty"><strong>${L.fr.loading}</strong></div></div></div>`;
+    renderCommunityDecks(deckTab());
+    return;
+  }
   view.innerHTML = `<div class="stack">
     ${colTabs('decks')}
+    ${tabsHtml}
     ${list.length ? `<div class="deck-list">${list.map((dk) => {
       const ck = deckCheck(dk), val = deckValue(dk);
       const legs = dk.legends.map((id) => cardsById.get(id));
@@ -3648,6 +3689,7 @@ function renderDeckPreview() {
     <div class="leg-slots">${legs.map((c) => `<div class="leg-slot"><button class="card-img" data-open="${esc(c.id)}">${cardImg(c)}</button></div>`).join('')}</div>
     <div class="rows">${rows.map(([c, n]) => `<div class="row deck-row"><button class="thumb" data-open="${esc(c.id)}">${cardImg(c)}</button><div class="rmain"><b>${n}× ${esc(cardName(c))}</b><span class="note num">${colorDot(c.color)}${esc(typeLabel(c.type))}${c.cost != null ? ` · ${L.cost} ${c.cost}` : ''}${ownedByName(c) < n ? ` · <span class="down">${L.dk.own(ownedByName(c), n)}</span>` : ''}</span></div><span></span></div>`).join('')}</div>
     <button class="cta" data-sh="import">${L.sh.import}</button>
+    ${pv.url ? `<a class="btn-ghost" style="text-align:center;text-decoration:none" href="${esc(pv.url)}" target="_blank" rel="noopener">${L.cd.official} ${I.ext}</a>` : ''}
   </div>`;
 }
 async function openDeckCode(raw) {
@@ -4125,6 +4167,351 @@ document.addEventListener('change', async (e) => {
 
 onCollectionChange = () => { if (user.prefs.lbPublic) lbSoon(); };
 
+// ---------- Listes (comme RiftDex / Pokécardex) : factions, rôles, équipements, personnages, couleurs, raretés… ----------
+// Factions, rôles et types d'équipement : « classes » des cartes (base officielle, scripts/import-tags.mjs).
+const T2 = (fr, en) => ({ fr, en });
+const FACTIONS = [
+  ['Arasaka', 'Arasaka'], ['Militech', 'Militech'], ['Zetatech', 'Zetatech'], ['Netwatch', 'NetWatch'], ['Trauma Team', 'Trauma Team'], ['NCPD', 'NCPD'],
+  ['Maelstrom', 'Maelstrom'], ['Valentino', 'Valentinos'], ['Tyger Claws', 'Tyger Claws'], ['Voodoo Boys', 'Voodoo Boys'], ['Mox', 'Mox'], ['6th Street', '6th Street'],
+  ['Animal', 'Animals'], ['Aldecaldo', 'Aldecaldos'], ['Raffen Shiv', 'Raffen Shiv'], ["Maine's Crew", "L'équipe de Maine"],
+];
+const ROLES = [
+  ['Ganger', 'Gangers', 'Gangers'], ['Merc', 'Mercenaires', 'Mercs'], ['Corpo', 'Corpos', 'Corpos'], ['Netrunner', 'Netrunners', 'Netrunners'], ['Fixer', 'Fixers', 'Fixers'],
+  ['Nomad', 'Nomades', 'Nomads'], ['Rocker', 'Rockers', 'Rockers'], ['Samurai', 'Samouraïs', 'Samurai'], ['Ripperdoc', 'Charcudocs', 'Ripperdocs'], ['Techie', 'Techies', 'Techies'],
+  ['Medtech', 'Medtechs', 'Medtechs'], ['Doll', 'Dolls', 'Dolls'], ['AI', 'IA', 'AIs'], ['Mystic', 'Mystiques', 'Mystics'], ['Scavenger', 'Récupérateurs', 'Scavengers'], ['Extreme', 'Extrêmes', 'Extremes'],
+];
+const GEARS = [
+  ['Cyberware', 'Cyberware (implants)', 'Cyberware'], ['Quickhack', 'Quickhacks', 'Quickhacks'], ['Weapon', 'Armes', 'Weapons'], ['Vehicle', 'Véhicules', 'Vehicles'],
+  ['Drone', 'Drones', 'Drones'], ['Braindance', 'Braindances', 'Braindances'], ['Plan', 'Plans', 'Plans'],
+];
+const hasClass = (t) => (c) => !!c.classes?.includes(t);
+const slugId = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const charName = (c) => String(c.nameEn ?? c.name).split(' — ')[0].trim();
+const LISTS = [
+  { id: 'legends', group: 'collection', title: T2('Légendes', 'Legends'), desc: T2('Les cartes Légende : trois par deck, elles donnent la RAM de leur couleur.', 'Legend cards: three per deck, they give the RAM of their colour.'), test: (c) => c.type === 'Legend' },
+  { id: 'units', group: 'collection', title: T2('Unités', 'Units'), desc: T2('Les membres de ton équipe qui attaquent et volent les Gigs.', 'Your crew members who attack and steal Gigs.'), test: (c) => c.type === 'Unit' },
+  { id: 'programs', group: 'collection', title: T2('Programmes', 'Programs'), desc: T2('Les effets instantanés qui secouent le terrain.', 'Instant effects that shake up the field.'), test: (c) => c.type === 'Program' },
+  { id: 'gears', group: 'collection', title: T2('Équipements', 'Gear'), desc: T2('Les équipements à attacher à tes Unités et Légendes.', 'Gear to equip on your Units and Legends.'), test: (c) => c.type === 'Gear' },
+  { id: 'iconic', group: 'collection', title: T2('Iconiques', 'Iconic'), desc: T2('Légendes iconiques, Iconiques et Secrètes iconiques : les plus belles illustrations.', 'Iconic Legends, Iconic and Iconic Secret cards: the finest artworks.'), test: (c) => /^Iconic/.test(c.rarity ?? '') },
+  { id: 'secret', group: 'collection', title: T2('Secrètes', 'Secret'), desc: T2('Les cartes Secrètes, les plus rares des boosters.', 'Secret cards, the rarest pulls.'), test: (c) => /Secret/.test(c.rarity ?? '') },
+  { id: 'nova', group: 'collection', title: T2('Nova Rares', 'Nova Rares'), desc: T2('Les Nova Rares, imprimées en foil.', 'Nova Rares, printed in foil.'), test: (c) => c.rarity === 'Nova Rare' },
+  { id: 'promos', group: 'collection', title: T2('Promos & jeu organisé', 'Promos & organised play'), desc: T2('Les cartes de tournois, d\'événements en boutique et les promos.', 'Tournament, store event and promo cards.'), test: (c) => setOf(c.set)?.block === 'op' },
+  { id: 'beta', group: 'collection', title: T2('Bêta', 'Beta'), desc: T2('Les cartes de la version bêta envoyée aux contributeurs Kickstarter.', 'Cards from the beta sent to Kickstarter backers.'), test: (c) => setOf(c.set)?.block === 'beta' },
+  ...COLORS.map((k) => ({ id: `col-${k.toLowerCase()}`, group: 'color', title: T2(TEXT.fr.color[k], k), desc: T2(`Toutes les cartes ${TEXT.fr.color[k].toLowerCase()}s.`, `All ${k.toLowerCase()} cards.`), test: (c) => c.color === k })),
+  ...FACTIONS.map(([t, name]) => ({ id: `f-${slugId(t)}`, group: 'faction', title: T2(name, name), desc: T2(`Les cartes ${name} : corpos, gangs et clans de Night City.`, `The ${name} cards: Night City's corps, gangs and clans.`), test: hasClass(t) })),
+  ...ROLES.map(([t, fr, en]) => ({ id: `r-${slugId(t)}`, group: 'role', title: T2(fr, en), desc: T2(`Tous les ${fr.toLowerCase()} de Night City.`, `All the ${en} of Night City.`), test: hasClass(t) })),
+  ...GEARS.map(([t, fr, en]) => ({ id: `g-${slugId(t)}`, group: 'gear', title: T2(fr, en), desc: T2(`Les cartes ${fr.toLowerCase()}.`, `The ${en.toLowerCase()} cards.`), test: hasClass(t) })),
+];
+const listTitle = (d) => d.title[lang] ?? d.title.en;
+const listDesc = (d) => d.desc[lang] ?? d.desc.en;
+let dynLists = null;
+function allLists() {
+  if (!dynLists) {
+    // personnages (au moins 3 cartes) et artistes (au moins 8 cartes)
+    const chars = new Map(), arts = new Map();
+    for (const c of catalog.cards) { chars.set(charName(c), (chars.get(charName(c)) ?? 0) + 1); for (const a of String(c.artist ?? '').split(/\s*[,&]\s*/)) if (a) arts.set(a, (arts.get(a) ?? 0) + 1); }
+    const known = new Set([...FACTIONS, ...ROLES, ...GEARS].map(([t]) => t));
+    const other = new Map();
+    for (const c of catalog.cards) for (const t of c.classes ?? []) if (!known.has(t)) other.set(t, (other.get(t) ?? 0) + 1);
+    dynLists = [
+      ...[...other].sort((a, b) => a[0].localeCompare(b[0])).map(([t]) => ({ id: `o-${slugId(t)}`, group: 'faction', title: T2(t, t), desc: T2(`Les cartes ${t}.`, `The ${t} cards.`), test: hasClass(t) })),
+      ...[...chars].filter(([, n]) => n >= 3).sort((a, b) => a[0].localeCompare(b[0])).map(([n]) => ({ id: `c-${slugId(n)}`, group: 'character', title: T2(n, n), desc: T2(`Toutes les cartes de ${n}.`, `All the ${n} cards.`), test: (c) => charName(c) === n })),
+      ...[...arts].filter(([, n]) => n >= 8).sort((a, b) => a[0].localeCompare(b[0])).map(([a]) => ({ id: `a-${slugId(a)}`, group: 'artist', title: T2(a, a), desc: T2(`Les cartes illustrées par ${a}.`, `Cards illustrated by ${a}.`), test: (c) => String(c.artist ?? '').split(/\s*[,&]\s*/).includes(a) })),
+    ];
+  }
+  return [...LISTS, ...dynLists];
+}
+const setOrderOf = (c) => setOf(c.set)?.order ?? 999;
+const byNumber = (a, b) => setOrderOf(a) - setOrderOf(b) || String(a.number).localeCompare(String(b.number), 'en', { numeric: true });
+const listCards = (d) => catalog.cards.filter((c) => inCardLang(c) && d.test(c)).sort(byNumber);
+function bestArt(cards) {
+  const rank = (c) => (/Iconic|Secret/.test(c.rarity ?? '') ? 3 : c.rarity === 'Nova Rare' ? 2 : c.type === 'Legend' ? 1 : 0);
+  const best = [...cards].filter((c) => imageOf(c)).sort((a, b) => rank(b) - rank(a) || (price(b.id) ?? 0) - (price(a.id) ?? 0))[0];
+  return best ? imageOf(best) : null;
+}
+function listCard(d, cards) {
+  const own = cards.filter((c) => qty(c.id) > 0).length, total = cards.length, p = total ? own / total : 0;
+  const art = bestArt(cards), key = `list:${d.id}`;
+  return `<div class="list-card ${p >= 1 ? 'done' : ''}" ${art ? `style="--art:url('${esc(art)}')"` : ''}>
+    <a class="list-link" href="#list-${esc(d.id)}" aria-label="${esc(listTitle(d))}"></a>
+    <div class="list-top"><h3>${esc(listTitle(d))}</h3>
+      <button class="icon-btn list-star ${fav.has(key) ? 'on' : ''}" data-fav="${esc(key)}" aria-pressed="${fav.has(key)}" aria-label="${L.ls.fav}">${I.star}</button></div>
+    <p class="list-desc">${esc(listDesc(d))}</p>
+    <div class="list-prog num"><b>${own}</b><small>/${total}</small><span>${Math.floor(p * 100)} %</span></div>
+    <div class="bar"><i style="width:${(p * 100).toFixed(1)}%"></i></div>
+  </div>`;
+}
+function renderLists() {
+  homeTopbar(false);
+  const withCards = allLists().map((d) => [d, listCards(d)]).filter(([, cards]) => cards.length);
+  const groups = [['fav', withCards.filter(([d]) => fav.has(`list:${d.id}`))], ...['collection', 'faction', 'role', 'gear', 'color', 'character', 'artist'].map((g) => [g, withCards.filter(([d]) => d.group === g)])];
+  view.innerHTML = `<div class="stack">
+    ${homeTabs('lists')}
+    <p class="note" style="margin:0">${L.ls.intro}</p>
+    ${groups.filter(([, l]) => l.length).map(([g, l]) => `<details class="block lists-block" ${g === 'character' || g === 'artist' ? '' : 'open'}>
+      <summary>${esc(L.ls.groups[g])} <small class="num">${l.length}</small>${I.chevron}</summary>
+      <div class="list-grid">${l.map(([d, cards]) => listCard(d, cards)).join('')}</div>
+    </details>`).join('')}
+  </div>`;
+}
+function renderList(id) {
+  const d = allLists().find((x) => x.id === id);
+  if (!d) { location.hash = '#lists'; return; }
+  const all = listCards(d);
+  const list = sortCards(filterCards(all), user.prefs.sort);
+  const own = all.filter((c) => qty(c.id) > 0).length, p = all.length ? own / all.length : 0;
+  const value = all.reduce((a, c) => a + valueOf(c.id), 0);
+  const art = bestArt(all), key = `list:${d.id}`;
+  setTopbar(`<a class="icon-btn" href="#lists" aria-label="${L.back}">${I.back}</a><h1 class="small">${esc(listTitle(d))}</h1>
+    <button class="icon-btn ${fav.has(key) ? 'on' : ''}" data-fav="${esc(key)}" aria-pressed="${fav.has(key)}" aria-label="${L.ls.fav}">${I.star}</button>
+    <button class="icon-btn" data-action="cycle-sort" aria-label="${L.changeSort}">${I.sort}</button>`);
+  view.innerHTML = `<div class="stack">
+    <div class="set-hero" ${art ? `style="--art:url('${esc(art)}')"` : ''}>
+      <div class="set-hero-text"><span class="title-code">${esc(L.ls.groups[d.group])}</span><h2>${esc(listTitle(d))}</h2><small>${esc(listDesc(d))}</small></div>
+      <div class="set-hero-prog num"><b>${Math.floor(p * 100)} %</b><span>${own}/${all.length}</span></div>
+      <div class="bar"><i style="width:${(p * 100).toFixed(1)}%"></i></div>
+    </div>
+    ${seg('setMode', user.prefs.setMode, [['cards', L.cards], ['list', L.list], ['grid', L.grid]])}
+    <div class="toolbar num"><span>${L.owned(own, all.length)}</span><span class="grow"></span>${hasPrices() ? `<span>${L.myValue} : <b style="color:var(--fg)">${eur(value)}</b></span>` : ''}</div>
+    ${cardsBlock(list, user.prefs.setMode)}
+  </div>`;
+}
+
+// ---------- Classeurs virtuels (comme RiftDex) ----------
+// Classeurs perso : pages de 2×2 à 4×4 cases, couverture de couleur, cartes placées case par case (un en gratuit, illimités pour les soutiens).
+// Classeurs « Master Set » : une série entière dans l'ordre des numéros, les cartes manquantes en gris (lecture seule).
+if (!Array.isArray(user.binders)) user.binders = [];
+const BD_COLORS = ['#7a1f2b', '#1f3a7a', '#1f6b4a', '#5b2a86', '#8a6a1f', '#1b1b1f', '#b0475f', '#2a7d8c'];
+const BD_LAYOUTS = [['2x2', '2×2'], ['3x3', '3×3'], ['3x4', '3×4'], ['4x3', '4×3'], ['4x4', '4×4']];
+const BD_FREE = 1;
+const bd = { page: 0, edit: false, confirmDel: false, pickSlot: null, pickQ: '' };
+const canAddBinder = () => !!cloud.supporter || user.binders.length < BD_FREE;
+const bdOwned = (b, c) => (b.auto ? qty(c.id) : qtyAll(c.id));
+function binderOf(id) {
+  if (id.startsWith('set-')) {
+    const s = setOf(id.slice(4));
+    if (!s) return null;
+    return { id, name: setName(s), size: 9, cols: 3, rows: 3, color: '#0f1625', auto: true, set: s, slots: setCards(s.code).map((c) => c.id) };
+  }
+  return user.binders.find((x) => x.id === id) ?? null;
+}
+const binderPages = (b) => Math.max(1, Math.ceil(b.slots.length / b.size));
+function binderCover(b) {
+  const cards = b.slots.map((id) => cardsById.get(id)).filter(Boolean);
+  const ownedCards = cards.filter((c) => bdOwned(b, c) > 0);
+  const vOwn = ownedCards.reduce((a, c) => a + (price(c.id) ?? 0), 0), vAll = cards.reduce((a, c) => a + (price(c.id) ?? 0), 0);
+  const art = bestArt(cards);
+  return `<a class="binder-card ${b.auto ? 'auto' : ''}" href="#binder-${esc(b.id)}" style="--bc:${esc(b.color)}">
+    <span class="bk-art">${art ? `<img src="${esc(art)}" alt="" loading="lazy">` : ''}</span>
+    <span class="bk-text">${b.auto ? `<b class="print">${esc(b.set.print ?? b.set.code)}</b>` : ''}<strong>${esc(b.name)}</strong>
+      <span>${L.bd.owned(ownedCards.length, cards.length)}</span><span>${L.bd.pages(binderPages(b))} · ${b.cols}×${b.rows}</span>
+      <em class="num">${L.bd.value(eur(vOwn), eur(vAll))}</em></span>
+  </a>`;
+}
+function renderBinders() {
+  setTopbar(`<h1>${L.myCollection}</h1>${langBtn()}`);
+  const mine = user.binders;
+  const form = canAddBinder() ? `<section class="panel binder-new">
+      <h3>${L.bd.new}</h3>
+      <form id="binderForm" class="binder-form">
+        <input class="search" id="binderName" maxlength="40" placeholder="${esc(L.bd.namePh)}" aria-label="${esc(L.bd.name)}" autocomplete="off">
+        <div class="bf-row"><span>${L.bd.layout}</span>${seg('bdLayout', user.prefs.bdLayout ?? '3x3', BD_LAYOUTS)}</div>
+        <div class="bf-row"><span>${L.bd.color}</span><div class="bd-colors">${BD_COLORS.map((c, i) => `<label style="--c:${c}"><input type="radio" name="bdColor" value="${c}" ${i === 0 ? 'checked' : ''}><i></i></label>`).join('')}</div></div>
+        <button class="cta">${L.bd.create}</button>
+      </form>
+      ${cloud.supporter ? '' : `<p class="note" style="margin:0">${L.bd.limit}</p>`}
+    </section>` : `<section class="plus-card">
+      <strong class="plus-logo">NIGHT<i>DEX</i><span>+</span></strong>
+      <p><span class="plus-ic">📚</span>${L.bd.plusUnlimited}</p>
+      <p><span class="plus-ic">⭐</span>${L.bd.plusMore}</p>
+      ${supportUrl() ? `<a class="plus-btn" href="${esc(supportUrl())}" target="_blank" rel="noopener">🚀 ${L.bd.plusBtn}</a>` : ''}
+      <small>${L.bd.plusHint}</small>
+    </section>`;
+  view.innerHTML = `<div class="stack">
+    ${colTabs('binders')}
+    <h2 class="section-title">${L.bd.mine} <small class="num">${mine.length}</small></h2>
+    ${mine.length ? `<div class="binder-list">${mine.map(binderCover).join('')}</div>` : `<p class="note">${L.bd.none}</p>`}
+    ${form}
+    <h2 class="section-title">${L.bd.master}</h2>
+    <div class="binder-list">${[...catalog.sets].filter((s) => setCards(s.code).length).sort((a, b) => (a.order ?? 999) - (b.order ?? 999)).map((s) => binderCover(binderOf(`set-${s.code}`))).join('')}</div>
+  </div>`;
+}
+function slotHtml(b, i) {
+  const id = b.slots[i];
+  const c = id ? cardsById.get(id) : null;
+  if (!c) return `<button class="slot empty" ${b.auto ? 'disabled' : `data-bslot="${i}"`} aria-label="${L.bd.pick}">${b.auto ? '' : '+'}</button>`;
+  const q = bdOwned(b, c), p = price(c.id);
+  return `<div class="slot ${q ? 'owned' : 'missing'}">
+    <button class="slot-card" data-open="${esc(c.id)}" aria-label="${esc(cardName(c))}">${cardImg(c)}</button>
+    ${p != null && user.prefs.bdPrices !== 'off' ? `<span class="slot-price num">${eur(p)}</span>` : ''}
+    ${bd.edit && !b.auto ? `<button class="slot-x" data-bremove="${i}" aria-label="${L.bd.remove}">${I.x}</button>` : ''}
+    ${q > 1 ? `<span class="slot-q num">×${q}</span>` : ''}
+  </div>`;
+}
+function renderBinder(id) {
+  const b = binderOf(id);
+  if (!b) { location.hash = '#binders'; return; }
+  const pages = binderPages(b);
+  bd.page = Math.min(bd.page, pages - 1);
+  const spread = isPC() ? 2 : 1;
+  const first = Math.floor(bd.page / spread) * spread;
+  const cards = b.slots.map((x) => cardsById.get(x)).filter(Boolean);
+  const ownCards = cards.filter((c) => bdOwned(b, c) > 0);
+  setTopbar(`<a class="icon-btn" href="#binders" aria-label="${L.back}">${I.back}</a><h1 class="small">${b.auto ? `<span class="title-code">${esc(b.set.print ?? b.set.code)}</span>` : ''}${esc(b.name)}</h1>
+    <button class="icon-btn ${user.prefs.bdPrices === 'off' ? '' : 'on'}" data-bd="prices" aria-label="${L.bd.prices}" title="${L.bd.prices}">€</button>`);
+  const page = (p) => `<div class="bpage" style="--bc:${esc(b.color)};--cols:${b.cols}">${Array.from({ length: b.size }, (_, k) => slotHtml(b, p * b.size + k)).join('')}<span class="bpage-num num">${p + 1}</span></div>`;
+  view.innerHTML = `<div class="stack">
+    <div class="toolbar num"><span>${L.bd.owned(ownCards.length, cards.length)}</span><span class="grow"></span><span>${L.bd.value(eur(ownCards.reduce((a, c) => a + (price(c.id) ?? 0), 0)), eur(cards.reduce((a, c) => a + (price(c.id) ?? 0), 0)))}</span></div>
+    <div class="binder-view" id="binderView">${Array.from({ length: spread }, (_, k) => first + k).filter((p) => p < pages).map(page).join('')}</div>
+    <div class="binder-nav">
+      <button class="bn-btn" data-bd="prev" ${first <= 0 ? 'disabled' : ''} aria-label="${L.prev}">${I.back}</button>
+      <span class="bn-page num">${first + 1} / ${pages}</span>
+      <button class="bn-btn primary flip-x" data-bd="next" ${first + spread >= pages ? 'disabled' : ''} aria-label="${L.next}">${I.back}</button>
+      ${b.auto ? '' : `<button class="bn-btn primary ${bd.edit ? 'on' : ''}" data-bd="edit" aria-label="${L.bd.settings}" title="${L.bd.settings}">${I.gear}</button>`}
+    </div>
+    ${b.auto ? `<p class="note">${L.bd.readOnly}</p>` : bd.edit ? `<section class="panel">
+      <h3>${L.bd.fill}</h3>
+      <div class="chips wrap">${catalog.sets.filter((s) => setCards(s.code).length).map((s) => `<button class="chip" data-bfill="set:${esc(s.code)}">${esc(s.print ?? s.code)}</button>`).join('')}<button class="chip" data-bfill="owned">${L.bd.fillOwned}</button></div>
+      <select class="search" id="bdFillList"><option value="">${L.bd.fillList}…</option>${allLists().filter((d) => d.group !== 'artist').map((d) => `<option value="${esc(d.id)}">${esc(listTitle(d))}</option>`).join('')}</select>
+      <div class="bf-row"><span>${L.bd.layout}</span>${BD_LAYOUTS.map(([k, l]) => `<button class="chip" data-bdlayout="${k}" aria-pressed="${`${b.cols}x${b.rows}` === k}">${l}</button>`).join('')}</div>
+      <div class="chips wrap"><button class="chip" data-bd="addpage">${L.bd.addPage}</button><button class="chip" data-bd="rename">${L.bd.rename}</button>
+      <button class="chip ${bd.confirmDel ? 'danger' : ''}" data-bd="delete">${bd.confirmDel ? L.bd.delConfirm : L.bd.del}</button></div>
+    </section>` : ''}
+  </div>`;
+}
+let pickCb = null;
+function openPicker(slot, onPick = null) {
+  bd.pickSlot = slot; bd.pickQ = ''; pickCb = onPick;
+  let el = document.getElementById('picker');
+  if (!el) { el = document.createElement('div'); el.id = 'picker'; el.className = 'picker'; document.body.append(el); }
+  el.hidden = false;
+  el.innerHTML = `<div class="picker-panel" role="dialog" aria-modal="true" aria-label="${L.bd.pick}">
+    <div class="picker-head"><input class="search" id="pickerQ" placeholder="${esc(L.bd.pickPh)}" autocomplete="off"><button class="icon-btn" data-pick="close" aria-label="${L.close}">${I.x}</button></div>
+    <div class="cards compact" id="pickerRes"></div></div>`;
+  pickerResults();
+  el.querySelector('#pickerQ').focus();
+}
+function pickerResults() {
+  const q = fold(bd.pickQ.trim());
+  const res = [...catalog.cards, ...extras].filter((c) => inCardLang(c) && (!q || fold([c.name, c.nameEn, `${printCode(c.set)} ${c.number}`, `${c.set} ${c.number}`].join(' ')).includes(q)))
+    .sort((a, b) => (qtyAll(b.id) > 0) - (qtyAll(a.id) > 0) || byNumber(a, b)).slice(0, 60);
+  document.getElementById('pickerRes').innerHTML = res.map((c) => `<button class="card ${qtyAll(c.id) ? 'owned' : 'missing'} pick-card" data-pick="${esc(c.id)}"><span class="card-img">${cardImg(c)}<span class="num-badge num">${esc(printCode(c.set))} ${esc(c.number)}</span></span></button>`).join('');
+}
+function closePicker() { const el = document.getElementById('picker'); if (el) el.hidden = true; bd.pickSlot = null; pickCb = null; }
+function binderEdit(fn) {
+  const b = user.binders.find((x) => x.id === location.hash.slice(8));
+  if (!b) return;
+  fn(b);
+  gSave(); currentRender();
+}
+function binderFill(b, ids) {
+  let i = 0;
+  for (const id of ids) {
+    if (b.slots.includes(id)) continue;
+    while (b.slots[i] != null) i++;
+    b.slots[i] = id; i++;
+  }
+  const pages = Math.ceil(b.slots.length / b.size);
+  for (let k = 0; k < pages * b.size; k++) if (b.slots[k] === undefined) b.slots[k] = null;
+}
+document.addEventListener('submit', (e) => {
+  if (e.target.id !== 'binderForm') return;
+  e.preventDefault();
+  if (!canAddBinder()) { currentRender(); return; }
+  const name = document.getElementById('binderName').value.trim() || L.bd.new;
+  const color = e.target.querySelector('input[name="bdColor"]:checked')?.value ?? BD_COLORS[0];
+  const [cols, rows] = String(user.prefs.bdLayout ?? '3x3').split('x').map(Number);
+  const b = { id: `b${Date.now().toString(36)}`, name: name.slice(0, 40), size: cols * rows, cols, rows, color, slots: Array(cols * rows).fill(null) };
+  user.binders.push(b); gSave(); toast(L.bd.created);
+  Object.assign(bd, { id: b.id, edit: true, page: 0, confirmDel: false }); location.hash = `#binder-${b.id}`;
+});
+document.addEventListener('click', (e) => {
+  const lay = e.target.closest('[data-bdlayout]');
+  if (lay) {   // changement de format : les cartes gardent leur ordre, les pages sont recalculées
+    const [cols, rows] = lay.dataset.bdlayout.split('x').map(Number);
+    binderEdit((b) => { const cards = b.slots; Object.assign(b, { cols, rows, size: cols * rows }); const n = Math.max(1, Math.ceil(cards.length / b.size)) * b.size; b.slots = Array.from({ length: n }, (_, k) => cards[k] ?? null); bd.page = 0; });
+    return;
+  }
+  if (e.target.id === 'picker') { closePicker(); return; }
+  const t = e.target.closest('[data-bd],[data-bslot],[data-bremove],[data-bfill],[data-pick]');
+  if (!t) return;
+  const d = t.dataset;
+  if (d.pick === 'close') { closePicker(); return; }
+  if (d.pick) { const slot = bd.pickSlot, cb = pickCb; closePicker(); if (cb) cb(d.pick); else binderEdit((b) => { b.slots[slot] = d.pick; }); return; }
+  if (d.bslot !== undefined) { openPicker(Number(d.bslot)); return; }
+  if (d.bremove !== undefined) { binderEdit((b) => { b.slots[Number(d.bremove)] = null; }); return; }
+  if (d.bfill) {
+    const ids = d.bfill === 'owned' ? [...catalog.cards, ...extras].filter((c) => qtyAll(c.id) > 0).sort(byNumber).map((c) => c.id) : setCards(d.bfill.slice(4)).map((c) => c.id);
+    binderEdit((b) => binderFill(b, ids)); return;
+  }
+  const act = d.bd;
+  if (!act) return;
+  if (act === 'prices') { user.prefs.bdPrices = user.prefs.bdPrices === 'off' ? 'on' : 'off'; save(); currentRender(); }
+  else if (act === 'edit') { bd.edit = !bd.edit; bd.confirmDel = false; currentRender(); }
+  else if (act === 'prev' || act === 'next') { const spread = isPC() ? 2 : 1; bd.page = Math.max(0, bd.page + (act === 'next' ? spread : -spread)); currentRender(); }
+  else if (act === 'addpage') binderEdit((b) => { for (let k = 0; k < b.size; k++) b.slots.push(null); bd.page = binderPages(b) - 1; });
+  else if (act === 'rename') { const b = user.binders.find((x) => x.id === location.hash.slice(8)); const n = b && prompt(L.bd.name, b.name); if (n && n.trim()) binderEdit((x) => { x.name = n.trim().slice(0, 40); }); }
+  else if (act === 'delete') {
+    if (!bd.confirmDel) { bd.confirmDel = true; currentRender(); return; }
+    const id = location.hash.slice(8);
+    user.binders = user.binders.filter((b) => b.id !== id); bd.confirmDel = false; gSave(); toast(L.bd.deleted); location.hash = '#binders';
+  }
+});
+document.addEventListener('input', (e) => { if (e.target.id === 'pickerQ') { bd.pickQ = e.target.value; pickerResults(); } });
+document.addEventListener('change', (e) => {
+  if (e.target.id !== 'bdFillList' || !e.target.value) return;
+  const d = allLists().find((x) => x.id === e.target.value);
+  if (d) binderEdit((b) => binderFill(b, listCards(d).map((c) => c.id)));
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !document.getElementById('picker')?.hidden && document.getElementById('picker')) closePicker(); });
+// glisser pour tourner les pages
+let bdSwipe = null;
+document.addEventListener('touchstart', (e) => { if (e.target.closest('#binderView') && e.touches.length === 1) bdSwipe = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }, { passive: true });
+document.addEventListener('touchend', (e) => {
+  if (!bdSwipe) return;
+  const t = e.changedTouches[0], dx = t.clientX - bdSwipe.x, dy = t.clientY - bdSwipe.y;
+  bdSwipe = null;
+  if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return;
+  document.querySelector(`[data-bd="${dx < 0 ? 'next' : 'prev'}"]:not([disabled])`)?.click();
+}, { passive: true });
+
+// ---------- Decks de la communauté et de tournoi (créateur de decks officiel, data/community-decks.json) ----------
+let community = null;
+const deckTab = () => (['mine', 'tourney', 'community'].includes(user.prefs.deckTab) ? user.prefs.deckTab : 'mine');
+async function communityLoad() {
+  if (community) return community;
+  try { community = await fetch('data/community-decks.json').then((r) => r.json()); } catch { community = { decks: [] }; }
+  return community;
+}
+function communityTile(dk) {
+  const ck = deckCheck({ ...dk, side: dk.side ?? {} }), val = deckValue(dk);
+  const legs = dk.legends.map((id) => cardsById.get(id));
+  return `<button class="deck-tile" data-cdeck="${esc(dk.id)}">
+    <span class="deck-legs">${[0, 1, 2].map((i) => (legs[i] ? `<img src="${esc(imageOf(canonOf(legs[i])) || placeholderArt(legs[i]))}" alt="" loading="lazy">` : '<span class="leg-empty"></span>')).join('')}</span>
+    <span class="deck-meta"><b>${esc(dk.name)}</b>
+      <span class="note num">${COLORS.filter((k) => ck.ram[k]).map(colorDot).join('')} ${L.cd.by(esc(dk.author || '?'))} · ♥ ${dk.likes} · 👁 ${dk.views}</span>
+      <span class="note num">${eur(val.v)}${val.miss ? ` · ${L.dk.missing(val.miss, eur(val.missCost))}` : ` · ${L.dk.complete}`}</span></span>
+  </button>`;
+}
+async function renderCommunityDecks(kind) {
+  const data = await communityLoad();
+  if (deckTab() !== kind || currentRender !== renderDecks) return;
+  const list = data.decks.filter((d) => d.kind === kind || (kind === 'community' && d.kind !== 'tourney'));
+  const box = document.getElementById('communityBox');
+  if (!box) return;
+  box.innerHTML = `<p class="note" style="margin:0">${kind === 'tourney' ? L.cd.tourneyHint : L.cd.communityHint}${data.updatedAt ? ` · ${L.cd.updated(fmt.date.format(new Date(data.updatedAt)))}` : ''}</p>
+    ${list.length ? `<div class="deck-list">${list.map(communityTile).join('')}</div>` : `<div class="empty"><strong>${L.cd.none}</strong></div>`}`;
+}
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-cdeck],[data-decktab]');
+  if (!t) return;
+  if (t.dataset.decktab) { user.prefs.deckTab = t.dataset.decktab; save(); renderDecks(); return; }
+  const dk = community?.decks.find((x) => x.id === t.dataset.cdeck);
+  if (!dk) return;
+  previewDeck = { deck: { name: dk.name, legends: dk.legends, main: dk.main, side: dk.side }, by: dk.author ? `@${dk.author}` : '', code: '', back: '#decks', url: dk.url };
+  location.hash = '#deckview';
+});
+
 // ---------- Navigation ----------
 let currentTab = 'home';
 function markTabs() {
@@ -4151,6 +4538,10 @@ function route() {
   else if (h === 'values') currentRender = renderValues;
   else if (h === 'sealed') { tab = 'sealed'; currentRender = renderSealed; }
   else if (h === 'extra') { tab = 'home'; currentRender = renderExtra; }
+  else if (h === 'lists') { tab = 'home'; currentRender = renderLists; }
+  else if (h.startsWith('list-')) { tab = 'home'; const id = h.slice(5); currentRender = () => renderList(id); }
+  else if (h === 'binders') { tab = 'collection'; currentRender = renderBinders; }
+  else if (h.startsWith('binder-')) { tab = 'collection'; const id = h.slice(7); if (bd.id !== id) Object.assign(bd, { id, page: 0, edit: bd.edit && bd.id === id, confirmDel: false }); currentRender = () => renderBinder(id); }
   else if (h === 'news') { tab = 'home'; currentRender = renderNews; }
   else if (h.startsWith('buy-')) { const src = h.slice(4); tab = src.startsWith('wish') ? 'wishlist' : src.startsWith('deck') ? 'decks' : 'home'; currentRender = () => renderBuy(src); }
   else if (h === 'capri') { currentRender = renderCapri; }

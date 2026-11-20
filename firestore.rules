@@ -25,7 +25,7 @@ service cloud.firestore {
       allow read: if isMe(uid) || isFriendOf(uid);
       allow delete: if isMe(uid);
       allow create, update: if isMe(uid)
-        && request.resource.data.keys().hasOnly(['items', 'sales', 'paid', 'copies', 'alerts', 'wlists', 'proofs', 'cardProofs', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['items', 'sales', 'paid', 'copies', 'alerts', 'wlists', 'proofs', 'cardProofs', 'binders', 'updatedAt'])
         && request.resource.data.items is list
         && request.resource.data.items.size() <= 2000
         && request.resource.data.sales is map;
