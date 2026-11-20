@@ -825,7 +825,8 @@ function seg(name, value, options) {
 const setArtCache = new Map();
 function setArt(code) {
   const k = `${code}|${cardLang}`;
-  if (!setArtCache.has(k)) setArtCache.set(k, bestArt(setCards(code)));
+  // nouvelle série sans image de carte (encore) : visuel de son booster ou de son scellé
+  if (!setArtCache.has(k)) setArtCache.set(k, bestArt(setCards(code)) ?? sealed.find((it) => it.set === code && it.image && !String(it.image).startsWith('pack:'))?.image ?? null);
   return setArtCache.get(k);
 }
 const artStyle = (code) => { const u = setArt(code); return u ? `style="--art:url('${esc(u)}')"` : ''; };
