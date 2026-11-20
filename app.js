@@ -1260,7 +1260,7 @@ function openCard(id, keepNav) {
   sheetPanel.innerHTML = `${sheetTop(navList.length > 1)}
     <div class="stack detail">
       <div class="detail-top ${sealedItem ? 'is-sealed' : ''}" ${rarityStyle(c.rarity)}>
-        <button class="card-img zoomable" data-zoom ${c.hd ? `data-hd="${esc(c.hd)}"` : ''} aria-label="${L.zoom}">${cardImg(c, true)}${c.pack ? `<span class="pack-badge num">×${c.pack}</span>` : ''}<span class="zoom-hint">3D</span></button>
+        ${sealedItem ? `<div class="card-img">${cardImg(c, true)}${c.pack ? `<span class="pack-badge num">×${c.pack}</span>` : ''}</div>` : `<button class="card-img zoomable" data-zoom ${c.hd ? `data-hd="${esc(c.hd)}"` : ''} aria-label="${L.zoom}">${cardImg(c, true)}<span class="zoom-hint">3D</span></button>`}
         <div class="detail-info">
           <h2 id="sheetTitle">${esc(cardName(c))}</h2>
           ${sealedItem
