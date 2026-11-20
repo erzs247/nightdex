@@ -821,10 +821,26 @@ function setTopbar(html) { topbar.innerHTML = html; }
 function seg(name, value, options) {
   return `<div class="seg" role="group">${options.map(([v, label]) => `<button data-seg="${name}" data-value="${v}" aria-pressed="${value === v}">${label}</button>`).join('')}</div>`;
 }
+// illustration de chaque série : sa carte phare (iconique, secrète ou nova rare la plus chère), dans la langue des cartes
+const setArtCache = new Map();
+function setArt(code) {
+  const k = `${code}|${cardLang}`;
+  if (!setArtCache.has(k)) setArtCache.set(k, bestArt(setCards(code)));
+  return setArtCache.get(k);
+}
+const artStyle = (code) => { const u = setArt(code); return u ? `style="--art:url('${esc(u)}')"` : ''; };
+function setHero(s) {
+  const total = setTotal(s), own = ownedIn(s.code), p = total ? own / total : 0;
+  return `<div class="set-hero" ${artStyle(s.code)}>
+    <div class="set-hero-text"><span class="title-code">${esc(s.print ?? s.code)}</span><h2>${esc(setName(s))}</h2>${s.releaseDate ? `<small>${fmt.date.format(parseDay(s.releaseDate))}</small>` : ''}</div>
+    <div class="set-hero-prog num"><b>${Math.floor(p * 100)} %</b><span>${own}/${total}</span></div>
+    <div class="bar"><i style="width:${(p * 100).toFixed(1)}%"></i></div>
+  </div>`;
+}
 function progressRow(s) {
   const total = setTotal(s); const own = ownedIn(s.code);
   const p = total ? own / total : 0;
-  return `<a class="set-row" href="#set-${esc(s.code)}">
+  return `<a class="set-row ${p >= 1 ? 'done' : ''}" href="#set-${esc(s.code)}" ${artStyle(s.code)}>
     <div class="set-head"><span class="set-code">${esc(s.print ?? s.code)}</span><span class="set-name">${esc(setName(s))}</span>
     <span class="set-count num">${own}<small>/${total}</small><b>${Math.floor(p * 100)} %</b></span></div>
     <div class="bar"><i style="width:${(p * 100).toFixed(1)}%"></i></div>
@@ -833,7 +849,7 @@ function progressRow(s) {
 function progressTile(s) {
   const total = setTotal(s); const own = ownedIn(s.code);
   const p = total ? own / total : 0;
-  return `<a class="set-tile" href="#set-${esc(s.code)}">
+  return `<a class="set-tile ${p >= 1 ? 'done' : ''}" href="#set-${esc(s.code)}" ${artStyle(s.code)}>
     <div class="set-head"><span class="set-code">${esc(s.print ?? s.code)}</span></div>
     <span class="set-name">${esc(setName(s))}</span>
     <span class="big num">${Math.floor(p * 100)} %</span>
@@ -948,6 +964,7 @@ function renderSet(code) {
     <button class="icon-btn" data-action="cycle-sort" aria-label="${L.changeSort}">${I.sort}</button>
     <button class="icon-btn ${showFilters || isFiltered ? 'on' : ''}" data-action="filters" aria-label="${L.filters}" aria-expanded="${showFilters}">${I.filter}</button>`);
   view.innerHTML = `<div class="stack">
+    ${setHero(s)}
     ${seg('setMode', user.prefs.setMode, [['cards', L.cards], ['list', L.list], ['grid', L.grid]])}
     ${showFilters ? filtersPanel(all) : ''}
     ${setIsComplete(code) ? `<div class="set-done ${user.proofs[code] ? 'ok' : ''}">${I.trophy}<span><b>${L.lb.setDone}</b>${user.proofs[code] ? L.lb.setVerified : L.lb.setToVerify}</span>${user.proofs[code] ? '' : `<button class="chip" data-proof="${esc(code)}">${I.camera}<span>${L.lb.verify}</span></button>`}</div>` : ''}
@@ -4359,7 +4376,7 @@ function renderBinder(id) {
   const ownCards = cards.filter((c) => bdOwned(b, c) > 0);
   setTopbar(`<a class="icon-btn" href="#binders" aria-label="${L.back}">${I.back}</a><h1 class="small">${b.auto ? `<span class="title-code">${esc(b.set.print ?? b.set.code)}</span>` : ''}${esc(b.name)}</h1>
     <button class="icon-btn ${user.prefs.bdPrices === 'off' ? '' : 'on'}" data-bd="prices" aria-label="${L.bd.prices}" title="${L.bd.prices}">€</button>`);
-  const page = (p) => `<div class="bpage" style="--bc:${esc(b.color)};--cols:${b.cols}">${Array.from({ length: b.size }, (_, k) => slotHtml(b, p * b.size + k)).join('')}<span class="bpage-num num">${p + 1}</span></div>`;
+  const page = (p) => `<div class="bpage" style="--bc:${esc(b.color)};--cols:${b.cols};--rows:${b.rows}">${Array.from({ length: b.size }, (_, k) => slotHtml(b, p * b.size + k)).join('')}<span class="bpage-num num">${p + 1}</span></div>`;
   view.innerHTML = `<div class="stack">
     <div class="toolbar num"><span>${L.bd.owned(ownCards.length, cards.length)}</span><span class="grow"></span><span>${L.bd.value(eur(ownCards.reduce((a, c) => a + (price(c.id) ?? 0), 0)), eur(cards.reduce((a, c) => a + (price(c.id) ?? 0), 0)))}</span></div>
     <div class="binder-view" id="binderView">${Array.from({ length: spread }, (_, k) => first + k).filter((p) => p < pages).map(page).join('')}</div>
