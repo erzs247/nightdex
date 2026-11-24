@@ -2,6 +2,33 @@
   "source": "https://cyberpunktcg.com/blog",
   "items": [
     {
+      "id": "wnc-impactful-cards",
+      "title": "The Top Performing Cards of the early WNC Metagame",
+      "excerpt": "Night City Showdowns and Brawls have begun. Champs are being crowned as we speak. Here are some of the standout cards helping players establish themselves as Night City Legends.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/fJku3qozKKZx4BFkltxz6/a26a9a9c355baff2fd997392acce9fa8/convertersplash.png",
+      "date": "2026-11-20",
+      "url": "https://cyberpunktcg.com/blog/wnc-impactful-cards",
+      "seen": "2026-11-24"
+    },
+    {
+      "id": "eor-chicago-wtd",
+      "title": "Everything you can do at Edgerunner Open Regional Chicago",
+      "excerpt": "We’re kicking off Edgerunner Open Regionals with a bang! See everything we have in store for players and attendees at EOR Chicago!",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/qmFx2EeJLWfL6ibTHX3wD/3f2874a70621d0c8060ef101b2cf895d/BombusSplash.png",
+      "date": "2026-11-19",
+      "url": "https://cyberpunktcg.com/blog/eor-chicago-wtd",
+      "seen": "2026-11-24"
+    },
+    {
+      "id": "eor-se-update",
+      "title": "EOR Updates: Revised Side Event Pricing and Key Upcoming Dates",
+      "excerpt": "We’re making some changes to EOR Side Event pricing. Here's what's changing, and a look at what this all means for EOR attendees.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/1fNYCHCrQbZ23NY4ZZTFe1/5f5ce3727459986c2d659898148cd599/gorosplash2.png",
+      "date": "2026-11-17",
+      "url": "https://cyberpunktcg.com/blog/eor-se-update",
+      "seen": "2026-11-24"
+    },
+    {
       "id": "wnc-art-qa",
       "title": "Behind the Art: Welcome to Night City Artist Q+A",
       "excerpt": "We’ve seen a hugely positive response to the art of Cyberpunk TCG. Today, we meet five of the artists behind some of our most powerful pieces, and learn more about their connection to the characters and world depicted in their art.",
@@ -578,5 +605,5 @@
       "frOf": "Introducing the Official Cyberpunk Trading Card Game"
     }
   ],
-  "updatedAt": "2026-11-17T06:09:55.205Z"
+  "updatedAt": "2026-11-24T07:42:09.277Z"
 }
