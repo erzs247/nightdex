@@ -43,6 +43,13 @@ const TEXT = {
     valuesLists: (l) => (l === 'fr' ? 'Listes ci-dessous : cartes en français (bouton FR | EN pour voir les cartes anglaises).' : 'Listes ci-dessous : cartes en anglais (bouton FR | EN pour voir les cartes françaises).'),
     colValue: 'Valeur de ma collection', colValueHint: 'Marquez des cartes comme possédées pour suivre la valeur de votre collection dans le temps.',
     pricesNote: (d) => `Prix Cardmarket (tendance, en euros) · mis à jour le ${d}`, noPricesNote: 'Les prix Cardmarket ne sont pas encore importés.',
+    mx: {
+      mineTitle: 'Ma collection : hausses et baisses', over: (d) => `sur ${d} j`, myUps: 'Ce qui a le plus monté (en €)', myDowns: 'Ce qui a le plus baissé (en €)',
+      title: 'Explorer les cotes', scope: 'Voir', market: 'Toutes les cartes', mine: 'Ma collection', wish: 'Mes souhaits', sortBy: 'Trier par', period: 'Période', kind: 'Type', count: 'Nombre', cards: 'Cartes',
+      priciest: 'Plus chères', cheapest: 'Moins chères', up: 'Hausses (%)', down: 'Baisses (%)', gain: 'Hausses (€)', loss: 'Baisses (€)', owned: 'Valeur possédée',
+      d7: '7 jours', d30: '30 jours', d90: '3 mois', ownedVal: (v) => `j'en ai pour ${v}`,
+      mineNote: 'Tes cartes et ton scellé, en français et en anglais. Les hausses et baisses en € comptent tous tes exemplaires.', wishNote: 'Les cartes de tes souhaits.',
+    },
     risers: 'Plus fortes hausses sur 7 jours', fallers: 'Plus fortes baisses sur 7 jours', priciest: 'Cartes les plus chères', noHistory: 'Pas encore assez d\'historique.',
     trend: 'Tendance Cardmarket', noPrice: 'Prix à venir', over30: 'sur 30 jours', removeCopy: 'Retirer un exemplaire', addCopy: 'Ajouter un exemplaire', copies: 'Exemplaires possédés',
     wishBtn: 'Liste de souhaits', ownBtn: 'Je possède cette carte', from: 'À partir de', avg7: 'Moy. 7 j', avg30: 'Moy. 30 j', foil: 'Foil',
@@ -274,6 +281,13 @@ const TEXT = {
     valuesLists: (l) => (l === 'fr' ? 'Lists below: French cards (FR | EN button to see English cards).' : 'Lists below: English cards (FR | EN button to see French cards).'),
     colValue: 'My collection value', colValueHint: 'Mark cards as owned to follow the value of your collection over time.',
     pricesNote: (d) => `Cardmarket prices (trend, in euros) · updated ${d}`, noPricesNote: 'Cardmarket prices have not been imported yet.',
+    mx: {
+      mineTitle: 'My collection: risers and fallers', over: (d) => `over ${d} d`, myUps: 'Biggest gains (in €)', myDowns: 'Biggest losses (in €)',
+      title: 'Explore prices', scope: 'Show', market: 'All cards', mine: 'My collection', wish: 'My wishlist', sortBy: 'Sort by', period: 'Period', kind: 'Type', count: 'Count', cards: 'Cards',
+      priciest: 'Most expensive', cheapest: 'Cheapest', up: 'Risers (%)', down: 'Fallers (%)', gain: 'Gains (€)', loss: 'Losses (€)', owned: 'Owned value',
+      d7: '7 days', d30: '30 days', d90: '3 months', ownedVal: (v) => `I own ${v}`,
+      mineNote: 'Your cards and sealed products, in French and English. Gains and losses in € count all your copies.', wishNote: 'The cards in your wishlist.',
+    },
     risers: 'Biggest risers over 7 days', fallers: 'Biggest fallers over 7 days', priciest: 'Most expensive cards', noHistory: 'Not enough history yet.',
     trend: 'Cardmarket trend', noPrice: 'No price yet', over30: 'over 30 days', removeCopy: 'Remove a copy', addCopy: 'Add a copy', copies: 'Copies owned',
     wishBtn: 'Wishlist', ownBtn: 'I own this card', from: 'From', avg7: '7-day avg', avg30: '30-day avg', foil: 'Foil',
@@ -789,7 +803,7 @@ function compactTile(c) {
     <button class="card-img" data-open="${esc(c.id)}" aria-label="${esc(cardName(c))}">${cardImg(c)}<span class="num-badge num">${esc(c.number)}</span></button>
   </div>`;
 }
-function cardRow(c, days = 30) {
+function cardRow(c, days = 30, extra = '') {
   const q = qty(c.id);
   const ch = change(c.id, days);
   return `<div class="row" data-cid="${esc(c.id)}" data-kind="row" data-days="${days}">
@@ -798,7 +812,7 @@ function cardRow(c, days = 30) {
       <strong>${esc(cardName(c))}</strong>
       <span>${isSealed(c) ? `${itemCode(c) ? `${esc(itemCode(c))} · ` : ''}${esc(L.catOne[c.category] ?? '')}` : `${esc(printCode(c.set))} · ${esc(c.number)}${c.rarity ? ` · <span class="rarity" ${rarityStyle(c.rarity)}>${esc(rarityLabel(c.rarity))}</span>` : ''}`}</span>
     </button>
-    <div class="rprice num">${eur(price(c.id))}${ch != null ? `<small class="${ch >= 0 ? 'up' : 'down'}">${pct(ch)} ${days} ${lang === 'en' ? 'd' : 'j'}</small>` : ''}</div>
+    <div class="rprice num">${eur(price(c.id))}${ch != null ? `<small class="${ch >= 0 ? 'up' : 'down'}">${pct(ch)} ${days} ${lang === 'en' ? 'd' : 'j'}</small>` : ''}${extra}</div>
     <button class="mini-btn own" data-own="${esc(c.id)}" aria-pressed="${q > 0}" aria-label="${L.ownBtn}">${I.own}${q > 1 ? `<span class="qty">${q}</span>` : ''}</button>
   </div>`;
 }
@@ -1109,17 +1123,51 @@ function portfolioSeries() {
   for (const c of owned) for (const [d] of P(c.id).history) if (d >= start) days.add(d);
   return [...days].sort().map((d) => [d, Math.round(owned.reduce((a, c) => a + qtyAll(c.id) * (valueAt(P(c.id).history, d) ?? 0), 0) * 100) / 100]);
 }
+// variation d'un prix en euros sur une période (par exemplaire)
+function changeEur(id, days) {
+  const h = P(id)?.history;
+  if (!h || h.length < 2) return null;
+  const last = h[h.length - 1];
+  const from = new Date(parseDay(last[0]) - days * 864e5).toISOString().slice(0, 10);
+  const before = valueAt(h, from) ?? h[0][1];
+  return before != null ? last[1] - before : null;
+}
+const eurSigned = (v) => `${v >= 0 ? '+' : '−'}${eur(Math.abs(v))}`;
+const MX_DEF = { scope: 'market', sort: 'price-desc', days: 7, kind: 'cards', n: 10 };
+const mx = () => ({ ...MX_DEF, ...(user.prefs.mx ?? {}) });
+// explorateur de la page Cotes : portée, tri, période, type, nombre de lignes
+function mxList() {
+  const o = mx();
+  let pool = o.scope === 'mine' ? allItems().filter((c) => qtyAll(c.id) > 0) : o.scope === 'wish' ? [...wish].map((id) => cardsById.get(id)).filter(Boolean) : allItems().filter(inCardLang);
+  if (o.kind === 'cards') pool = pool.filter((c) => !isSealed(c)); else if (o.kind === 'sealed') pool = pool.filter(isSealed);
+  const mult = (c) => (o.scope === 'mine' ? qtyAll(c.id) : 1);
+  const rows = pool.filter((c) => price(c.id) != null).map((c) => ({ c, p: price(c.id), pc: change(c.id, o.days), e: (changeEur(c.id, o.days) ?? 0) * mult(c), v: valueAll(c.id) }));
+  const sorters = {
+    'price-desc': [(r) => true, (a, b) => b.p - a.p], 'price-asc': [(r) => r.p >= 0.02, (a, b) => a.p - b.p],
+    up: [(r) => r.pc > 0 && r.p >= 0.5, (a, b) => b.pc - a.pc], down: [(r) => r.pc < 0 && r.p >= 0.5, (a, b) => a.pc - b.pc],
+    gain: [(r) => r.e > 0, (a, b) => b.e - a.e], loss: [(r) => r.e < 0, (a, b) => a.e - b.e],
+    owned: [(r) => r.v > 0, (a, b) => b.v - a.v],
+  };
+  const [keep, cmp] = sorters[o.sort] ?? sorters['price-desc'];
+  return rows.filter(keep).sort(cmp).slice(0, o.n);
+}
 function renderValues() {
   setTopbar(`<h1>${L.market}</h1>${langBtn()}`);
   const owned = allItems().filter((c) => qtyAll(c.id) > 0);
   const value = owned.reduce((a, c) => a + valueAll(c.id), 0);
-  const priced = allItems().filter((c) => inCardLang(c) && (price(c.id) ?? 0) >= 0.5);
-  const movers = priced.map((c) => [c, change(c.id, 7)]).filter(([, v]) => v != null && v !== 0);
-  const ups = [...movers].filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  const downs = [...movers].filter(([, v]) => v < 0).sort((a, b) => a[1] - b[1]).slice(0, 5);
-  const top = sortCards(catalog.cards.filter((c) => inCardLang(c) && price(c.id) != null), 'price-desc').slice(0, 10);
   const updated = priceFile.updatedAt ? fmt.date.format(parseDay(priceFile.updatedAt)) : '—';
   const empty = `<p class="note" style="padding:12px">${L.noHistory}</p>`;
+  const o = mx();
+  if (o.scope !== 'mine' && (o.sort === 'owned')) o.sort = 'price-desc';
+  // ma collection : variation totale et plus fortes hausses / baisses en euros
+  const mine = owned.map((c) => ({ c, e: (changeEur(c.id, o.days) ?? 0) * qtyAll(c.id), pc: change(c.id, o.days) })).filter((r) => r.e !== 0);
+  const myUps = mine.filter((r) => r.e > 0).sort((a, b) => b.e - a.e).slice(0, 5);
+  const myDowns = mine.filter((r) => r.e < 0).sort((a, b) => a.e - b.e).slice(0, 5);
+  const myDelta = mine.reduce((a, r) => a + r.e, 0);
+  const gainTag = (e) => `<small class="${e >= 0 ? 'up' : 'down'}">${eurSigned(e)}</small>`;
+  const list = mxList();
+  const chips = (key, opts) => opts.map(([k, l]) => `<button class="chip" data-mx="${key}" data-v="${k}" aria-pressed="${String(o[key]) === String(k)}">${l}</button>`).join('');
+  const sorts = [['price-desc', L.mx.priciest], ['up', L.mx.up], ['down', L.mx.down], ['gain', L.mx.gain], ['loss', L.mx.loss], ['price-asc', L.mx.cheapest], ...(o.scope === 'mine' ? [['owned', L.mx.owned]] : [])];
   view.innerHTML = `<div class="stack">
     <section class="panel">
       <div class="hero-value"><small>${L.colValue}</small><strong class="num">${eur(value)}</strong></div>
@@ -1127,16 +1175,37 @@ function renderValues() {
       ${owned.length ? '<div class="ranges" id="pfRanges"></div><div class="chart" id="pfChart"></div>' : `<p class="note">${L.colValueHint}</p>`}
       <p class="note">${hasPrices() ? L.pricesNote(updated) : L.noPricesNote}</p>
     </section>
-    <p class="note lang-scope">${L.valuesLists(cardLang)}</p>
-    <h2 class="section-title">${L.risers}</h2>
-    <div class="rows">${ups.map(([c]) => cardRow(c, 7)).join('') || empty}</div>
-    <h2 class="section-title">${L.fallers}</h2>
-    <div class="rows">${downs.map(([c]) => cardRow(c, 7)).join('') || empty}</div>
-    <h2 class="section-title">${L.priciest}</h2>
-    <div class="rows">${top.map((c) => cardRow(c)).join('') || empty}</div>
+    ${owned.length ? `<section class="panel my-movers">
+      <h3>${L.mx.mineTitle}<small class="num ${myDelta >= 0 ? 'up' : 'down'}">${eurSigned(myDelta)} ${L.mx.over(o.days)}</small></h3>
+      <div class="chips">${chips('days', [[7, L.mx.d7], [30, L.mx.d30], [90, L.mx.d90]])}</div>
+      <h4 class="mv-title up">▲ ${L.mx.myUps}</h4>
+      <div class="rows">${myUps.map((r) => cardRow(r.c, o.days, gainTag(r.e))).join('') || empty}</div>
+      <h4 class="mv-title down">▼ ${L.mx.myDowns}</h4>
+      <div class="rows">${myDowns.map((r) => cardRow(r.c, o.days, gainTag(r.e))).join('') || empty}</div>
+    </section>` : ''}
+    <section class="panel explorer">
+      <h3>${L.mx.title}</h3>
+      <div class="mx-row"><span>${L.mx.scope}</span><div class="chips">${chips('scope', [['market', L.mx.market], ['mine', L.mx.mine], ['wish', L.mx.wish]])}</div></div>
+      <div class="mx-row"><span>${L.mx.sortBy}</span><div class="chips wrap">${chips('sort', sorts)}</div></div>
+      ${['up', 'down', 'gain', 'loss'].includes(o.sort) ? `<div class="mx-row"><span>${L.mx.period}</span><div class="chips">${chips('days', [[7, L.mx.d7], [30, L.mx.d30], [90, L.mx.d90]])}</div></div>` : ''}
+      <div class="mx-row"><span>${L.mx.kind}</span><div class="chips">${chips('kind', [['all', L.all], ['cards', L.mx.cards], ['sealed', L.sealed]])}</div></div>
+      <div class="mx-row"><span>${L.mx.count}</span><div class="chips">${chips('n', [[10, '10'], [25, '25'], [50, '50']])}</div></div>
+      <p class="note lang-scope">${o.scope === 'market' ? L.valuesLists(cardLang) : o.scope === 'mine' ? L.mx.mineNote : L.mx.wishNote}</p>
+    </section>
+    <div class="rows">${list.map((r) => cardRow(r.c, o.days, ['gain', 'loss'].includes(o.sort) ? gainTag(r.e) : o.sort === 'owned' ? `<small>${L.mx.ownedVal(eur(r.v))}</small>` : '')).join('') || empty}</div>
   </div>`;
   if (owned.length) mountRangedChart(document.getElementById('pfRanges'), document.getElementById('pfChart'), portfolioSeries(), 'valueRange', true);
 }
+
+
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-mx]');
+  if (!b) return;
+  const k = b.dataset.mx, v = b.dataset.v;
+  user.prefs.mx = { ...mx(), [k]: ['days', 'n'].includes(k) ? Number(v) : v };
+  save();
+  const y = scrollY; renderValues(); scrollTo(0, y);
+});
 
 // ---------- Graphique de prix ----------
 const RANGE_DAYS = [7, 30, 90, 365, 0];

@@ -1221,3 +1221,9 @@ button.deck-tile { text-align: left; width: 100%; }
 .bf-row .seg { flex: 1 1 100%; min-width: 0; grid-auto-columns: minmax(0, 1fr); }
 .bf-row .seg button { font-size: 14px; padding: 8px 2px; min-width: 0; white-space: nowrap; }
 .binder-form, .binder-new { min-width: 0; overflow: hidden; }
+
+/* Cotes : ma collection + explorateur */
+.my-movers h3 small.up, .rprice small.up { color: var(--up); } .my-movers h3 small.down, .rprice small.down { color: var(--down); }
+.mv-title { margin: 4px 0 -4px; font: 600 14px var(--font-display); } .mv-title.up { color: var(--up); } .mv-title.down { color: var(--down); }
+.mx-row { display: grid; gap: 6px; } .mx-row > span { font-size: 12.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.explorer .chips.wrap { flex-wrap: wrap; overflow: visible; }
