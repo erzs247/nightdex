@@ -5002,6 +5002,19 @@ function petBind() {
   setInterval(() => { if (pet.on && !pet.raf && !pet.drag && pet.el.dataset.state === 'wave' && Date.now() - pet.lastTalk > 3000) petState('idle'); }, 1500);
 }
 
+// ---------- DexHub (erzs247.github.io) : ouvrir une carte depuis le hub ----------
+// Appli ouverte dans un onglet du hub : quand on touche une carte dans le hub, il demande de l'afficher ici.
+// Seuls les messages de erzs247.github.io sont écoutés.
+const HUB_ORIGIN = 'https://erzs247.github.io';
+addEventListener('message', (e) => {
+  if (e.origin !== HUB_ORIGIN || e.source !== window.parent || e.data?.type !== 'dexhub:open') return;
+  if (cardsById.has(e.data.id)) openCard(e.data.id);
+});
+function hubReady() {
+  if (window.parent === window) return;
+  try { window.parent.postMessage({ type: 'dexhub:ready' }, HUB_ORIGIN); } catch { /* hub absent */ }
+}
+
 // ---------- Démarrage ----------
 pcQuery.addEventListener('change', () => {
   applyDevice(); markTabs(); currentRender(); petSync();
@@ -5013,6 +5026,7 @@ try {
   setTimeout(alertsCheck, 800);
   if (user.prefs.ownV !== 2) { migrateOwned(user.owned); user.prefs.ownV = 2; save(); }
   route();
+  hubReady();
   initCloud();
 } catch (err) {
   view.innerHTML = `<div class="empty"><strong>${L.loadError}</strong>${L.loadErrorHint}</div>`;
