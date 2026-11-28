@@ -2,6 +2,24 @@
   "source": "https://cyberpunktcg.com/blog",
   "items": [
     {
+      "id": "wnc-showdown-decks",
+      "title": "5 Night City Showdown Winning Decklists from the Community",
+      "excerpt": "The first Cyberpunk TCG players have already earned their legend by taking down Night City Showdown tournaments. Today we’re going to take a look at some of their winning decklists.\n",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/2Ft40BFuiVRS5w0FfotezZ/a1dc4c451e72ea3e51a41e1deaecd121/Smashersplash.png",
+      "date": "2026-11-27",
+      "url": "https://cyberpunktcg.com/blog/wnc-showdown-decks",
+      "seen": "2026-11-28"
+    },
+    {
+      "id": "eor-pc-reveals",
+      "title": "Additional EOR Announcements: Unrevealed Prize Cards and new Black Sapphire Invitational details",
+      "excerpt": "Today we’re lifting the veil on our final Edgerunner Open Regional prize cards, and sharing some important new information about Black Sapphire Invitationals.",
+      "image": "https://images.ctfassets.net/udihssg1zwbu/3OXAXXcqYvtk29zhOvZ9hn/a64aa11601a97ef633eebb6c3fe8f2da/GutsSplash.png",
+      "date": "2026-11-26",
+      "url": "https://cyberpunktcg.com/blog/eor-pc-reveals",
+      "seen": "2026-11-28"
+    },
+    {
       "id": "wnc-impactful-cards",
       "title": "The Top Performing Cards of the early WNC Metagame",
       "excerpt": "Night City Showdowns and Brawls have begun. Champs are being crowned as we speak. Here are some of the standout cards helping players establish themselves as Night City Legends.",
@@ -605,5 +623,5 @@
       "frOf": "Introducing the Official Cyberpunk Trading Card Game"
     }
   ],
-  "updatedAt": "2026-11-24T07:42:09.277Z"
+  "updatedAt": "2026-11-28T07:36:15.532Z"
 }
